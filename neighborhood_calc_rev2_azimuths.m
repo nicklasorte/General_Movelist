@@ -163,22 +163,17 @@ if ~isempty(zero_idx)==1
                     end
                 end
 
-
-
+                
 
                 %%%%%%%%%%Binary Search
                 [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                 [num_ppts,~]=size(base_protection_pts);
                 max_number_calc=sim_radius_km/min_binaray_spacing
-                disp_progress(app,strcat('Neighborhood Calc 1: Line 159: Binary Search:', num2str(max_number_calc)))
+                disp_progress(app,strcat('Neighborhood Calc 1: Line 172: ', num2str(max_number_calc)))
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 [hWaitbar_binary,hWaitbarMsgQueue_binary]= ParForWaitbarCreateMH_time('Binary Search: ',max_number_calc);    %%%%%%% Create ParFor Waitbar, this one covers points and chunks
 
-
-                %%%%Change the CatB neighborhood to be highest
-                %%%%factor of search dist array. For example, 500km CatB Radius -->
-                %%%%512km CatB Neighborhood.
                 binary_dist_array=[1,2,4,8,16,32,64,128,256,512,1024];
                 CBSD_label='BaseStation';
                 [nn_idx]=nearestpoint_app(app,sim_radius_km,binary_dist_array,'next');
