@@ -118,11 +118,11 @@ if ~isempty(zero_idx)==1
                         % % %      %%%%array_list_bs  %%%%%%%1) Lat, 2)Lon, 3)BS height, 4)BS EIRP 5) Nick Unique ID for each sector, 6)NLCD: R==1/S==2/U==3, 7) Azimuth 8)BS EIRP Mitigation
 
 
-                        load(strcat(data_label1,'_radar_height.mat'),'radar_height')
-                        temp_data=radar_height;
-                        clear radar_height;
-                        radar_height=temp_data;
-                        clear temp_data;
+                        % % load(strcat(data_label1,'_radar_height.mat'),'radar_height')
+                        % % temp_data=radar_height;
+                        % % clear radar_height;
+                        % % radar_height=temp_data;
+                        % % clear temp_data;
 
                         load(strcat(data_label1,'_radar_beamwidth.mat'),'radar_beamwidth')
                         temp_data=radar_beamwidth;

@@ -1,4 +1,4 @@
-function neighborhood_wrapper_rev1(app,rev_folder,parallel_flag)
+function neighborhood_wrapper_rev1(app,rev_folder,parallel_flag,tf_server_status)
 
 
 
@@ -42,7 +42,8 @@ toc;
 [maine_exception]=load_data_maine_exception(app);
 [deployment_percentage]=load_data_deployment_percentage(app);
 [agg_check_reliability]=load_data_agg_check_reliability(app);
-server_status_rev1(app)
+[tf_clutter]=load_data_tf_clutter(app);
+server_status_rev2(app,tf_server_status)
 
 
 
@@ -58,8 +59,12 @@ num_chunks=24;  %%%%%%%%%This number needs to be set right here to not create po
 %%%%%%server it is running on, because some servers have a different number
 %%%%%%of cores, which would change the number of chunks.
 
-part1_calc_pathloss_itm_or_tirem_rev4(app,rev_folder,folder_names,parallel_flag,sim_number,reliability,confidence,FreqMHz,Tpol,workers,string_prop_model,num_chunks)
-propagation_clean_up_rev1(app,rev_folder,folder_names,parallel_flag,sim_number,workers,string_prop_model,num_chunks)
+%part1_calc_pathloss_itm_or_tirem_rev4(app,rev_folder,folder_names,parallel_flag,sim_number,reliability,confidence,FreqMHz,Tpol,workers,string_prop_model,num_chunks)
+%propagation_clean_up_rev1(app,rev_folder,folder_names,parallel_flag,sim_number,workers,string_prop_model,num_chunks)
+
+tf_recalc_pathloss=0
+part1_calc_pathloss_clutter2108_rev11(app,rev_folder,folder_names,parallel_flag,sim_number,reliability,confidence,FreqMHz,Tpol,workers,string_prop_model,tf_recalc_pathloss,tf_server_status,tf_clutter)
+
 
 %%%%%%neighborhood_calc_rev1(app,folder_names,parallel_flag,rev_folder,workers,move_list_reliability,sim_number,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt)
 neighborhood_calc_rev2_azimuths(app,folder_names,parallel_flag,rev_folder,workers,move_list_reliability,sim_number,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt)
