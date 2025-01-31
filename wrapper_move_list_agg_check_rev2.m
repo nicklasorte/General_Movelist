@@ -1,4 +1,4 @@
-function wrapper_move_list_agg_check_rev1(app,parallel_flag,rev_folder,tf_server_status)
+function wrapper_move_list_agg_check_rev2(app,parallel_flag,rev_folder,tf_server_status,workers)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%App Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,7 +10,7 @@ RandStream('mt19937ar','Seed','shuffle')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Toolbox Check (Sims can run without the Parallel Toolbox)
-[workers,parallel_flag]=check_parallel_toolbox(app,parallel_flag);
+%[workers,parallel_flag]=check_parallel_toolbox(app,parallel_flag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Check for the Number of Folders to Sim
 [sim_number,folder_names,num_folders]=check_rev_folders(app,rev_folder);

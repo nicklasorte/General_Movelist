@@ -321,6 +321,8 @@ if ~isempty(zero_idx)==1
                             end
                             toc;
 
+                            %%%%%%%%%Maybe do the figures here
+
                             retry_save=1;
                             while(retry_save==1)
                                 try
