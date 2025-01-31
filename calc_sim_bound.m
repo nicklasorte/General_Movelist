@@ -18,16 +18,16 @@ function [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1)
     sim_bound=horzcat(reshape_lat(con_hull_idx),reshape_lon(con_hull_idx));
 
 
-    close all;
-    figure;
-    hold on;
-    plot(base_polygon(:,2),base_polygon(:,1),'-ob')
-    plot(sim_bound(:,2),sim_bound(:,1),'-r')
-    grid on;
-    plot_google_map('maptype','terrain','APIKey','AIzaSyCgnWnM3NMYbWe7N4svoOXE7B2jwIv28F8') %%%Google's API key made by nick.matlab.error@gmail.com
-    filename1=strcat('Sim_Area_',data_label1,'.png');
-    pause(0.1)
-    %saveas(gcf,char(filename1))
+%     close all;
+%     figure;
+%     hold on;
+%     plot(base_polygon(:,2),base_polygon(:,1),'-ob')
+%     plot(sim_bound(:,2),sim_bound(:,1),'-r')
+%     grid on;
+%     plot_google_map('maptype','terrain','APIKey','AIzaSyCgnWnM3NMYbWe7N4svoOXE7B2jwIv28F8') %%%Google's API key made by nick.matlab.error@gmail.com
+%     filename1=strcat('Sim_Area_',data_label1,'.png');
+%     pause(0.1)
+%     %saveas(gcf,char(filename1))
 
 
 end

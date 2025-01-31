@@ -4,7 +4,6 @@ function [mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort
 mc_agg_dbm=pow2db(sum(binary_sort_mc_watts,"omitnan")*1000);
 
 
-
 if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
     hi=length(binary_sort_mc_watts);
     lo=0;
