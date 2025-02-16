@@ -6,6 +6,8 @@ function [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1)
     ellipsoid=[];
     n_pts=50;
     [num_pts,~]=size(base_polygon);
+    nnan_idx=find(~isnan(base_polygon(:,1)));
+    base_polygon=base_polygon(nnan_idx,:);
     %%%%%Preallocate
     temp_lat_buff=NaN(n_pts,num_pts);
     temp_lon_buff=NaN(n_pts,num_pts);

@@ -341,12 +341,16 @@ if ~isempty(zero_idx)==1
                             % % % pause(0.1)
                             % % % close(f2)
 
-                            %base_polygon
+                            %
                             %[num_base_pts,~]=size(base_polygon)
 
 
                             %[zone_lat,zone_lon]=scircle1(base_polygon(:,1),base_polygon(:,2),km2deg(max_knn_dist));
+                            nnan_idx=find(~isnan(base_polygon(:,1)));
+                            base_polygon=base_polygon(nnan_idx,:);
+                            max_knn_dist
                             [sim_bound]=calc_circle_bound(app,base_polygon,max_knn_dist);
+
                             %%%%Find the number of base stations within the coordination zone.
                             tic;
                             inside_idx=find(inpolygon(sim_array_list_bs(:,2),sim_array_list_bs(:,1),sim_bound(:,2),sim_bound(:,1)));
@@ -452,6 +456,10 @@ if ~isempty(zero_idx)==1
                         end
                     end
 
+                    table_miti=array2table(array_miti_distance);
+                    table_miti.Properties.VariableNames=({'Mitigation_dB', 'Max_Distance_km' 'Move_List_size' 'Total_BS_inside_zone'})
+                    writetable(table_miti,strcat('table_miti.xlsx'));
+
                     retry_save=1;
                     while(retry_save==1)
                         try
@@ -467,9 +475,9 @@ if ~isempty(zero_idx)==1
                 delete(hWaitbarMsgQueue_movelist);
                 close(hWaitbar_movelist);
 
-                table_miti=array2table(array_miti_distance);
-                table_miti.Properties.VariableNames=({'Mitigation_dB', 'Max_Distance_km' 'Move_List_size' 'Total_BS_inside_zone'})
-                writetable(table_miti,strcat('table_miti.xlsx'));
+                % % table_miti=array2table(array_miti_distance);
+                % % table_miti.Properties.VariableNames=({'Mitigation_dB', 'Max_Distance_km' 'Move_List_size' 'Total_BS_inside_zone'})
+                % % writetable(table_miti,strcat('table_miti.xlsx'));
 
 
                 %%%%%1) Mitigation dB, 2) Maximum Turnoff Distance, 3)Size of Move List, 4) Total Number of Base Stations inside coordination zone

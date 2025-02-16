@@ -3,8 +3,8 @@ function [radar_ant_array]=horizontal_antenna_loss_app(app,radar_beamwidth,min_r
 
        %%%%%%%%%%Add Radar Antenna Pattern: Offset from 0 degrees and loss in dB
         %[radar_ant_array]=radar_hor_ant_loss_app(app,radar_beamwidth,min_radar_loss);
-        radar_beamwidth
-        min_radar_loss
+        %radar_beamwidth
+        %min_radar_loss
         
         %%%%%%%%%%%%%%Calculate Radar Rx Antenna Loss (dB) for 180 degrees
         tenth_bw=radar_beamwidth/10;
