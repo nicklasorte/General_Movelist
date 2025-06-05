@@ -55,8 +55,10 @@ end
 
 
 if any(isinf(monte_carlo_pr_dBm))
-    'Infinity Error with monte_carlo_pr_dBm'
-    pause;
+    inf_idx=find(isinf(monte_carlo_pr_dBm));
+    monte_carlo_pr_dBm(inf_idx)=-1;
+    % 'Infinity Error with monte_carlo_pr_dBm'
+    % pause;
 end
 
 end

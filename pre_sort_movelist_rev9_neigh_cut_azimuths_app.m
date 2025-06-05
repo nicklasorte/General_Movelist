@@ -68,6 +68,7 @@ else
         pathloss=pathloss(:,[rel_first_idx:rel_second_idx]);
     end
     size(pathloss)
+    [pathloss]=fix_inf_pathloss_rev1(app,pathloss);
 
 
     %%%%'Cut the base stations and pathloss to be only within the search distance'
@@ -163,6 +164,19 @@ else
         %disp_progress(app,strcat('Error: PAUSE: Inside Pre_sort_ML rev8 Line 164: NaN error on sort_full_Pr_dBm'))
         pause;
     end
+
+
+    % if any(isinf(sort_full_Pr_dBm))
+    %     inf_idx=find(isinf(sort_full_Pr_dBm));
+    %     [num_rows,num_cols]=size(sort_full_Pr_dBm)
+    %     if num_cols==1
+    %         sort_full_Pr_dBm(inf_idx)=999;
+    %     else
+    %         'Error inf sort_full_Pr_dBm'
+    %         pause;
+    %     end
+    % end
+
     %%%sort_full_Pr_dBm(1:10,:)'
     %%%%array_list_bs  %%%%%%%1) Lat, 2)Lon, 3)BS height, 4)BS EIRP 5) Unique ID
 
@@ -244,7 +258,7 @@ else
 
             if length(reliability)==1 %%%%%%%This assume 50%
                 if ~all(sort_full_Pr_dBm==sort_monte_carlo_pr_dBm)
-                    %disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 244:Error:Pr dBm Mismatch'))
+                    disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 244:Error:Pr dBm Mismatch'))
                     pause;
                 end
             end

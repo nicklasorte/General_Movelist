@@ -51,10 +51,15 @@ else
         pathloss=pathloss(:,[rel_first_idx:rel_second_idx]);
     end
     size(pathloss)
+    min(pathloss)
+
+    [pathloss]=fix_inf_pathloss_rev1(app,pathloss);
 
     %%%%%%%%%Cut the pathloss from those on
     pathloss(off_idx,:)=[];  %%%%%%%Cut off_idx
     size(pathloss)
+
+
 
 
     %%%%%%%Take into consideration the sector/azimuth off-axis gain
@@ -139,7 +144,8 @@ else
 
             if length(reliability)==1 %%%%%%%This assume 50%
                 if ~all(on_full_Pr_dBm==sort_monte_carlo_pr_dBm)
-                    %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 138: Pr dBm Mismatch'))
+                    min(pathloss)
+                    disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 138: Pr dBm Mismatch'))
                     pause;
                 end
             end
