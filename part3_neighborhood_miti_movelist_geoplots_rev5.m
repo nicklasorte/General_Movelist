@@ -344,7 +344,7 @@ if ~isempty(zero_idx)==1
                     filename1=strcat('Miti_turnoff_',data_label1,'.png');
                     saveas(gcf,char(filename1))
                     pause(1);
-                    %close(f1)
+                    close(f1)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
                     retry_save=1;
