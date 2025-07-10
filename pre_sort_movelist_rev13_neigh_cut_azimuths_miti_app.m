@@ -1,4 +1,4 @@
-function [cell_miti_list]=pre_sort_movelist_rev12_neigh_cut_azimuths_mitigation_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius)
+function [cell_miti_list]=pre_sort_movelist_rev13_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Move List Function with Neighborhoor Cut
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,6 +226,16 @@ else
                         sort_full_Pr_dBm_miti(temp_uni_miti_idx)=sort_full_Pr_dBm(temp_uni_miti_idx)-past_miti_dB;
                     end
                 end
+                %%%%%%%%%%%%%We are setting it to
+                %%%%%%%%%%%%%the max, since we
+                %%%%%%%%%%%%%typically set it to 0
+
+                %%%%%%Empty problem
+                temp_cell_max_idx=cell_miti_list(:,5);
+                temp_cell_max_idx=temp_cell_max_idx(~cellfun('isempty',temp_cell_max_idx));
+                low_idx=max(cell2mat(temp_cell_max_idx));
+            else
+                low_idx=0;
             end
 
 
@@ -275,18 +285,17 @@ else
                         pause;
                     end
 
-                    %%%%%%Convert to Watts, Sum, and Find Aggregate
-                    %%%pow2db(0.1*1000)=20, 0.1 Watts = 20dBm
-                    %%%db2pow(20)/1000=0.1, 20dBm = 0.1 Watts
-                    binary_sort_mc_watts=db2pow(sort_temp_mc_dBm)/1000; %%%%%%To be used for the binary search
-
-                    if any(isnan(binary_sort_mc_watts))
-                        disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 282: NaN Error: binary_sort_mc_watts'))
-                        pause;
-                    end
-
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Binary Search
-                    [mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort_mc_watts);
+
+                    %%%%%%%%%%Input is lo_idx to
+                    %%%%%%%%%%not affect the
+                    %%%%%%%%%%previous mitigations
+
+                    %[mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort_mc_watts);
+                    %function [mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort_mc_watts)
+                    % %%%%%For Mitigation, we need to stay in dB
+                    binary_sort_mc_dBm=sort_temp_mc_dBm;
+                    [mid]=pre_sort_binary_miti_movelist_rev3_app(app,radar_threshold,binary_sort_mc_dBm,low_idx,miti_idx,rev_array_mitigation);
                     azimuth_turn_off_size(azimuth_idx)=mid;
                 end
                 array_turn_off_size(mc_iter)=max(azimuth_turn_off_size); %%%%%%%%%%%max across all azimuths for a single MC iteration
@@ -302,11 +311,12 @@ else
                 'Error: Inside Pre_sort_ML rev8 Line 301: Check the empty move_list_idx'
                 %pause;
             else
-                move_list_turn_off_idx=1:1:turn_off_size95;
+                %move_list_turn_off_idx=1:1:turn_off_size95;
+                move_list_turn_off_idx=(low_idx+1):1:turn_off_size95;  %%%%%%%low_idx+1, since we set it to the last affected tx
             end
 
             if isempty(move_list_turn_off_idx)==1
-                'Empty move_list_turn_off_idx, need to change the code below for the check'
+                %'Empty move_list_turn_off_idx, need to change the code below for the check'
                 move_sort_sim_array_list_bs=NaN(1,15);
                 %%%move_sort_sim_array_list_bs(:,[1:15])=[]
                 %%%%%
@@ -320,19 +330,19 @@ else
 
             if miti_idx>1
                 %%%%%%%%%%%%%%%%Find the Unique
-                cell_miti_list
-                cell_miti_list([1:1:(miti_idx-1)],2)
-                temp_cell=cell_miti_list([1:1:(miti_idx-1)],2)
-                temp_cell_size_before=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false))
+                %cell_miti_list
+                %cell_miti_list([1:1:(miti_idx-1)],2)
+                temp_cell=cell_miti_list([1:1:(miti_idx-1)],2);
+                temp_cell_size_before=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false));
                 for n = 1:length(temp_cell)
                     temp_cell{n} = reshape(temp_cell{n}, numel(temp_cell{n}),1);
                 end
-                temp_cell
-                temp_cell_size_after=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false))
-                temp_cell{:}
-                vertcat(temp_cell{:})
+                %temp_cell
+                temp_cell_size_after=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false));
+                %temp_cell{:}
+                %vertcat(temp_cell{:})
                 %%%cell2mat(temp_cell)
-                all_past_idx=unique(vertcat(temp_cell{:}))
+                all_past_idx=unique(vertcat(temp_cell{:}));
                 %%%cell2mat(cell_miti_list([1:1:(miti_idx-1)],2))
                 %%%all_past_idx=unique(cell2mat(cell_miti_list([1:1:(miti_idx-1)],2)));
                 all_past_idx=all_past_idx(~isnan(all_past_idx));
@@ -340,46 +350,91 @@ else
                 all_past_idx=NaN(1,1);
                 all_past_idx=all_past_idx(~isnan(all_past_idx));
             end
-            move_list_setxor_idx=setxor(all_past_idx,move_list_turn_off_idx);
-            move_sort_sim_array_list_bs_setxor=sort_sim_array_list_bs(move_list_setxor_idx,:);
-            move_sort_sim_array_list_bs_setxor(:,4)=move_sort_sim_array_list_bs_setxor(:,4)-temp_miti_dB;
+
+            if isempty(move_list_turn_off_idx)
+                %%%'empty move_list_turn_off_idx'
+                %move_list_setxor_idx=move_list_turn_off_idx;
+                move_sort_sim_array_list_bs_setxor=sort_sim_array_list_bs(move_list_turn_off_idx,:);
+            else
+                %move_list_setxor_idx=setxor(all_past_idx,move_list_turn_off_idx)
+                %move_sort_sim_array_list_bs_setxor=sort_sim_array_list_bs(move_list_setxor_idx,:);
+                move_sort_sim_array_list_bs_setxor=sort_sim_array_list_bs(move_list_turn_off_idx,:);
+                move_sort_sim_array_list_bs_setxor(:,4)=move_sort_sim_array_list_bs_setxor(:,4)-temp_miti_dB;
+            end
+            % cell_miti_list{miti_idx,1}=move_sort_sim_array_list_bs_setxor;
+            % cell_miti_list{miti_idx,2}=move_list_setxor_idx;
+            % cell_miti_list{miti_idx,3}=temp_miti_dB;
+            % cell_miti_list{miti_idx,4}=min(move_list_setxor_idx);
+            % cell_miti_list{miti_idx,5}=max(move_list_setxor_idx);
+
+
+
+            if ~isempty(move_sort_sim_array_list_bs_setxor)
+                if miti_idx==1
+                    %%%These are turned off
+                    move_sort_sim_array_list_bs_setxor(:,4)=move_sort_sim_array_list_bs_setxor(:,4)-99999; %%%%%Off
+                else
+                    %%%%%%%Use sort_full_Pr_dBm
+                    %max(sort_sim_array_list_bs(:,4))
+                    past_miti_dB=rev_array_mitigation(miti_idx-1);
+                    move_sort_sim_array_list_bs_setxor(:,4)=sort_sim_array_list_bs(move_list_turn_off_idx,4)-past_miti_dB; %%%%What was the original EIRP?
+                    %max(sort_sim_array_list_bs(move_list_turn_off_idx,4))
+                    %move_sort_sim_array_list_bs_setxor
+                    %'This should have the eirp that needs to be checked for the double aggregate check at the bottom, not what was turned off.'
+                    %'check for fourth colum'
+                end
+            end
+
             cell_miti_list{miti_idx,1}=move_sort_sim_array_list_bs_setxor;
-            cell_miti_list{miti_idx,2}=move_list_setxor_idx;
+            cell_miti_list{miti_idx,2}=move_list_turn_off_idx;
             cell_miti_list{miti_idx,3}=temp_miti_dB;
-            cell_miti_list{miti_idx,4}=min(move_list_setxor_idx);
-            cell_miti_list{miti_idx,5}=max(move_list_setxor_idx);
+            cell_miti_list{miti_idx,4}=min(move_list_turn_off_idx); %%%%%%Since we are changing this to be the low_idx
+            cell_miti_list{miti_idx,5}=max(move_list_turn_off_idx);
+
+            % array_turn_off_size
+            % turn_off_size95
+            % cell_miti_list
+
+            % % % if miti_idx>6
+            % % %     miti_idx
+            % % %     'check the turn off'
+            % % %     'starting here for miti_idx==6, line 1091.'
+            % % %     pause;
+            % % % end
         end
 
         %%%%%%%%%%%%%% 'Need to add a final column of those not turned off.'
         [num_bs,~]=size(sort_sim_array_list_bs)
-        %all_past_idx=unique(cell2mat(cell_miti_list([1:1:(miti_idx)],2)));
-        
+        %%%all_past_idx=unique(cell2mat(cell_miti_list([1:1:(miti_idx)],2)));
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Fix for the concat error
-        temp_cell=cell_miti_list([1:1:(miti_idx)],2)
-        temp_cell_size_before=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false))
+        temp_cell=cell_miti_list([1:1:(miti_idx)],2);
+        temp_cell_size_before=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false));
         for n = 1:length(temp_cell)
             temp_cell{n} = reshape(temp_cell{n}, numel(temp_cell{n}),1);
         end
-        temp_cell
-        temp_cell_size_after=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false))
-        temp_cell{:}
-        vertcat(temp_cell{:})
+        %temp_cell
+        temp_cell_size_after=cell2mat(cellfun(@size,temp_cell,'UniformOutput',false));
+        %temp_cell{:}
+        %vertcat(temp_cell{:})
         %%%cell2mat(temp_cell)
-        all_past_idx=unique(vertcat(temp_cell{:}))
+        all_past_idx=unique(vertcat(temp_cell{:}));
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
+
+        %%%%'Need to check format of cell for consistency'
+
         all_past_idx=all_past_idx(~isnan(all_past_idx));
         move_list_setxor_idx=setxor(all_past_idx,[1:1:num_bs]);
         move_sort_sim_array_list_bs_setxor=sort_sim_array_list_bs(move_list_setxor_idx,:);
+        horzcat(max(sort_sim_array_list_bs(:,4)),max(move_sort_sim_array_list_bs_setxor(:,4)))
         cell_miti_list{end,1}=move_sort_sim_array_list_bs_setxor;
-        cell_miti_list{end,2}=move_list_setxor_idx;
+        cell_miti_list{end,2}=move_list_setxor_idx';
         cell_miti_list{end,3}=NaN(1,1);
         cell_miti_list{end,4}=min(move_list_setxor_idx);
         cell_miti_list{end,5}=max(move_list_setxor_idx);
 
         cell_miti_list
-
-        'check'
 
 
         %%%%%%Save the move list
@@ -394,7 +449,7 @@ else
                 pause(1)
             end
         end
- 
+
         % [num_rows,~]=size(cell_miti_list)
         % color_set=plasma(num_rows);
         % %%%%%%%%%%%%%%%%Original Linear Heat Map Color set
@@ -432,7 +487,7 @@ else
         % filename1=strcat('Miti_turnoff_',data_label1,'.png');
         % %saveas(gcf,char(filename1))
         % pause(1);
-        % close(f1)
+        % %%%close(f1)
     end
     toc;
 end
