@@ -111,9 +111,9 @@ else
         %%%%%%But then each protection point is not calculated in parallel, but as one large calculation.
         %%%%%%%%This calculation might take 90 seconds, compared to milliseconds for the CBRS sorted move list.
         tf_calc_opt_sort=0  %%%%%%To be used to re-calculate.
-        'Need to insert custom_antenna_pattern into near_opt_sort_idx_string_prop_model_miti_rev3 '
-        pause;
-        [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
+        
+        %%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
+        [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
         sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
     end
 
@@ -195,8 +195,8 @@ else
         array_turn_off_size=NaN(mc_size,1);
         [num_tx,~]=size(sort_sim_array_list_bs);
 
-        array_off_axis_loss_fed=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
-        array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
+        %array_off_axis_loss_fed=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
+        %array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 234: Entering the Monte Carlo Loop'))
         for mc_iter=1:1:mc_size
             %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 236:',num2str(mc_iter)))
@@ -259,16 +259,20 @@ else
                 %%%%[off_axis_loss]=calc_off_axix_loss_rev1_app(app,sim_azimuth,bs_azimuth,radar_ant_array,min_ant_loss);
                 %%%%%%%%%%%%%%%%%%%%%%%Since we've already rotated the antenna pattern, just need to find the nearest bs_azimuth
                 [ant_deg_idx]=nearestpoint_app(app,bs_azimuth,shift_antpat(:,1));
-                off_axis_loss=shift_antpat(ant_deg_idx,2);
-                sort_temp_mc_dBm=sort_monte_carlo_pr_dBm-off_axis_loss;
+                off_axis_gain=shift_antpat(ant_deg_idx,2);
+                sort_temp_mc_dBm=sort_monte_carlo_pr_dBm+off_axis_gain;
+
+                % % horzcat(sort_temp_mc_dBm(1:10),sort_monte_carlo_pr_dBm(1:10),off_axis_gain(1:10))
+                % % 'check the off_axis_gain'
+                % % pause;
 
                 %%%%Maybe save this too, but only for the first
                 %%%%mc-iteration, and only if there is one mc iteration.
 
-                if mc_iter==1
-                    array_sort_mc_dBm(:,azimuth_idx)=sort_temp_mc_dBm;
-                    array_off_axis_loss_fed(:,azimuth_idx)=off_axis_loss;
-                end
+                % if mc_iter==1
+                %     array_sort_mc_dBm(:,azimuth_idx)=sort_temp_mc_dBm;
+                %     array_off_axis_loss_fed(:,azimuth_idx)=off_axis_gain;
+                % end
 
                 if any(isnan(sort_temp_mc_dBm))  %%%%%%%%Check
                     %disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 272: NaN Error: temp_mc_dBm'))

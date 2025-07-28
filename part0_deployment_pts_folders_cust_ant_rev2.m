@@ -247,7 +247,7 @@ if ~isempty(zero_idx)==1
                         %%%%%%%%%ITU_AP8_AN3 %%%%2020 Appendix 8, Annex 3
                         col_ant_dia_idx=find(matches(data_header,'ant_diamter_m'));
                         temp_ant_diamter=temp_single_cell_sim_data{col_ant_dia_idx};
-                        ant_diamter_m=temp_ant_diamter; %%%%%meters
+                        ant_diamter_m=temp_ant_diamter %%%%%meters
                         col_ant_gain_idx=find(matches(data_header,'rx_ant_gain_mb'));
                         temp_ant_gain=temp_single_cell_sim_data{col_ant_gain_idx};
                         ant_gain_dBi=temp_ant_gain; %%%%%%%%dBi

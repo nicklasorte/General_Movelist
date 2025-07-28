@@ -73,6 +73,17 @@ server_status_rev2(app,tf_server_status)
 %%%%neighborhood_calc_rev3_azimuths_geoplots(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalc_pathloss,tf_server_status)
 neighborhood_calc_rev4_azimuths_geoplots_custant(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalc_pathloss,tf_server_status)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'Now do the mitigation move list within the neighborhood.'
+%%%%part3_neighborhood_miti_geoplots_rev4(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
+%%%%%part3_neighborhood_miti_movelist_geoplots_rev5(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
+part3_neighborhood_miti_movelist_geoplots_custant_rev6(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
+
+
+% % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%part 4 Census Pop Impact
+tf_convex=1
+scrap_data_pop_geo_id_pea_rev8(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex)
+
+
 %%'Uncomment these for the final version.'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Scrap the Data for each DPA: Neighborhood Distance and Move List size
 [sim_number,folder_names,~]=check_rev_folders(app,rev_folder);
@@ -88,18 +99,6 @@ table_neighborhood_data=cell2table(cell_status(:,[1,3,4]));
 table_neighborhood_data.Properties.VariableNames={'DPA_Name' 'Neighborhood_km' 'Move_List_Size'}
 writetable(table_neighborhood_data,strcat('Neighborhood_data_',num2str(sim_number),'.xlsx'));
 pause(0.1)
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'Now do the mitigation move list within the neighborhood.'
-%%%%part3_neighborhood_miti_geoplots_rev4(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
-%%%%%part3_neighborhood_miti_movelist_geoplots_rev5(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
-part3_neighborhood_miti_movelist_geoplots_custant_rev6(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
-
-
-% % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%part 4 Census Pop Impact
-tf_convex=1
-scrap_data_pop_geo_id_pea_rev8(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex)
 
 if  parallel_flag==1
     poolobj=gcp('nocreate');

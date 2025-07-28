@@ -215,6 +215,8 @@ if ~isempty(zero_idx)==1
                     end
                 end
 
+                strcat('neighborhood_radius:',num2str(neighborhood_radius))
+                %pause;
 
                 % % fig1=figure;
                 % % hold on;
@@ -260,7 +262,6 @@ if ~isempty(zero_idx)==1
                         parfor point_idx=1:num_ppts  %%%%Change to parfor
                             %%%%pre_sort_movelist_rev13_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius);
                             pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius,custom_antenna_pattern);
-
                         end
                     end
 
@@ -277,6 +278,7 @@ if ~isempty(zero_idx)==1
                         [cell_miti_list]=pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius,custom_antenna_pattern);
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         cell_multi_pt_miti_list{point_idx}=cell_miti_list;
+                        cell_miti_list
                     end
                     toc;
 
@@ -285,84 +287,91 @@ if ~isempty(zero_idx)==1
                         pause;
                     end
 
+                    cell_multi_pt_miti_list
+
                     %%%%%%%%'Need to find the minimum EIRP, for each unique lat/lon and set that to the EIRP/mitigation'
                     all_miti_list=vertcat(cell_multi_pt_miti_list{:});
                     nan_cols=cell2mat(all_miti_list(:,3));
                     keep_col_idx=find(~isnan(nan_cols)); %%%Remove these from the list.
                     nnan_all_miti_list=all_miti_list(keep_col_idx,:);
-                    array_all_list=vertcat(nnan_all_miti_list{:,1});
-                    uni_bs_idx=unique(array_all_list(:,5));
-                    num_bs=length(uni_bs_idx);
-                    [num_all_bs,num_col]=size(sim_array_list_bs);
-                    neigh_miti_list_bs=NaN(num_bs,num_col);
-                    for i=1:1:num_bs
-                        row_idx=find(array_all_list(:,5)==uni_bs_idx(i));
-                        if length(row_idx)>1
-                            temp_rows_data=array_all_list(row_idx,:);
-                            [~,min_idx]=min(temp_rows_data(:,4));
-                            neigh_miti_list_bs(i,:)=array_all_list(row_idx(min_idx),:);
-                        else
-                            neigh_miti_list_bs(i,:)=array_all_list(row_idx,:);
+                    array_all_list=vertcat(nnan_all_miti_list{:,1})
+
+                    if isempty(array_all_list)
+                        cell_miti_union=cell(1,2);
+                    else
+                        uni_bs_idx=unique(array_all_list(:,5));
+                        num_bs=length(uni_bs_idx);
+                        [num_all_bs,num_col]=size(sim_array_list_bs);
+                        neigh_miti_list_bs=NaN(num_bs,num_col);
+                        for i=1:1:num_bs
+                            row_idx=find(array_all_list(:,5)==uni_bs_idx(i));
+                            if length(row_idx)>1
+                                temp_rows_data=array_all_list(row_idx,:);
+                                [~,min_idx]=min(temp_rows_data(:,4));
+                                neigh_miti_list_bs(i,:)=array_all_list(row_idx(min_idx),:);
+                            else
+                                neigh_miti_list_bs(i,:)=array_all_list(row_idx,:);
+                            end
                         end
-                    end
 
-                    %%%%%%%%Find the mitigation for each base station
-                    [num_miti_bs,~]=size(neigh_miti_list_bs)
-                    ind_miti_dB=NaN(num_miti_bs,1); %%%%%%%The individual mitigation applied to the base station
-                    for i=1:1:num_miti_bs
-                        row_idx=find(sim_array_list_bs(:,5)==neigh_miti_list_bs(i,5));  %%%%%%%ID number
-                        ind_miti_dB(i)=sim_array_list_bs(row_idx,4)-neigh_miti_list_bs(i,4); %%%%%%EIRP
-                    end
-
-                    %%%%%%%%%%Group by mitigation and put into individual cells
-                    uni_miti=unique(ind_miti_dB)
-                    num_uni_miti=length(uni_miti)
-                    cell_miti_union=cell(num_uni_miti,2); %%%%%%%%%%1) List of the lat/lon and miti off EIRP. 2) Mitigation dB [Off-List]
-                    for i=1:1:num_uni_miti
-                        rows_match_idx=find(ind_miti_dB==uni_miti(i));
-                        cell_miti_union{i,1}=neigh_miti_list_bs(rows_match_idx,:);
-                        cell_miti_union{i,2}=uni_miti(i);
-                    end
-                    cell_miti_union
-
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Map the Mitigation Turn-off
-                    [num_rows,~]=size(cell_miti_union)
-                    color_set=plasma(num_rows);
-                    %%%%%%%%%%%%%%%%Original Linear Heat Map Color set
-                    f1=figure;
-                    for i=1:1:num_rows
-                        temp_latlon=cell_miti_union{i,1};
-                        geoscatter(temp_latlon(:,1),temp_latlon(:,2),10,color_set(i,:),'filled');
-                        hold on;
-                    end
-                    h = colorbar;
-                    ylabel(h, 'Margin [dB]')
-                    colorbar_labels=cell2mat(cell_miti_union(:,2))
-                    num_labels=length(colorbar_labels)*2+1;
-                    cell_bar_label=cell(num_labels,1);
-                    counter=0;
-                    for miti_idx=2:2:num_labels
-                        counter=counter+1;
-                        if isnan(colorbar_labels(counter))
-                            cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)));
-                        else
-                            cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)),'dB');
+                        %%%%%%%%Find the mitigation for each base station
+                        [num_miti_bs,~]=size(neigh_miti_list_bs)
+                        ind_miti_dB=NaN(num_miti_bs,1); %%%%%%%The individual mitigation applied to the base station
+                        for i=1:1:num_miti_bs
+                            row_idx=find(sim_array_list_bs(:,5)==neigh_miti_list_bs(i,5));  %%%%%%%ID number
+                            ind_miti_dB(i)=sim_array_list_bs(row_idx,4)-neigh_miti_list_bs(i,4); %%%%%%EIRP
                         end
+
+                        %%%%%%%%%%Group by mitigation and put into individual cells
+                        uni_miti=unique(ind_miti_dB)
+                        num_uni_miti=length(uni_miti)
+                        cell_miti_union=cell(num_uni_miti,2); %%%%%%%%%%1) List of the lat/lon and miti off EIRP. 2) Mitigation dB [Off-List]
+                        for i=1:1:num_uni_miti
+                            rows_match_idx=find(ind_miti_dB==uni_miti(i));
+                            cell_miti_union{i,1}=neigh_miti_list_bs(rows_match_idx,:);
+                            cell_miti_union{i,2}=uni_miti(i);
+                        end
+                        cell_miti_union
+
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Map the Mitigation Turn-off
+                        [num_rows,~]=size(cell_miti_union)
+                        color_set=plasma(num_rows);
+                        %%%%%%%%%%%%%%%%Original Linear Heat Map Color set
+                        f1=figure;
+                        for i=1:1:num_rows
+                            temp_latlon=cell_miti_union{i,1};
+                            geoscatter(temp_latlon(:,1),temp_latlon(:,2),10,color_set(i,:),'filled');
+                            hold on;
+                        end
+                        h = colorbar;
+                        ylabel(h, 'Margin [dB]')
+                        colorbar_labels=cell2mat(cell_miti_union(:,2))
+                        num_labels=length(colorbar_labels)*2+1;
+                        cell_bar_label=cell(num_labels,1);
+                        counter=0;
+                        for miti_idx=2:2:num_labels
+                            counter=counter+1;
+                            if isnan(colorbar_labels(counter))
+                                cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)));
+                            else
+                                cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)),'dB');
+                            end
+                        end
+                        bar_tics=linspace(0,1,num_labels);
+                        h = colorbar('Location','eastoutside','Ticks',bar_tics,'TickLabels',cell_bar_label);
+                        colormap(f1,color_set)
+                        grid on;
+                        title({strcat('Mitigation Turnoff')})
+                        pause(0.1)
+                        geobasemap streets-light%landcover
+                        f1.Position = [100 100 1200 900];
+                        pause(1)
+                        filename1=strcat('Miti_turnoff_',data_label1,'.png');
+                        saveas(gcf,char(filename1))
+                        pause(1);
+                        close(f1)
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     end
-                    bar_tics=linspace(0,1,num_labels);
-                    h = colorbar('Location','eastoutside','Ticks',bar_tics,'TickLabels',cell_bar_label);
-                    colormap(f1,color_set)
-                    grid on;
-                    title({strcat('Mitigation Turnoff')})
-                    pause(0.1)
-                    geobasemap streets-light%landcover
-                    f1.Position = [100 100 1200 900];
-                    pause(1)
-                    filename1=strcat('Miti_turnoff_',data_label1,'.png');
-                    saveas(gcf,char(filename1))
-                    pause(1);
-                    close(f1)
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     
                     retry_save=1;
                     while(retry_save==1)

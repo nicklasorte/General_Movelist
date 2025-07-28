@@ -150,9 +150,9 @@ else
     end
 
 
-    %%%%%%%%For this first pass, no mitigations
+    %%%%%%%%
 
-
+    cell_miti_list=cell(num_miti+1,5);  %%%%1)Move list with EIRP Change 2)IDX of sort 3)Mitigations, 4)Min IDX, 5)Max IDX
     if isempty(sort_full_Pr_dBm)
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 194: Empty sort_full_Pr_dBm'))
         move_list_turn_off_idx=NaN(1,1);
@@ -161,8 +161,6 @@ else
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%This is where we put the Generalized Move List
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 200: Starting to Calculate the Move List'))
-
-
 
 
         % % % %%%%%%%%%%Add Radar Antenna Pattern: Offset from 0 degrees and loss in dB
@@ -196,8 +194,8 @@ else
         array_turn_off_size=NaN(mc_size,1);
         [num_tx,~]=size(sort_sim_array_list_bs);
 
-        array_off_axis_loss_fed=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
-        array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
+        %array_off_axis_loss_fed=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
+        %array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 234: Entering the Monte Carlo Loop'))
         num_miti=length(array_mitigation);
         if mc_size>1
@@ -205,7 +203,7 @@ else
             pause;
         end
 
-        cell_miti_list=cell(num_miti+1,5);  %%%%1)Move list with EIRP Change 2)IDX of sort 3)Mitigations, 4)Min IDX, 5)Max IDX
+        %cell_miti_list=cell(num_miti+1,5);  %%%%1)Move list with EIRP Change 2)IDX of sort 3)Mitigations, 4)Min IDX, 5)Max IDX
         %%%%%%%%%%%%The idx is the level that they can't operate at.
         rev_array_mitigation=fliplr(array_mitigation);
         for miti_idx=1:1:num_miti
@@ -241,6 +239,10 @@ else
                 temp_cell_max_idx=temp_cell_max_idx(~cellfun('isempty',temp_cell_max_idx));
                 low_idx=max(cell2mat(temp_cell_max_idx));
             else
+                low_idx=0;
+            end
+            
+            if isempty(low_idx)
                 low_idx=0;
             end
 
@@ -311,8 +313,13 @@ else
                     %%[off_axis_loss]=calc_off_axix_loss_rev1_app(app,sim_azimuth,bs_azimuth,radar_ant_array,min_ant_loss);
                     %%%%%%%%%%%%%%%%%%%%%%%Since we've already rotated the antenna pattern, just need to find the nearest bs_azimuth
                     [ant_deg_idx]=nearestpoint_app(app,bs_azimuth,shift_antpat(:,1));
-                    off_axis_loss=shift_antpat(ant_deg_idx,2);
-                    sort_temp_mc_dBm=sort_monte_carlo_pr_dBm-off_axis_loss;
+                    off_axis_gain=shift_antpat(ant_deg_idx,2);
+                    sort_temp_mc_dBm=sort_monte_carlo_pr_dBm+off_axis_gain;
+
+
+                    % horzcat(sort_temp_mc_dBm(1:10),sort_monte_carlo_pr_dBm(1:10),off_axis_gain(1:10))
+                    % 'check the off_axis_gain'
+                    % pause;
 
                     % % figure;
                     % % hold on;
@@ -326,10 +333,10 @@ else
                     %%%%Maybe save this too, but only for the first
                     %%%%mc-iteration, and only if there is one mc iteration.
 
-                    if mc_iter==1
-                        array_sort_mc_dBm(:,azimuth_idx)=sort_temp_mc_dBm;
-                        array_off_axis_loss_fed(:,azimuth_idx)=off_axis_loss;
-                    end
+                    % % if mc_iter==1
+                    % %     array_sort_mc_dBm(:,azimuth_idx)=sort_temp_mc_dBm;
+                    % %     array_off_axis_loss_fed(:,azimuth_idx)=off_axis_loss;
+                    % % end
 
                     if any(isnan(sort_temp_mc_dBm))  %%%%%%%%Check
                         disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 272: NaN Error: temp_mc_dBm'))

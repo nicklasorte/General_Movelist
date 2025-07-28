@@ -15,6 +15,10 @@ mc_agg_dbm=pow2db(sum(binary_sort_mc_watts,"omitnan")*1000);
 % pause;
 % 'Start here keeping it in dBm, instead of Watts'
 % pause;
+% % 
+% % if isempty(low_idx)
+% %     low_idx=0;
+% % end
 
 if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
     hi=length(binary_sort_mc_dBm);
@@ -30,7 +34,7 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
             temp_mc_pr_dBm=binary_sort_mc_dBm;
 
             %%%idx_cut=1:1:mid;
-            idx_cut=(low_idx+1):1:mid;
+            idx_cut=(low_idx+1):1:mid
             if miti_idx==1 %%%%%%%%%%For the first, we turn off.
                 temp_mc_pr_watts=db2pow(temp_mc_pr_dBm)/1000; %%%%%%Convert to Watts
                 temp_mc_pr_watts(idx_cut)=NaN(1);
@@ -49,7 +53,7 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
             temp_mc_pr_watts=temp_mc_pr_watts(~isnan(temp_mc_pr_watts));  %%%%%%%%%%%Remove NaN just in case
 
             %%%%Re-calculate Aggregate Power
-            binary_mc_agg_dbm=pow2db(sum(temp_mc_pr_watts,"omitnan")*1000);
+            binary_mc_agg_dbm=pow2db(sum(temp_mc_pr_watts,"omitnan")*1000)
 
             %horzcat(binary_mc_agg_dbm,mid)
             if binary_mc_agg_dbm<radar_threshold
@@ -65,7 +69,7 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
     %%%%%%%Double check Aggregate
     temp_mc_pr_dBm=binary_sort_mc_dBm;
 
-    idx_cut=(low_idx+1):1:mid;
+    idx_cut=(low_idx+1):1:mid
     if miti_idx==1 %%%%%%%%%%For the first, we turn off.
         temp_mc_pr_watts=db2pow(temp_mc_pr_dBm)/1000; %%%%%%Convert to Watts
         temp_mc_pr_watts(idx_cut)=NaN(1);
@@ -88,6 +92,9 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
     if check_mc_agg_dbm>radar_threshold
         'Binary Search Error'
         check_mc_agg_dbm
+        mid
+        miti_idx
+        low_idx
         pause;
     end
 else

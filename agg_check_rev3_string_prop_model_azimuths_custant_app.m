@@ -196,8 +196,13 @@ else
                 %%%%[off_axis_loss]=calc_off_axix_loss_rev1_app(app,sim_azimuth,bs_azimuth,radar_ant_array,min_ant_loss);
                 %%%%%%%%%%%%%%%%%%%%%%%Since we've already rotated the antenna pattern, just need to find the nearest bs_azimuth
                 [ant_deg_idx]=nearestpoint_app(app,bs_azimuth,shift_antpat(:,1));
-                off_axis_loss=shift_antpat(ant_deg_idx,2);
-                sort_temp_mc_dBm=sort_monte_carlo_pr_dBm-off_axis_loss;
+                off_axis_gain=shift_antpat(ant_deg_idx,2);
+                sort_temp_mc_dBm=sort_monte_carlo_pr_dBm+off_axis_gain;
+
+
+                % % horzcat(sort_temp_mc_dBm(1:10),sort_monte_carlo_pr_dBm(1:10),off_axis_gain(1:10))
+                % % 'check the off_axis_gain'
+                % % pause;
 
                 if any(isnan(sort_temp_mc_dBm))  %%%%%%%%Check
                     %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 158: NaN Error: temp_mc_dBm'))
