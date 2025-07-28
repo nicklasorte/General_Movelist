@@ -98,7 +98,7 @@ else
         toc; %%%%%Elapsed time is 0.000862 seconds.
     else
         %disp_progress(app,strcat('PAUSE: Inside Pre_sort_ML rev8 Line 118: Need to double check optimal sort Logic Below'))
-        pause;
+        %pause;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Near-Optimal Move List Function Start
         %%%%%%Not optimal when we do it separately for all protection points. But this allows us to calculate the protection points in parallel.
         %%%%%%To get closer to optimal, need to have all the temp_pr_dbm for all the protection points. This can be a large array, especially when there are 180~240 azimuths per point.
@@ -106,11 +106,11 @@ else
         %%%%%%But then each protection point is not calculated in parallel, but as one large calculation.
         %%%%%%%%This calculation might take 90 seconds, compared to milliseconds for the CBRS sorted move list.
 
-        'Need to insert custom_antenna_pattern into near_opt_sort_idx_string_prop_model_miti_rev3 '
-        pause;
         tf_calc_opt_sort=0  %%%%%%To be used to re-calculate.
-        [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
+        %%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
+        [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
         sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
+        'calculated near-opt'
     end
 
     if any(isnan(sort_bs_idx))
