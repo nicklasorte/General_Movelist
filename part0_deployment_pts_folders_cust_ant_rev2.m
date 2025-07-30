@@ -336,18 +336,70 @@ if ~isempty(zero_idx)==1
                         'Need to add another pattern'
                         pause;
                     end
+                else
+                    %%%%%%%%%%Add Radar Antenna Pattern: Offset from 0 degrees and loss in dB
+                    array_azi=0:1:360;
+                    if ant_beamwidth==360
+                        custom_antenna_pattern=array_azi';
+                        custom_antenna_pattern(:,2)=0;
+                    else
+                         %%%%%%%%%%%Note, this is not STATGAIN
+                        [radar_ant_array]=horizontal_antenna_loss_app(app,ant_beamwidth,min_ant_loss);
+                        neg_ant_array=flipud(radar_ant_array([2:end],:));
+                        neg_ant_array(:,1)=-1*neg_ant_array(:,1);
+                        mod_neg_ant_array=neg_ant_array;
+                        mod_neg_ant_array(:,1)=mod(neg_ant_array(:,1),360);
 
-                  
+                        min_neg_azi=min(mod_neg_ant_array(:,1));
+                        neg_nn1_idx=nearestpoint_app(app,min_neg_azi,array_azi,'previous'); %%%%Use this one
+                        %%%%neg_nn2_idx=nearestpoint_app(app,min_neg_azi,array_azi,'next');
+                        %%%%horzcat(min_neg_azi,array_azi(neg_nn1_idx),array_azi(neg_nn2_idx))
 
+                        max_pos_azi=max(radar_ant_array(:,1));
+                        pos_nn1_idx=nearestpoint_app(app,max_pos_azi,array_azi,'next'); %%%%Use this one
+                        %%%%%%horzcat(max_pos_azi,array_azi(pos_nn1_idx))
+
+                        if neg_nn1_idx<pos_nn1_idx
+                            'Error on the non-custom ant pattern'
+                            pause;
+                        end
+                        middle_piece=array_azi([pos_nn1_idx:1:neg_nn1_idx])';
+                        middle_piece(:,2)=-1*min_ant_loss;
+                        custom_antenna_pattern=vertcat(radar_ant_array,middle_piece,mod_neg_ant_array);                       
+                    end
+
+
+                    %%%%%%%%%%%%%%Plot and Save
+                    fig1=figure;
+                    hold on;
+                    plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-b')
+                    xlabel('Azimuth [Degree]')
+                    ylabel('Antenna Gain')
+                    grid on;
+                    filename1=strcat(data_label1,'_custom_ant_gain.png');
                     retry_save=1;
                     while(retry_save==1)
                         try
-                            save(strcat(data_label1,'_custom_antenna_pattern.mat'),'custom_antenna_pattern')
+                            saveas(gcf,char(filename1))
+                            pause(0.1);
                             retry_save=0;
                         catch
                             retry_save=1;
-                            pause(1)
+                            pause(0.1)
                         end
+                    end
+                    pause(0.1)
+                    close(fig1)
+                end
+
+                retry_save=1;
+                while(retry_save==1)
+                    try
+                        save(strcat(data_label1,'_custom_antenna_pattern.mat'),'custom_antenna_pattern')
+                        retry_save=0;
+                    catch
+                        retry_save=1;
+                        pause(1)
                     end
                 end
 
