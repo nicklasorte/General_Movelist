@@ -1,4 +1,4 @@
-function part2_neigh_calc_rev5_azi_geoplots_custant_excel(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalc_pathloss,tf_server_status,tf_print_excel)
+function part2_neigh_calc_rev5_azi_geoplots_custant_excel(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Check for the Number of Folders to Sim
@@ -17,7 +17,7 @@ checkout_filename=strcat('TF_checkout_',string_prop_model,'_',num2str(sim_number
 tf_update_cell_status=0;
 sim_folder='';  %%%%%Empty sim_folder to not update.
 [cell_status]=checkout_cell_status_rev1(app,checkout_filename,cell_status_filename,sim_folder,folder_names,tf_update_cell_status);
-if tf_recalc_pathloss==1
+if tf_recalculate==1
     cell_status(:,2)=num2cell(0);
 end
 zero_idx=find(cell2mat(cell_status(:,2))==0);
@@ -94,6 +94,10 @@ if ~isempty(zero_idx)==1
             %%%%%%Check for the tf_complete_ITM file
             complete_filename=strcat(data_label1,'_',label_single_filename,'.mat'); %%%This is a marker for me
             [var_exist]=persistent_var_exist_with_corruption(app,complete_filename);
+            if tf_recalculate==1
+                var_exist=0
+            end
+
             if var_exist==2
                 retry_cd=1;
                 while(retry_cd==1)
@@ -410,6 +414,52 @@ if ~isempty(zero_idx)==1
                             end
                             toc;
 
+                          
+
+                            %%%%%%%%%%%%%%%%Make the Red/Green/Blue Graph for illustrative reasons.
+                            %%%%%%%First make the single_search_dist circle(purple)
+                            single_search_dist
+                            if single_search_dist>0
+                                [search_dist_bound]=calc_sim_bound(app,base_polygon,single_search_dist,data_label1);
+
+                                %%%%%%%Find the "on" inside of search_dist_boudn
+                                [inside_idx]=find_points_inside_contour(app,search_dist_bound,on_list_bs(:,[1,2]));
+                            end
+                            % size(inside_idx)
+                            % on_list_bs([1:10],[1,2])
+
+                            single_scrap_data
+                            temp_max_agg=max(single_scrap_data(:,1))
+                            [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1);
+
+
+                            f1=figure;
+                            geoplot(base_protection_pts(:,1),base_protection_pts(:,2),'xk','LineWidth',3,'DisplayName','Federal System')
+                            hold on;
+                            geoplot(sim_bound(:,1),sim_bound(:,2),'--','Color','b','LineWidth',3,'DisplayName',strcat(num2str(single_search_dist),'km'))
+                            if single_search_dist>0
+                                geoplot(search_dist_bound(:,1),search_dist_bound(:,2),'-','Color',[255/256 51/256 255/256] ,'LineWidth',3,'DisplayName',strcat(num2str(single_search_dist),'km'))
+                            end
+                            geoscatter(on_list_bs(:,1),on_list_bs(:,2),1,'b','filled')
+                            if single_search_dist>0
+                                geoscatter(on_list_bs(inside_idx,1),on_list_bs(inside_idx,2),2,'g','filled')
+                            end
+                            if ~isempty(union_turn_off_list_data)
+                                geoscatter(union_turn_off_list_data(:,1),union_turn_off_list_data(:,2),3,'r','filled')
+                            end
+                            grid on;
+                            geoplot(base_protection_pts(:,1),base_protection_pts(:,2),'xk','LineWidth',3,'DisplayName','Federal System')
+                            title(strcat(num2str(single_search_dist),'km--Maximum Aggregate:',num2str(temp_max_agg)))
+                            pause(0.1)
+                            geobasemap streets-light%landcover
+                            f1.Position = [100 100 1200 900];
+                            pause(1)
+                            filename1=strcat('SearchDist_',data_label1,'_',num2str(single_search_dist),'km.png');
+                            saveas(gcf,char(filename1))
+                            pause(0.1);
+                            close(f1)
+
+                            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 336: Saving single_scrap_data :',num2str(single_search_dist),'km'))
                             retry_save=1;
                             while(retry_save==1)
@@ -493,11 +543,24 @@ if ~isempty(zero_idx)==1
 
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 415: Plotting the Data'))
                 tf_catb=1;
-                %'need to uncomment this after development'
                 single_mod_plateau_alg_rev6_geoplot_name(app,data_label1,sim_number,radar_threshold,margin,maine_exception,CBSD_label,base_polygon,base_protection_pts,tf_catb)
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 418: Data Plotted --> Moving to Next Location'))
                 delete(hWaitbarMsgQueue_binary);
                 close(hWaitbar_binary);
+
+                cell2mat(all_data_stats_binary)
+                table_stats=array2table(cell2mat(all_data_stats_binary))
+                retry_save=1;
+                while(retry_save==1)
+                    try
+                        writetable(table_stats,strcat('Stats_Neighborhood_',data_label1,'_',string_prop_model,'_Rev',num2str(sim_number),'.xlsx'));
+                        pause(0.1);
+                        retry_save=0;
+                    catch
+                        retry_save=1;
+                        pause(0.1)
+                    end
+                end
 
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -581,10 +644,50 @@ if ~isempty(zero_idx)==1
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'Calculate the antenna gain at Rx'
                         %%%%%%%%%%%%%%%%Calculate the simualation azimuths
                         [array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev3_360_azimuths_app(app,radar_beamwidth,min_azimuth,max_azimuth);
-                        if num_sim_azi>1
-                            'Need to expand the spreadsheet for multiple rx antenna rotations'
+                        % % if num_sim_azi>1
+                        % %     'Need to expand the spreadsheet for multiple rx antenna rotations'
+                        % %     pause;
+                        % % end
+
+
+                        [mid_idx]=nearestpoint_app(app,50,move_list_reliability);
+                        mid_pathloss_dB=pathloss(:,mid_idx);
+                        temp_pr_dbm=sim_array_list_bs(:,4)-mid_pathloss_dB+bs_azi_gain;  %%%%%%%%%%%Non-Mitigation EIRP - Pathloss + BS Azi Gain = Power Received at Federal System
+                        %%%%%%Need to do it twice, once for the sim
+                        %%%%%%distance and another for the neighbohrood
+                        %%%%%%distance (neighborhood_radius)
+
+                        %%%%%%%%First for the sim_radius_km
+                        tf_calc_opt_sort=0%1%0%1%0  %%%%%%%Load if it's been calculated before
+                        [opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,sim_radius_km,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+
+
+                        figure;
+                        hold on;
+                        plot(array_max_agg,'-ok')
+                        grid on;
+                        pause(0.1)
+
+                        delta_agg=diff(array_max_agg);
+                        if max(delta_agg)>0
+                            'Not optimum'
                             pause;
                         end
+
+                        % figure;
+                        % hold on;
+                        % plot(delta_agg,'-ok')
+                        % grid on;
+                        % pause(0.1)
+
+                        'Need to update for multiple azimuths'
+                        pause;
+                        'pull tf_opt_idx and then just take the max of all azimuths for the excel'
+                        pause;
+
+                        'old code below'
+                        pause;
+
 
                         for azimuth_idx=1:1:num_sim_azi
                             %%%Find CBSD azimuths outside of +/- of half_ant_hor_deg of temp_azimuth
@@ -702,14 +805,34 @@ if ~isempty(zero_idx)==1
                         table_excel_data.Properties.VariableNames={'Uni_Id' 'BS_Latitude_DD' 'BS_Longitude_DD' 'BS_Height_m' 'Fed_Latitude_DD' 'Fed_Longitude_DD' 'Fed_Height_m' 'BS_EIRP_dBm' 'Path_Loss_dB' 'Distance_km' 'Rx_Ant_Gain' 'Rx_Pwr_dBm' 'TF_off' 'Aggregate_dBm' 'Interference_Threshold'}
                         disp_progress(app,strcat('Writing Excel File . . . '))
                         tic;
-                        writetable(table_excel_data,strcat('FULL_',data_label1,'_Point',num2str(point_idx),'_',string_prop_model,'_Rev',num2str(sim_number),'.xlsx'));
+                        retry_save=1;
+                        while(retry_save==1)
+                            try
+                                writetable(table_excel_data,strcat('FULL_',data_label1,'_Point',num2str(point_idx),'_',string_prop_model,'_Rev',num2str(sim_number),'.xlsx'));
+                                pause(0.1);
+                                retry_save=0;
+                            catch
+                                retry_save=1;
+                                pause(0.1)
+                            end
+                        end
                         toc;  %%%%%%A few seconds
 
                         table_excel_keep_data=array2table(keep_full_excel_data);
                         table_excel_keep_data.Properties.VariableNames={'Uni_Id' 'BS_Latitude_DD' 'BS_Longitude_DD' 'BS_Height_m' 'Fed_Latitude_DD' 'Fed_Longitude_DD' 'Fed_Height_m' 'BS_EIRP_dBm' 'Path_Loss_dB' 'Distance_km' 'Rx_Ant_Gain' 'Rx_Pwr_dBm' 'TF_off' 'Aggregate_dBm' 'Interference_Threshold'}
                         disp_progress(app,strcat('Writing Excel File . . . '))
                         tic;
-                        writetable(table_excel_keep_data,strcat('Neighborhood_',data_label1,'_Point',num2str(point_idx),'_',string_prop_model,'_Rev',num2str(sim_number),'.xlsx'));
+                        retry_save=1;
+                        while(retry_save==1)
+                            try
+                                writetable(table_excel_keep_data,strcat('Neighborhood_',data_label1,'_Point',num2str(point_idx),'_',string_prop_model,'_Rev',num2str(sim_number),'.xlsx'));
+                                pause(0.1);
+                                retry_save=0;
+                            catch
+                                retry_save=1;
+                                pause(0.1)
+                            end
+                        end
                         toc;  %%%%%%A few seconds
                     end
                 end

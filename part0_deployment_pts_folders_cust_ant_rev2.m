@@ -197,6 +197,24 @@ if ~isempty(zero_idx)==1
                 sim_array_list_bs(:,7)=0;
                 % % %      %%%%array_list_bs  %%%%%%%1) Lat, 2)Lon, 3)BS height, 4)BS EIRP Adjusted 5) Nick Unique ID for each sector, 6)NLCD: R==1/S==2/U==3, 7) Azimuth 8)BS EIRP Mitigation
 
+  
+
+                f1=figure;
+                geoscatter(sim_array_list_bs(:,1),sim_array_list_bs(:,2),1,'b')
+                hold on;
+                geoplot(sim_bound(:,1),sim_bound(:,2),'-g','LineWidth',4)
+                geoplot(base_polygon(:,1),base_polygon(:,2),'or','LineWidth',3)
+                grid on;
+                pause(0.1)
+                %%%%geobasemap landcover
+                geobasemap streets-light%landcover
+                f1.Position = [100 100 1200 900];
+                pause(1)
+                filename1=strcat('Sim_Area','_',data_label1,'.png');
+                saveas(gcf,char(filename1))
+                pause(0.1);
+                close(f1)
+
                 retry_save=1;
                 while(retry_save==1)
                     try
