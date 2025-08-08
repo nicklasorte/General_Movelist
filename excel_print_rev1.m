@@ -222,7 +222,7 @@ function excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,bas
                         %%%%Need this input: sim_array_list_bs, temp_pr_dbm
                         neighborhood_radius
                         tf_calc_opt_sort=0%1%0%1%0  %%%%%%%Load if it's been calculated before
-                        [neigh_opt_sort_bs_idx,neigh_array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+                        [neigh_opt_sort_bs_idx,neigh_array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,keep_sim_array_list_bs,base_protection_pts,keep_temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
 
 
                         % figure;
