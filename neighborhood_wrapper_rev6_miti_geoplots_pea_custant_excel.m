@@ -53,7 +53,6 @@ server_status_rev2(app,tf_server_status)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Step 0: Make the grid points
 disp_TextArea_PastText(app,strcat('Entering into Part0: Creating Grid Points'))
-%%%%part0_deployment_pts_folders_rev1(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km)
 part0_deployment_pts_folders_cust_ant_rev2(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km,FreqMHz)
 
 
@@ -76,13 +75,11 @@ server_status_rev2(app,tf_server_status)
 %neighborhood_calc_rev4_azimuths_geoplots_custant(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalc_pathloss,tf_server_status)
 part2_neigh_calc_rev5_azi_geoplots_custant_excel(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel)
 
-'stop before here to see if we need to add pictures in part2'
-pause;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'Now do the mitigation move list within the neighborhood.'
-%%%%part3_neighborhood_miti_geoplots_rev4(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
-%%%%%part3_neighborhood_miti_movelist_geoplots_rev5(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
 part3_neighborhood_miti_movelist_geoplots_custant_rev6(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
+
+
 
 
 % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%part 4 Census Pop Impact

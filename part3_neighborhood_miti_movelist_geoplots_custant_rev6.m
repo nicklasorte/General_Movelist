@@ -234,6 +234,7 @@ if ~isempty(zero_idx)==1
                 num_miti=length(array_mitigation)
 
 
+
                 %%%'Need to do the move list, but with cells for each mitigation'
                 %%%%%%%%%%First check for the union move list
                 %%%%%%%%%First, check to see if the union of the move list exists
@@ -288,6 +289,9 @@ if ~isempty(zero_idx)==1
                     end
 
                     cell_multi_pt_miti_list
+
+
+
 
                     %%%%%%%%'Need to find the minimum EIRP, for each unique lat/lon and set that to the EIRP/mitigation'
                     all_miti_list=vertcat(cell_multi_pt_miti_list{:});
@@ -353,6 +357,8 @@ if ~isempty(zero_idx)==1
                             counter=counter+1;
                             if isnan(colorbar_labels(counter))
                                 cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)));
+                            elseif colorbar_labels(counter)>=9999
+                                cell_bar_label{miti_idx}=strcat('Off');
                             else
                                 cell_bar_label{miti_idx}=strcat(num2str(colorbar_labels(counter)),'dB');
                             end
@@ -372,7 +378,7 @@ if ~isempty(zero_idx)==1
                         close(f1)
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     end
-                    
+
                     retry_save=1;
                     while(retry_save==1)
                         try
@@ -509,9 +515,9 @@ if ~isempty(zero_idx)==1
                     end
                     cell_bound_miti
 
-                    'Need to calculate the convexhull of each EIRP in the neigh_miti_list_bs: This is the off list.'
-                    'Then find the pop impact of each mitigation zone'
-                    'Put it into the data format for the pea/pop impact section'
+                    % % % 'Need to calculate the convexhull of each EIRP in the neigh_miti_list_bs: This is the off list.'
+                    % % % 'Then find the pop impact of each mitigation zone'
+                    % % % 'Put it into the data format for the pea/pop impact section'
 
                     %%%%%%%%Map it
                     cell_multi_con=cell_bound_miti(:,[1,3])
