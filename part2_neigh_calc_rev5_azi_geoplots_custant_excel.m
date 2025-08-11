@@ -201,7 +201,12 @@ if ~isempty(zero_idx)==1
                 %%%%%%%%%%Binary Search
                 [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                 [num_ppts,~]=size(base_protection_pts);
-                max_number_calc=sim_radius_km/min_binaray_spacing
+                if num_ppts==1
+                    max_number_calc=ceil(log2(sim_radius_km))+3  %%%%%%%This assumes a 1km min_binaray_spacing and the 0 and max distance
+                else
+                    %max_number_calc=sim_radius_km/min_binaray_spacing
+                    max_number_calc=(ceil(log2(sim_radius_km))+3)*num_ppts  %%%%%%%This assumes a 1km min_binaray_spacing and the 0 and max distance and that each distance search for a point is not applicable to the other points
+                end
                 disp_progress(app,strcat('Neighborhood Calc 1: Line 172: ', num2str(max_number_calc)))
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -360,6 +365,7 @@ if ~isempty(zero_idx)==1
                             end
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 289: Union Move List --> Creating the Keep On List :',num2str(single_search_dist),'km'))
 
+                            union_turn_off_list_data
                             size(union_turn_off_list_data)
 
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%First create the keep_on list
@@ -422,7 +428,14 @@ if ~isempty(zero_idx)==1
                             if single_search_dist>0
                                 [search_dist_bound]=calc_sim_bound(app,base_polygon,single_search_dist,data_label1);
 
-                                %%%%%%%Find the "on" inside of search_dist_boudn
+                                % %%%%%%%Find the "on" inside of search_dist_boudn
+                                % figure;
+                                % hold on;
+                                % plot(search_dist_bound(:,2),search_dist_bound(:,1),'-ob')
+                                % plot(on_list_bs(:,2),on_list_bs(:,1),'xr')
+                                % grid on;
+                                % search_dist_bound
+                                % on_list_bs(:,[1,2])
                                 [inside_idx]=find_points_inside_contour(app,search_dist_bound,on_list_bs(:,[1,2]));
                             end
                             % size(inside_idx)
@@ -561,14 +574,18 @@ if ~isempty(zero_idx)==1
                         pause(0.1)
                     end
                 end
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 569: Stats Neighborhood Excel Saved'))
 
 
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Before we mark it complete, print the excel
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
+                %%%%%%%%%%%%excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
+                excel_print_empty_union_rev2(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
 
+
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 578: Aggregate Excel Saved'))
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%Save
