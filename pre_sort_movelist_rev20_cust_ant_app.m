@@ -65,6 +65,15 @@ else
     keep_idx=find(bs_distance<=single_search_dist);
     horzcat(length(bs_distance),length(keep_idx))
 
+    % % figure;
+    % % hold on;
+    % % plot(sim_array_list_bs(:,2),sim_array_list_bs(:,1),'ob')
+    % % plot(sim_array_list_bs(keep_idx,2),sim_array_list_bs(keep_idx,1),'or','LineWidth',2)
+    % % plot(sim_pt(2),sim_pt(1),'sg','LineWidth',3)
+    % % pause(0.1)
+    % % 'check if different sizes, then this is where the error is occuring'
+    % % pause;
+
     %%%%%%%%Cut the pathloss
     pathloss=pathloss(keep_idx,:);
     size(pathloss)
@@ -114,7 +123,8 @@ else
         
         %%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
         %%%%%%%%%%%%%%%%%%%%%%%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
-         [opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+         %[opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+                                               [opt_sort_bs_idx]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
 
         sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
     end

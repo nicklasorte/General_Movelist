@@ -109,7 +109,9 @@ else
         tf_calc_opt_sort=0  %%%%%%To be used to re-calculate.
         %%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
         %%%%%%%%%%%%%%%%%%%%%%%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
-         [opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+         %[opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+                                    [opt_sort_bs_idx,array_max_agg,array_uuid]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,neighborhood_radius,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+
 
         sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
         'calculated near-opt'
@@ -200,10 +202,7 @@ else
         %array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 234: Entering the Monte Carlo Loop'))
         num_miti=length(array_mitigation);
-        if mc_size>1
-            'Need to check the mc_size for greater than 1'
-            pause;
-        end
+
 
         %cell_miti_list=cell(num_miti+1,5);  %%%%1)Move list with EIRP Change 2)IDX of sort 3)Mitigations, 4)Min IDX, 5)Max IDX
         %%%%%%%%%%%%The idx is the level that they can't operate at.
@@ -216,21 +215,30 @@ else
             if miti_idx>1
                 %%%%%%%%%%%%%%%%Apply Past mitigations
                 for miti_row_idx=1:1:(miti_idx-1)
-                    temp_uni_miti_idx=cell_miti_list{miti_row_idx,2};
+                    temp_uni_miti_idx=cell_miti_list{miti_row_idx,2}
+                    cell_miti_list
 
-                    [~,num_col]=size(sort_full_Pr_dBm);
-                    if num_col>1
-                        'Need to check for larger'
-                        pause;
-                    end
+                    [num_rows,num_col]=size(sort_full_Pr_dBm)
+
                     if miti_row_idx==1
+                        99999
                         %%%These are turned off
-                        sort_full_Pr_dBm_miti(temp_uni_miti_idx)=sort_full_Pr_dBm(temp_uni_miti_idx)-99999; %%%%%Off
+                        sort_full_Pr_dBm_miti(temp_uni_miti_idx,:)
+                        %%%sort_full_Pr_dBm_miti(temp_uni_miti_idx)=sort_full_Pr_dBm(temp_uni_miti_idx)-99999; %%%%%Off %%%Need to expand to include the other
+                        sort_full_Pr_dBm_miti(temp_uni_miti_idx,:)=sort_full_Pr_dBm(temp_uni_miti_idx,:)-99999;  %%%%%%%This is the experiment
+                        sort_full_Pr_dBm_miti(temp_uni_miti_idx,:)
                     else
                         %%%%Apply the past mitigations
-                        past_miti_dB=cell_miti_list{miti_row_idx-1,3};
-                        sort_full_Pr_dBm_miti(temp_uni_miti_idx)=sort_full_Pr_dBm(temp_uni_miti_idx)-past_miti_dB;
+                        past_miti_dB=cell_miti_list{miti_row_idx-1,3}
+                        %%sort_full_Pr_dBm_miti(temp_uni_miti_idx)=sort_full_Pr_dBm(temp_uni_miti_idx)-past_miti_dB;
+                        sort_full_Pr_dBm_miti(temp_uni_miti_idx,:)=sort_full_Pr_dBm(temp_uni_miti_idx,:)-past_miti_dB;
                     end
+                    [after_num_rows,after_num_col]=size(sort_full_Pr_dBm)
+                    % if num_col>1
+                    %     cell_miti_list
+                    %     'Need to check for larger'
+                    %     pause;
+                    % end
                 end
                 %%%%%%%%%%%%%We are setting it to
                 %%%%%%%%%%%%%the max, since we
@@ -249,6 +257,7 @@ else
             end
 
 
+
             %diff(horzcat(sort_full_Pr_dBm_miti(1:100),sort_full_Pr_dBm(1:100)),1,2)
             unique(diff(horzcat(sort_full_Pr_dBm_miti,sort_full_Pr_dBm),1,2))
             % if miti_idx>4
@@ -259,6 +268,7 @@ else
             for mc_iter=1:1:mc_size
                 mc_iter
                 %%%%%%%Generate 1 MC Iteration
+                size(sort_full_Pr_dBm_miti)
                 [sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm_miti);
 
                 if length(reliability)==1 %%%%%%%This assume 50%
@@ -369,12 +379,19 @@ else
                     [mid]=pre_sort_binary_miti_movelist_rev3_app(app,radar_threshold,binary_sort_mc_dBm,low_idx,miti_idx,rev_array_mitigation);
                     azimuth_turn_off_size(azimuth_idx)=mid;
                 end
+                % % azimuth_turn_off_size
+                % % max(azimuth_turn_off_size)
+                % % 'check azimuth_turn_off_size'
+                % % pause;
                 array_turn_off_size(mc_iter)=max(azimuth_turn_off_size); %%%%%%%%%%%max across all azimuths for a single MC iteration
             end
 
+            sort(array_turn_off_size)
+
 
             %sort(array_turn_off_size)
-            turn_off_size95=ceil(prctile(array_turn_off_size,mc_percentile)); %%%%This was interp between points, so need to ceiling it.
+            turn_off_size95=ceil(prctile(array_turn_off_size,mc_percentile)) %%%%This was interp between points, so need to ceiling it.
+
 
             if turn_off_size95==0
                 move_list_turn_off_idx=NaN(1,1);

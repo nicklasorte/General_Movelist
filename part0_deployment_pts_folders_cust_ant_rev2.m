@@ -210,8 +210,17 @@ if ~isempty(zero_idx)==1
                 geobasemap streets-light%landcover
                 f1.Position = [100 100 1200 900];
                 pause(1)
-                filename1=strcat('Sim_Area','_',data_label1,'.png');
-                saveas(gcf,char(filename1))
+                filename1=strcat('Sim_Area','_',data_label1,'.png');      
+                retry_save=1;
+                while(retry_save==1)
+                    try
+                        saveas(gcf,char(filename1))
+                        retry_save=0;
+                    catch
+                        retry_save=1;
+                        pause(1)
+                    end
+                end
                 pause(0.1);
                 close(f1)
 
@@ -477,8 +486,12 @@ if ~isempty(zero_idx)==1
         end
         multi_hWaitbarMsgQueue.send(0);
     end
-    delete(multi_hWaitbarMsgQueue);
-    close(multi_hWaitbar);
+    try
+        delete(multi_hWaitbarMsgQueue);
+    end
+    try
+        close(multi_hWaitbar);
+    end
 
 
     %%%%%%%%%%If we make it here, just mark all the cell_status as complete

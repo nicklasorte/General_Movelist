@@ -1,5 +1,7 @@
 function [monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,reliability_range,cut_temp_Pr_dBm)
 
+size(cut_temp_Pr_dBm)
+
 [num_tx,~]=size(cut_temp_Pr_dBm);
 %%%%%%%Generate 1 MC Iteration
 rng(rand_seed1+mc_iter);%For Repeatability
@@ -33,11 +35,14 @@ end
 % % horzcat(cut_temp_Pr_dBm(1:10),monte_carlo_pr_dBm(1:10))
 % % 
 if any(monte_carlo_pr_dBm<cut_temp_Pr_dBm(:,end))
+    horzcat(monte_carlo_pr_dBm,cut_temp_Pr_dBm(:,1),cut_temp_Pr_dBm(:,end),monte_carlo_pr_dBm<cut_temp_Pr_dBm(:,end))
     'Error: MC too small'
     pause;
 end
 
+
 if any(monte_carlo_pr_dBm>cut_temp_Pr_dBm(:,1))
+    horzcat(monte_carlo_pr_dBm,cut_temp_Pr_dBm(:,1),cut_temp_Pr_dBm(:,end),monte_carlo_pr_dBm>cut_temp_Pr_dBm(:,1))
     'Error: MC too large'
     pause;
 end

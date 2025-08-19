@@ -6,8 +6,10 @@ function [mid]=pre_sort_binary_miti_movelist_rev3_app(app,radar_threshold,binary
 %%%%%%Convert to Watts, Sum, and Find Aggregate
 %%%pow2db(0.1*1000)=20, 0.1 Watts = 20dBm
 %%%db2pow(20)/1000=0.1, 20dBm = 0.1 Watts
+
 binary_sort_mc_watts=db2pow(binary_sort_mc_dBm)/1000; %%%%%%To be used for the binary search
 mc_agg_dbm=pow2db(sum(binary_sort_mc_watts,"omitnan")*1000);
+size(binary_sort_mc_watts)
 
 
 % 'might need to only apply mitigations from top to bottom, instead of the entire power.'
@@ -35,6 +37,7 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
 
             %%%idx_cut=1:1:mid;
             idx_cut=(low_idx+1):1:mid
+            miti_idx
             if miti_idx==1 %%%%%%%%%%For the first, we turn off.
                 temp_mc_pr_watts=db2pow(temp_mc_pr_dBm)/1000; %%%%%%Convert to Watts
                 temp_mc_pr_watts(idx_cut)=NaN(1);
@@ -78,7 +81,7 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
         %%%%%%%%%%Find the delta between previous and current Mitigation here
         previous_miti_dB=rev_array_mitigation(miti_idx-1);
         current_miti_dB=rev_array_mitigation(miti_idx);
-        delta_miti_dB=previous_miti_dB-current_miti_dB;
+        delta_miti_dB=previous_miti_dB-current_miti_dB
 
         %temp_mc_pr_dBm(idx_cut(1))
         temp_mc_pr_dBm(idx_cut)=temp_mc_pr_dBm(idx_cut)-delta_miti_dB;
@@ -92,9 +95,12 @@ if mc_agg_dbm>radar_threshold %%%Over Threshold, binary search
     if check_mc_agg_dbm>radar_threshold
         'Binary Search Error'
         check_mc_agg_dbm
+        hi
         mid
         miti_idx
         low_idx
+        mid=hi;
+        idx_cut=(low_idx+1):1:mid
         pause;
     end
 else

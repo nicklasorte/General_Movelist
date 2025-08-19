@@ -113,7 +113,7 @@ if exist(temp_filename,'file')==2
         
         catb_dist_data
         [m_dist,m_idx]=max(catb_dist_data);
-        fig1=figure;
+        f1=figure;
         %plot(base_polygon(:,2),base_polygon(:,1),'-k')
         geoplot(base_polygon(:,1),base_polygon(:,2),'-k')%%%,'LineWidth',3,'DisplayName','Federal System')
         hold on;
@@ -155,7 +155,7 @@ if exist(temp_filename,'file')==2
             end
         end
         pause(0.1)
-        close(fig1)
+        close(f1)
         
         
         num_bins=ceil((ceil(max(catb_dist_data))-floor(min(catb_dist_data)))/10)+1;
@@ -279,7 +279,7 @@ if exist(temp_filename,'file')==2
         end
         
 
-        fig1=figure;
+        f1=figure;
        
         if x41>1
             %%%plot(base_polygon(:,2),base_polygon(:,1),'-k')
@@ -313,7 +313,7 @@ if exist(temp_filename,'file')==2
             end
         end
         pause(0.1)
-        close(fig1)
+        close(f1)
         
         %%%%%%%%Save the CatB Neighborhood Polygon
         

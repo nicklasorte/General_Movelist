@@ -468,7 +468,16 @@ if ~isempty(zero_idx)==1
                             f1.Position = [100 100 1200 900];
                             pause(1)
                             filename1=strcat('SearchDist_',data_label1,'_',num2str(single_search_dist),'km.png');
-                            saveas(gcf,char(filename1))
+                            while(retry_save==1)
+                                try
+                                    saveas(gcf,char(filename1))
+                                    retry_save=0;
+                                catch
+                                    retry_save=1;
+                                    pause(1)
+                                end
+                            end
+
                             pause(0.1);
                             close(f1)
 
@@ -557,12 +566,30 @@ if ~isempty(zero_idx)==1
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 415: Plotting the Data'))
                 tf_catb=1;
                 single_mod_plateau_alg_rev6_geoplot_name(app,data_label1,sim_number,radar_threshold,margin,maine_exception,CBSD_label,base_polygon,base_protection_pts,tf_catb)
-                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 418: Data Plotted --> Moving to Next Location'))
-                delete(hWaitbarMsgQueue_binary);
-                close(hWaitbar_binary);
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 418: Data Plotted --> Moving to Next Location')) %%%Error after this location
+                try
+                    delete(hWaitbarMsgQueue_binary);
+                end
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 562: Post delete(hWaitbarMsgQueue_binary);')) 
+                try
+                    close(hWaitbar_binary);
+                end
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 564: Post close(hWaitbar_binary);'))
 
-                cell2mat(all_data_stats_binary)
-                table_stats=array2table(cell2mat(all_data_stats_binary))
+
+                %cell2mat(all_data_stats_binary)
+
+                %%%%%%%Distance will also be the same, and move list size
+                %%%%%%%will always be the same, just the aggregate
+
+                temp_array=horzcat(all_data_stats_binary{:})
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 573: Post temp_array'))
+                [num_row,num_col]=size(temp_array)
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 575: Post size(temp_array)'))
+                agg_col_idx=2:3:num_col
+                disp_progress(app,strcat('Neighborhood Calc Rev1 Line 577: Post agg_col_idx'))
+                table_stats=array2table(temp_array(:,[1,3,agg_col_idx]))
+                  disp_progress(app,strcat('Neighborhood Calc Rev1 Line 579: Post table_stats'))
                 retry_save=1;
                 while(retry_save==1)
                     try
@@ -572,18 +599,18 @@ if ~isempty(zero_idx)==1
                     catch
                         retry_save=1;
                         pause(0.1)
+                        disp_progress(app,strcat('Neighborhood Calc Rev1 Line 589: Cant Save Stats Table'))
                     end
                 end
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 569: Stats Neighborhood Excel Saved'))
 
 
-                
+      
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Before we mark it complete, print the excel
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
                 excel_print_empty_union_rev2(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
-
 
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 578: Aggregate Excel Saved'))
 

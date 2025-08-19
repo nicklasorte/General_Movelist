@@ -80,8 +80,6 @@ part2_neigh_calc_rev5_azi_geoplots_custant_excel(app,parallel_flag,rev_folder,wo
 part3_neighborhood_miti_movelist_geoplots_custant_rev6(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,tf_opt,tf_server_status,tf_recalculate,array_mitigation)
 
 
-
-
 % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%part 4 Census Pop Impact
 tf_convex=1
 scrap_data_pop_geo_id_pea_rev8(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex)

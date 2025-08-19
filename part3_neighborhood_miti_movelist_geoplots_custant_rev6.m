@@ -218,6 +218,7 @@ if ~isempty(zero_idx)==1
                 strcat('neighborhood_radius:',num2str(neighborhood_radius))
                 %pause;
 
+
                 % % fig1=figure;
                 % % hold on;
                 % % plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-b')
@@ -284,17 +285,48 @@ if ~isempty(zero_idx)==1
                     toc;
 
                     if num_ppts>1
-                        'Need to double check how we merge.'
-                        pause;
+                        'cell size'
+                        miti_size=cell2mat(cellfun(@size,cell_multi_pt_miti_list,'UniformOutput',false))
+                        all(diff(miti_size,[],1) == 0,1)
+                        %%%%%cell_merged_miti_list=cell(miti_size(1,1),miti_size(1,2))
+                        for i=1:1:num_ppts
+                            if i==1
+                                cell_merged_miti_list=cell_multi_pt_miti_list{i};
+                            else
+                                temp_miti_cell=cell_multi_pt_miti_list{i};
+                                [miti_rows,miti_col]=size(cell_merged_miti_list);
+                                for m=1:1:miti_rows
+                                    for n=1:1:2%miti_col
+                                        horzcat(m,n)
+                                        temp1=cell_merged_miti_list{m,n};
+                                        temp2=temp_miti_cell{m,n};
+                                        if n==2
+                                            temp1=temp1';
+                                            temp2=temp2';
+                                        end
+                                        uni_temp=unique(vertcat(temp1,temp2),'rows');
+                                        %%%[~,ts_idx]=sort(uni_temp(:,5));
+                                        %%%sort_uni_temp=uni_temp(ts_idx,:);
+                                        cell_merged_miti_list{m,n}=uni_temp;
+                                        % 
+                                        % 'unique and merge'
+                                        % pause;
+                                    end
+                                end
+                            end
+                        end
+                        all_miti_list=cell_merged_miti_list
+                        %%all_miti_list{1,1}
+                    else
+                        all_miti_list=vertcat(cell_multi_pt_miti_list{:})
                     end
 
-                    cell_multi_pt_miti_list
-
+                    
 
 
 
                     %%%%%%%%'Need to find the minimum EIRP, for each unique lat/lon and set that to the EIRP/mitigation'
-                    all_miti_list=vertcat(cell_multi_pt_miti_list{:});
+                    
                     nan_cols=cell2mat(all_miti_list(:,3));
                     keep_col_idx=find(~isnan(nan_cols)); %%%Remove these from the list.
                     nnan_all_miti_list=all_miti_list(keep_col_idx,:);
@@ -336,6 +368,7 @@ if ~isempty(zero_idx)==1
                             cell_miti_union{i,2}=uni_miti(i);
                         end
                         cell_miti_union
+
 
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Map the Mitigation Turn-off
                         [num_rows,~]=size(cell_miti_union)
@@ -554,8 +587,6 @@ if ~isempty(zero_idx)==1
                     end
                 end
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%Save
