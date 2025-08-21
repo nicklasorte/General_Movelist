@@ -98,8 +98,19 @@ cell_status_filename=strcat('cell_neighborhood_data',string_prop_model,'_',num2s
 %%%%%%%%Keep the Same Order as the Raw GMF
 table_neighborhood_data=cell2table(cell_status(:,[1,3,4]));
 table_neighborhood_data.Properties.VariableNames={'DPA_Name' 'Neighborhood_km' 'Move_List_Size'}
-writetable(table_neighborhood_data,strcat('Neighborhood_data_',num2str(sim_number),'.xlsx'));
-pause(0.1)
+%%%%%Save 
+retry_save=1;
+while(retry_save==1)
+    try
+        writetable(table_neighborhood_data,strcat('Neighborhood_data_',num2str(sim_number),'.xlsx'));
+        pause(0.1)
+        retry_save=0;
+    catch
+        retry_save=1;
+        pause(2)
+    end
+end
+
 
 if  parallel_flag==1
     poolobj=gcp('nocreate');

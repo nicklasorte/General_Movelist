@@ -1,13 +1,15 @@
 function [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1)
 
 
+'General movelist'
     %Go inland from all points and include those in a bigger polygon to be included for the census tracs polygon
     az=[];
     ellipsoid=[];
     n_pts=50;
-    [num_pts,~]=size(base_polygon);
+    
     nnan_idx=find(~isnan(base_polygon(:,1)));
     base_polygon=base_polygon(nnan_idx,:);
+    [num_pts,~]=size(base_polygon);
     %%%%%Preallocate
     temp_lat_buff=NaN(n_pts,num_pts);
     temp_lon_buff=NaN(n_pts,num_pts);
@@ -18,6 +20,7 @@ function [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1)
     reshape_lon=reshape(temp_lon_buff,[],1);    
     con_hull_idx=convhull(reshape_lon,reshape_lat); %%%%%%%%%%%Convex Hull
     sim_bound=horzcat(reshape_lat(con_hull_idx),reshape_lon(con_hull_idx));
+
 
 
 %     close all;

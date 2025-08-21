@@ -215,7 +215,7 @@ else
             if miti_idx>1
                 %%%%%%%%%%%%%%%%Apply Past mitigations
                 for miti_row_idx=1:1:(miti_idx-1)
-                    temp_uni_miti_idx=cell_miti_list{miti_row_idx,2}
+                    temp_uni_miti_idx=cell_miti_list{miti_row_idx,2};
                     cell_miti_list
 
                     [num_rows,num_col]=size(sort_full_Pr_dBm)

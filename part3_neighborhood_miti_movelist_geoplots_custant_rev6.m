@@ -298,11 +298,12 @@ if ~isempty(zero_idx)==1
                                 for m=1:1:miti_rows
                                     for n=1:1:2%miti_col
                                         horzcat(m,n)
+                                        cell_merged_miti_list
                                         temp1=cell_merged_miti_list{m,n};
                                         temp2=temp_miti_cell{m,n};
                                         if n==2
-                                            temp1=temp1';
-                                            temp2=temp2';
+                                            [temp1]=ensureVertical(app,temp1);
+                                            [temp2]=ensureVertical(app,temp2);
                                         end
                                         uni_temp=unique(vertcat(temp1,temp2),'rows');
                                         %%%[~,ts_idx]=sort(uni_temp(:,5));
@@ -406,7 +407,16 @@ if ~isempty(zero_idx)==1
                         f1.Position = [100 100 1200 900];
                         pause(1)
                         filename1=strcat('Miti_turnoff_',data_label1,'.png');
-                        saveas(gcf,char(filename1))
+                        retry_save=1;
+                        while(retry_save==1)
+                            try
+                                saveas(gcf,char(filename1))
+                                retry_save=0;
+                            catch
+                                retry_save=1;
+                                pause(1)
+                            end
+                        end
                         pause(1);
                         close(f1)
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -626,8 +636,12 @@ if ~isempty(zero_idx)==1
         end
         multi_hWaitbarMsgQueue.send(0);
     end
-    delete(multi_hWaitbarMsgQueue);
-    close(multi_hWaitbar);
+    try
+        delete(multi_hWaitbarMsgQueue);
+    end
+    try
+        close(multi_hWaitbar);
+    end
     finish_cell_status_rev1(app,rev_folder,cell_status_filename)
 end
 server_status_rev2(app,tf_server_status)

@@ -425,6 +425,12 @@ if ~isempty(zero_idx)==1
                             %%%%%%%%%%%%%%%%Make the Red/Green/Blue Graph for illustrative reasons.
                             %%%%%%%First make the single_search_dist circle(purple)
                             single_search_dist
+                            figure;
+                            hold on;
+                            plot(base_polygon(:,2),base_polygon(:,1),'-or')
+                            grid on;
+                            pause(0.1)
+
                             if single_search_dist>0
                                 [search_dist_bound]=calc_sim_bound(app,base_polygon,single_search_dist,data_label1);
 
@@ -468,6 +474,7 @@ if ~isempty(zero_idx)==1
                             f1.Position = [100 100 1200 900];
                             pause(1)
                             filename1=strcat('SearchDist_',data_label1,'_',num2str(single_search_dist),'km.png');
+                            retry_save=1;
                             while(retry_save==1)
                                 try
                                     saveas(gcf,char(filename1))
