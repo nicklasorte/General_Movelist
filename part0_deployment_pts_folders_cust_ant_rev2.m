@@ -368,7 +368,9 @@ if ~isempty(zero_idx)==1
                     array_azi=0:1:360;
                     if ant_beamwidth==360
                         custom_antenna_pattern=array_azi';
-                        custom_antenna_pattern(:,2)=0;
+                        ant_gain_idx=find(matches(data_header,'rx_ant_gain_mb'));
+                        ant_gain=temp_single_cell_sim_data{ant_gain_idx}
+                        custom_antenna_pattern(:,2)=ant_gain;
                     else
                          %%%%%%%%%%%Note, this is not STATGAIN
                         [radar_ant_array]=horizontal_antenna_loss_app(app,ant_beamwidth,min_ant_loss);

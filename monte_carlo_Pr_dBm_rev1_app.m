@@ -1,6 +1,6 @@
 function [monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,reliability_range,cut_temp_Pr_dBm)
 
-size(cut_temp_Pr_dBm)
+%size(cut_temp_Pr_dBm)
 
 [num_tx,~]=size(cut_temp_Pr_dBm);
 %%%%%%%Generate 1 MC Iteration

@@ -1,4 +1,4 @@
-function [cell_miti_list]=pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius,custom_antenna_pattern)
+function [cell_miti_list]=pre_sort_movelist_rev21b_miti_bsdist_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius,custom_antenna_pattern,bs_eirp_dist)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Move List Function with Neighborhoor Cut
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,7 +269,16 @@ else
                 mc_iter
                 %%%%%%%Generate 1 MC Iteration
                 size(sort_full_Pr_dBm_miti)
-                [sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm_miti);
+                [pre_sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm_miti);
+
+                %%%%%%%'Monte carlo the bs_eirp_dist and combine'
+                [rand_norm_eirp]=monte_carlo_bs_eirp_dist_rev1(app,bs_eirp_dist,rand_seed1,mc_iter,num_tx);
+                sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp;
+
+                % % %%%%%%%%Check distribution
+                % % horzcat(pre_sort_monte_carlo_pr_dBm(1:10),rand_norm_eirp(1:10),sort_monte_carlo_pr_dBm(1:10))
+                % % 'add bs_eirp_dist'
+                % % pause;
 
                 if length(reliability)==1 %%%%%%%This assume 50%
                     if ~all(sort_full_Pr_dBm_miti==sort_monte_carlo_pr_dBm)

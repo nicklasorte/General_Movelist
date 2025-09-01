@@ -1,4 +1,4 @@
-function part2_neigh_calc_rev5_azi_geoplots_custant_excel(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel)
+function part2_neigh_calc_rev6_azi_custant_excel_bsdist(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel,bs_eirp_dist)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Check for the Number of Folders to Sim
@@ -296,12 +296,14 @@ if ~isempty(zero_idx)==1
                                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 249: Calculating Union, First ParFor Movelist:',num2str(single_search_dist),'km'))
 
 
+           
                                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate first-->Parfor --> No data load
                                 if parallel_flag==1
                                     [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                                     parfor point_idx=1:num_ppts  %%%%Change to parfor
                                         %%%%%%%pre_sort_movelist_rev9_neigh_cut_azimuths_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth);
-                                        pre_sort_movelist_rev20_cust_ant_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                        %%%%%%%%pre_sort_movelist_rev20_cust_ant_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                        pre_sort_movelist_rev20b_cust_ant_bsdist_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,bs_eirp_dist);
                                     end
                                 end
 
@@ -317,7 +319,9 @@ if ~isempty(zero_idx)==1
                                 for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
                                     point_idx
                                     %%%%%%%[move_sort_sim_array_list_bs]=pre_sort_movelist_rev9_neigh_cut_azimuths_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth);
-                                    [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20_cust_ant_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                    %%%%%%%%[move_sort_sim_array_list_bs]=pre_sort_movelist_rev20_cust_ant_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                    [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20b_cust_ant_bsdist_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,bs_eirp_dist);
+
                                     if ~isnan(move_sort_sim_array_list_bs(1,1))
                                         cell_move_list_turn_off_data{point_idx}=move_sort_sim_array_list_bs;
                                     end
@@ -384,6 +388,8 @@ if ~isempty(zero_idx)==1
 
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Aggregate Check
 
+
+
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate first-->Parfor --> No data load
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 309: Parfor Aggregate Check :',num2str(single_search_dist),'km'))
                             server_status_rev2(app,tf_server_status)
@@ -391,7 +397,8 @@ if ~isempty(zero_idx)==1
                                 [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                                 parfor point_idx=1:num_ppts  %%%%Change to parfor
                                     %%%%agg_check_rev2_string_prop_model_azimuths_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth);
-                                    agg_check_rev3_string_prop_model_azimuths_custant_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                    %%%%%agg_check_rev3_string_prop_model_azimuths_custant_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern);
+                                    agg_check_rev4_bsdist_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern,bs_eirp_dist);
                                 end
                             end
 
@@ -408,7 +415,9 @@ if ~isempty(zero_idx)==1
                                 point_idx
 
                                 %%%%%%%[array_agg_check_95]=agg_check_rev2_string_prop_model_azimuths_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth);
-                               [array_agg_check_95]=agg_check_rev3_string_prop_model_azimuths_custant_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern);
+                               %%%%%%[array_agg_check_95]=agg_check_rev3_string_prop_model_azimuths_custant_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern);
+                               [array_agg_check_95]=agg_check_rev4_bsdist_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern,bs_eirp_dist);
+
 
                                 cell_agg_check_data{point_idx}=array_agg_check_95;
                                 single_scrap_data(point_idx,1)=max(array_agg_check_95); %%%%%%Aggregate
@@ -419,8 +428,6 @@ if ~isempty(zero_idx)==1
                                 end
                             end
                             toc;
-
-                          
 
                             % % % %%%%%%%%%%%%%%%%Make the Red/Green/Blue Graph for illustrative reasons.
                             % % % %%%%%%%First make the single_search_dist circle(purple)

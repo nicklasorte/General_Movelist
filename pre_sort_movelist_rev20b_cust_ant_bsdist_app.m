@@ -1,4 +1,4 @@
-function [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20_cust_ant_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern)
+function [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20b_cust_ant_bsdist_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,bs_eirp_dist)
 
 
 
@@ -214,15 +214,22 @@ else
             %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 236:',num2str(mc_iter)))
             mc_iter
             %%%%%%%Generate 1 MC Iteration
-            [sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm);
+            [pre_sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm);
+            %size(pre_sort_monte_carlo_pr_dBm)
 
+            %%%%%%%'Monte carlo the bs_eirp_dist and combine'
+            [rand_norm_eirp]=monte_carlo_bs_eirp_dist_rev1(app,bs_eirp_dist,rand_seed1,mc_iter,num_tx);
+            sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp;
+            
+            %%%%%%%%%Check distribution
+            %horzcat(pre_sort_monte_carlo_pr_dBm(1:10),rand_norm_eirp(1:10),sort_monte_carlo_pr_dBm(1:10))
 
-            if length(reliability)==1 %%%%%%%This assume 50%
-                if ~all(sort_full_Pr_dBm==sort_monte_carlo_pr_dBm)
-                    disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 244:Error:Pr dBm Mismatch'))
-                    pause;
-                end
-            end
+            % if length(reliability)==1 %%%%%%%This assume 50%
+            %     if ~all(sort_full_Pr_dBm==sort_monte_carlo_pr_dBm)
+            %         disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 244:Error:Pr dBm Mismatch'))
+            %         pause;
+            %     end
+            % end
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Move List for Single MC Iteration
