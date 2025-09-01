@@ -221,8 +221,14 @@ else
             [rand_norm_eirp]=monte_carlo_bs_eirp_dist_rev1(app,bs_eirp_dist,rand_seed1,mc_iter,num_tx);
             sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp;
             
-            %%%%%%%%%Check distribution
-            %horzcat(pre_sort_monte_carlo_pr_dBm(1:10),rand_norm_eirp(1:10),sort_monte_carlo_pr_dBm(1:10))
+            % %%%%%%%%Check distribution
+            % horzcat(pre_sort_monte_carlo_pr_dBm(1:10),rand_norm_eirp(1:10),sort_monte_carlo_pr_dBm(1:10))
+            % size(pre_sort_monte_carlo_pr_dBm)
+            % size(rand_norm_eirp)
+            % size(sort_monte_carlo_pr_dBm)
+            % 
+            % 'check size'
+            % pause;
 
             % if length(reliability)==1 %%%%%%%This assume 50%
             %     if ~all(sort_full_Pr_dBm==sort_monte_carlo_pr_dBm)
