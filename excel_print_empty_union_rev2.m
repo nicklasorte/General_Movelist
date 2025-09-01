@@ -4,11 +4,11 @@ function excel_print_empty_union_rev2(app,tf_print_excel,reliability,data_label1
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Before we mark it complete, print the excel
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 if tf_print_excel==1
-                    num_rel=length(reliability)
-                    if num_rel>1
-                        'Need to update this with multiple reliabilities'
-                        pause;
-                    end
+                    % num_rel=length(reliability)
+                    % if num_rel>1
+                    %     'Need to update this with multiple reliabilities'
+                    %     pause;
+                    % end
                  
                     %%%%%%%%%%%%Pull the neighborhood radius--> Union Move list --> Pathloss --> Excel
                     retry_load=1;

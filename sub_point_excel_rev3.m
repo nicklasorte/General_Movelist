@@ -121,7 +121,7 @@ size(max_off_axis_gain)
 
 %%%%%%%%%%%%%%%%%%%%%Calculate Power Received;
 %array_rx_pwr=sim_array_list_bs(:,4)-pathloss+off_axis_gain+bs_azi_gain;
-max_array_rx_pwr=sim_array_list_bs(:,4)-pathloss+max_off_axis_gain+bs_azi_gain;
+max_array_rx_pwr=sim_array_list_bs(:,4)-mid_pathloss_dB+max_off_axis_gain+bs_azi_gain;
 % horzcat(array_rx_pwr(1:10),sim_array_list_bs(1:10,4),pathloss(1:10),off_axis_gain(1:10),bs_azi_gain(1:10))
 % 'check'
 % pause;
@@ -142,7 +142,7 @@ max_array_rx_pwr=sim_array_list_bs(:,4)-pathloss+max_off_axis_gain+bs_azi_gain;
 %%%%%%%%%13) TF_off
 %%%%%%%%%14) Aggregate
 
-array_excel_data=horzcat(sim_array_list_bs(:,5),sim_array_list_bs(:,[1,2,3]),sim_pt.*ones(num_tx,1),sim_array_list_bs(:,[4]),pathloss,bs_distance_km,max_off_axis_gain,max_array_rx_pwr);
+array_excel_data=horzcat(sim_array_list_bs(:,5),sim_array_list_bs(:,[1,2,3]),sim_pt.*ones(num_tx,1),sim_array_list_bs(:,[4]),mid_pathloss_dB,bs_distance_km,max_off_axis_gain,max_array_rx_pwr);
 array_excel_data(:,13)=0;
 array_excel_data(1:10,:)
 
@@ -181,6 +181,7 @@ while(retry_save==1)
 end
 toc;  %%%%%%A few seconds
 %%%%%%%%%%%%%%%%%%%%%%This full excel seems to be working.
+
 
 
 %%%%%%%%%%%%%%%%%%Now cut all that are outside the neighborhood
@@ -222,7 +223,7 @@ end
 % end
 
 
-keep_array_excel_data=horzcat(keep_sim_array_list_bs(:,5),keep_sim_array_list_bs(:,[1,2,3]),sim_pt.*ones(length(keep_idx),1),keep_sim_array_list_bs(:,[4]),pathloss(keep_idx),bs_distance_km(keep_idx),max_off_axis_gain(keep_idx),max_array_rx_pwr(keep_idx));
+keep_array_excel_data=horzcat(keep_sim_array_list_bs(:,5),keep_sim_array_list_bs(:,[1,2,3]),sim_pt.*ones(length(keep_idx),1),keep_sim_array_list_bs(:,[4]),mid_pathloss_dB(keep_idx),bs_distance_km(keep_idx),max_off_axis_gain(keep_idx),max_array_rx_pwr(keep_idx));
 keep_array_excel_data(:,13)=0;
 
 %%%%%%%%%Find the neighborhood uuid in the keep_array_excel_data
