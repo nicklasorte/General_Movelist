@@ -58,7 +58,8 @@ if ~isempty(zero_idx)==1
         try
             %%%load('Cascade_new_full_census_2010.mat','new_full_census_2010')%%%%%%%Geo Id, Center Lat, Center Lon,  NLCD (1-4), Population
             %%'need to update part3_neighborhood_miti_movelist_custant_bsdist_rev7 with census 2020 data'
-            load('Cascade_new_full_census_2020.mat','new_full_census_2020')%%%%%%%1) Geo Id, 2) Center Lat, 3) Center Lon,  4) Population
+            %%load('Cascade_new_full_census_2020.mat','new_full_census_2020')%%%%%%%1) Geo Id, 2) Center Lat, 3) Center Lon,  4) Population
+            load('Cascade_new_full_census_2023_UA.mat','new_full_census_2020')%%%%%%%1) %%%%%%%1) Geo Id, 2) Center Lat, 3) Center Lon,  4) Population 5)UA Number
 
             retry_load=0;
         catch
