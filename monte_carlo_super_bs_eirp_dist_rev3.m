@@ -5,7 +5,9 @@ function [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev3(app,super_array_bs
 if num_cols>1
     %%%%%%%Generate 1 MC Iteration
     rng(rand_seed1+mc_iter+1);%For Repeatability
-    rand_numbers=rand(num_rows,1)*(max(reliability)-min(reliability)+min(reliability)); %Create Random Number within Max/Min or reliability
+    rel_min=min(reliability);
+    rel_max=max(reliability);
+    rand_numbers=rand(num_rows,1)*(rel_max-rel_min)+rel_min; %Create random numbers within [rel_min, rel_max]
     rand_norm_eirp=NaN(num_rows,1);
     for n=1:1:num_rows
         rand_norm_eirp(n)=interp1(reliability,super_array_bs_eirp_dist(n,:),rand_numbers(n),'spline');
@@ -25,4 +27,7 @@ else
     rand_norm_eirp=zeros(num_tx,1);
 end
 
-%size(rand_norm_eirp)
+
+% %size(rand_norm_eirp)
+
+
