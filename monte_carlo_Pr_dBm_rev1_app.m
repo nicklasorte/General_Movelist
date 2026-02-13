@@ -5,7 +5,11 @@ function [monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter
 [num_tx,~]=size(cut_temp_Pr_dBm);
 %%%%%%%Generate 1 MC Iteration
 rng(rand_seed1+mc_iter);%For Repeatability
-rand_numbers=rand(num_tx,1)*(max(reliability_range)-min(reliability_range))+min(reliability_range); %Create Random Number within Max/Min or reliability
+%%%rand_numbers=rand(num_tx,1)*(max(reliability_range)-min(reliability_range))+min(reliability_range); %Create Random Number within Max/Min or reliability
+
+rel_min = min(reliability_range);
+rel_max = max(reliability_range);
+rand_numbers = rand(num_tx,1)*(rel_max-rel_min)+rel_min;
 
 [ind_prev]=nearestpoint_app(app,rand_numbers,reliability_range,'previous');  %%%Find the previous and next reliability
 [ind_next]=nearestpoint_app(app,rand_numbers,reliability_range,'next');
