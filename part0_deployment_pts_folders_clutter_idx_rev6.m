@@ -1,4 +1,4 @@
-function part0_deployment_pts_folders_bs_azi_idx_rev4(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km,FreqMHz)
+function part0_deployment_pts_folders_clutter_idx_rev6(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km,FreqMHz)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Function:
@@ -192,14 +192,18 @@ if ~isempty(zero_idx)==1
 
                 %%%%%base_station_latlonheight(1:3,:)
                 %%%%%%%%%base_station_latlonheight 
-                %%1)Lat, 2)Lon, 3)Height meters, 4)Azimuth 5)IDx, 6)EIRP number ID
+                %%1)Lat, 2)Lon, 3)Height meters, 4)Azimuth 5)IDx, 6)EIRP number ID 7)Clutter IDX
 
                 sim_array_list_bs=base_station_latlonheight(bs_inside_idx,[1:3]);
                 sim_array_list_bs(:,4)=bs_eirp_reductions;
                 sim_array_list_bs(:,5)=base_station_latlonheight(bs_inside_idx,5);
                 sim_array_list_bs(:,6)=base_station_latlonheight(bs_inside_idx,6);
                 sim_array_list_bs(:,7)=base_station_latlonheight(bs_inside_idx,4);
+                sim_array_list_bs(:,9)=base_station_latlonheight(bs_inside_idx,7);
                 [num_tx,~]=size(sim_array_list_bs);
+
+                sim_array_list_bs(1:10,:)
+                 unique(sim_array_list_bs(:,9))
 
 
                 % % %      %%%%array_list_bs  
@@ -211,6 +215,7 @@ if ~isempty(zero_idx)==1
                 % %%%%%6)NLCD: R==1/S==2/U==3, 
                 % %%%%%7) Azimuth 
                 % %%%%%8)BS EIRP Mitigation
+                %%%%%%%9) Clutter IDX, 1==Urban, 2==Suburban, 3==Rural
 
                 % % sim_array_list_bs(1:10,:)
                 % % size(sim_array_list_bs)
@@ -284,6 +289,9 @@ if ~isempty(zero_idx)==1
                 tf_cust_ant_idx=find(matches(data_header,'TF_Custom_Ant_Pattern'));
                 tf_custom_ant_pat=temp_single_cell_sim_data{tf_cust_ant_idx}
 
+                tf_ant_square_idx=find(matches(data_header,'tf_ant_square'));
+                tf_ant_square_pattern=temp_single_cell_sim_data{tf_ant_square_idx}
+
                 if tf_custom_ant_pat==1
                     col_ant_pat_str_idx=find(matches(data_header,'Antenna_Pattern_Str'));
                     temp_str_ant_pattern=temp_single_cell_sim_data{col_ant_pat_str_idx};
@@ -333,27 +341,46 @@ if ~isempty(zero_idx)==1
                         col_gs_elevation_idx=find(matches(data_header,'gs_elevation'));
                         gs_elevation=temp_single_cell_sim_data{col_gs_elevation_idx};
 
-                        array_azi=0:1:360;
-                        num_azi=length(array_azi);
-                        array_azi_gain=NaN(num_azi,1);
-                        for i=1:1:num_azi
-                            temp_azi=array_azi(i);
+                        if tf_ant_square_pattern==1
+                            array_azi=0:1:360;
+                            num_azi=length(array_azi);
+                            array_azi_gain=NaN(num_azi,1);
+                            for i=1:1:num_azi
+                                temp_azi=array_azi(i);
 
-                            %%%Find the deltas in azimuth and elevation
-                            delta_azi=abs(gs_azimuth-temp_azi);
-                            delta_ele=abs(gs_azimuth-gs_elevation);
+                                %%%Find the deltas in azimuth and elevation
+                                delta_azi=abs(gs_azimuth-temp_azi);
+                                delta_ele=abs(gs_azimuth-gs_elevation);
 
-                            %%%%%%%%%%%%%A simplified, worst-case calculation.
-                            if delta_azi<gs_elevation
-                                min_azi=gs_elevation;
-                            else
-                                min_azi=min(horzcat(delta_ele,delta_azi));
+                                %%%%%%%%%%%%%A simplified, worst-case calculation.
+                                if delta_azi<gs_elevation
+                                    min_azi=gs_elevation;
+                                else
+                                    min_azi=min(horzcat(delta_ele,delta_azi));
+                                end
+
+                                nn_idx=nearestpoint_app(app,min_azi,array_ant_gain(:,1));
+                                array_azi_gain(i)=array_ant_gain(nn_idx,2);
                             end
+                            custom_antenna_pattern=horzcat(array_azi',array_azi_gain);
+                        else
+                            %%%%%%%%a^2+b^2=c^2
+                            array_azi=0:1:360;
+                            num_azi=length(array_azi);
+                            array_azi_gain=NaN(num_azi,1);
+                            for i=1:1:num_azi
+                                temp_azi=array_azi(i);
 
-                            nn_idx=nearestpoint_app(app,min_azi,array_ant_gain(:,1));
-                            array_azi_gain(i)=array_ant_gain(nn_idx,2);
+                                %%%Find the deltas in azimuth and elevation
+                                delta_azi=abs(gs_azimuth-temp_azi);
+
+                                %%%%%%%%a^2+b^2=c^2
+                                min_azi=sqrt(delta_azi^2+gs_elevation^2);
+                                nn_idx=nearestpoint_app(app,min_azi,array_ant_gain(:,1));
+                                array_azi_gain(i)=array_ant_gain(nn_idx,2);
+                            end
+                            custom_antenna_pattern=horzcat(array_azi',array_azi_gain);
                         end
-                        custom_antenna_pattern=horzcat(array_azi',array_azi_gain);
 
                           %%%%%%%%%%%%%%Plot and Save
                         fig1=figure;
@@ -377,6 +404,7 @@ if ~isempty(zero_idx)==1
                         end
                         pause(0.1)
                         close(fig1)
+
                     else
                         'Need to add another pattern'
                         pause;

@@ -1,9 +1,6 @@
 function single_mod_plateau_alg_rev6_geoplot_name(app,data_label1,sim_number,radar_threshold,margin,maine_exception,CBSD_label,base_polygon,base_protection_pts,tf_catb)
 
 
-
-      
-
 %%%Check for cell and Process
 %%%temp_filename=strcat(data_label1,'_',num2str(sim_number),'_all_data_stats_binary.mat');
 temp_filename=strcat(CBSD_label,'_',data_label1,'_',num2str(sim_number),'_all_data_stats_binary.mat');

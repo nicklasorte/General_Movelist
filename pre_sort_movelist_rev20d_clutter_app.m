@@ -1,5 +1,4 @@
-function [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20c_cust_ant_superbsdist_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data)
-
+function [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20d_clutter_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,7 +30,7 @@ else
     %%%%%%Persistent Load
     %disp_progress(app,strcat('Inside Pre_sort_ML_rev8 Line46: Loading Pathloss'))
 
-    file_name_pathloss=strcat(string_prop_model,'_pathloss_',num2str(point_idx),'_',num2str(sim_number),'_',data_label1,'.mat')
+    file_name_pathloss=strcat(string_prop_model,'_pathloss_',num2str(point_idx),'_',num2str(sim_number),'_',data_label1,'.mat');
     retry_load=1;
     while(retry_load==1)
         try
@@ -43,10 +42,22 @@ else
         end
     end
 
+    file_name_clutter=strcat('P2108_clutter_loss_',num2str(point_idx),'_',num2str(sim_number),'_',data_label1,'.mat');
+    retry_load=1;
+    while(retry_load==1)
+        try
+            load(file_name_clutter,'clutter_loss')
+            retry_load=0;
+        catch
+            retry_load=1;
+            pause(1)
+        end
+    end
+
 
     %%%%%%%% Cut the reliabilities that we will use for the move list
     %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line62: Cutting Reliabilities'))
-    size(pathloss)
+    %size(pathloss)
     [rel_first_idx]=nearestpoint_app(app,min(move_list_reliability),reliability);
     [rel_second_idx]=nearestpoint_app(app,max(move_list_reliability),reliability);
     if strcmp(string_prop_model,'TIREM')
@@ -54,9 +65,15 @@ else
     else
         pathloss=pathloss(:,[rel_first_idx:rel_second_idx]);
     end
-    size(pathloss)
+    %size(pathloss)
     [pathloss]=fix_inf_pathloss_rev1(app,pathloss);
 
+    %%%%%%%% Cut the reliabilities that we will use for the move list
+    %size(clutter_loss)
+    [rel_first_idx]=nearestpoint_app(app,min(move_list_reliability),reliability);
+    [rel_second_idx]=nearestpoint_app(app,max(move_list_reliability),reliability);
+    clutter_loss=clutter_loss(:,[rel_first_idx:rel_second_idx]);
+    %size(clutter_loss)
 
     %%%%'Cut the base stations and pathloss to be only within the search distance'
     %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line75: Cutting Base Stations'))
@@ -65,25 +82,22 @@ else
     keep_idx=find(bs_distance<=single_search_dist);
     horzcat(length(bs_distance),length(keep_idx))
 
-    % % figure;
-    % % hold on;
-    % % plot(sim_array_list_bs(:,2),sim_array_list_bs(:,1),'ob')
-    % % plot(sim_array_list_bs(keep_idx,2),sim_array_list_bs(keep_idx,1),'or','LineWidth',2)
-    % % plot(sim_pt(2),sim_pt(1),'sg','LineWidth',3)
-    % % pause(0.1)
-    % % 'check if different sizes, then this is where the error is occuring'
-    % % pause;
 
     %%%%%%%%Cut the pathloss
     pathloss=pathloss(keep_idx,:);
-    size(pathloss)
+    %size(pathloss)
+    %%%%%%%%Cut the clutter
+    clutter_loss=clutter_loss(keep_idx,:);
+    %size(clutter_loss)
 
+    %%%%%%%%%%%%Cut the list
     sim_array_list_bs=sim_array_list_bs(keep_idx,:);
-    size(sim_array_list_bs)
+    %size(sim_array_list_bs)
 
     %%%%%%%%%%%%Might need to create the sorted list before we move into the move list calculation, a sort of step 1b.
     %%%%array_list_bs  %%%%%%%1) Lat, 2)Lon, 3)BS height, 4)BS EIRP 5) Unique ID
     %%%%%%Creating a sorted move list for each protection point is not optimial but it allows the calculations to be done in parallel.
+
 
     % % %     sim_array_list_bs(1,:)
     % % %     '1Lat'
@@ -102,23 +116,15 @@ else
 
     [mid_idx]=nearestpoint_app(app,50,move_list_reliability);
     mid_pathloss_dB=pathloss(:,mid_idx);
-    temp_pr_dbm=sim_array_list_bs(:,4)-mid_pathloss_dB+bs_azi_gain;  %%%%%%%%%%%Non-Mitigation EIRP - Pathloss + BS Azi Gain = Power Received at Federal System
+    mid_clutter_loss=clutter_loss(:,mid_idx);
+    size(mid_clutter_loss)  
+    temp_pr_dbm=sim_array_list_bs(:,4)-mid_pathloss_dB-mid_clutter_loss+bs_azi_gain;  %%%%%%%%%%%Non-Mitigation EIRP - Pathloss + BS Azi Gain = Power Received at Federal System
 
 
     %%%'need to check if the norm_aas_zero_elevation_data and the 50th percentile cell_aas_dist_data are the same'
     array_aas_dist_data=cell_aas_dist_data{2};
     aas_dist_azimuth=cell_aas_dist_data{1};
     array_50_aas_dist=array_aas_dist_data(:,mid_idx);
-
-    % if all(norm_aas_zero_elevation_data(:,2)==array_50_aas_dist)~=1
-    %     'norm_aas_zero_elevation_data and array_50_aas_dist do not match'
-    %     pause;
-    % end
-
-    % %%%%'Check to see if  aas_dist_azimuth and bs_eirp_dist are the same at 0 azimuth, it's all off by 0.5, which is based on how we normalized it.'
-    % zero_azi_idx=find(aas_dist_azimuth==0)
-    % horzcat(bs_eirp_dist,array_aas_dist_data(zero_azi_idx,:)')
-    % bs_eirp_dist(:,2)-array_aas_dist_data(zero_azi_idx,:)'
 
 
     %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth
@@ -130,13 +136,6 @@ else
     [nn_azi_idx]=nearestpoint_app(app,mod_azi_diff_bs,aas_dist_azimuth); %%%%%%%Nearest Azimuth Idx
 
     %%%%%%%%Now create a super_array_bs_eirp_dist with array_aas_dist_data which will be used in the same way as bs_eirp_dist
-    % % % num_rows=length(nn_azi_idx)
-    % % % [~,num_int_col]=size(array_aas_dist_data);
-    % % % super_array_bs_eirp_dist=NaN(num_rows,num_int_col);
-    % % % size(super_array_bs_eirp_dist)
-    % % % for k=1:1:num_rows
-    % % %     super_array_bs_eirp_dist(k,:)=array_aas_dist_data(nn_azi_idx(k),:);
-    % % % end
     super_array_bs_eirp_dist=array_aas_dist_data(nn_azi_idx, :);
     %size(super_array_bs_eirp_dist)
 
@@ -157,12 +156,7 @@ else
         %%%%%%But then each protection point is not calculated in parallel, but as one large calculation.
         %%%%%%%%This calculation might take 90 seconds, compared to milliseconds for the CBRS sorted move list.
         tf_calc_opt_sort=0  %%%%%%To be used to re-calculate.
-        
-        %%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_miti_rev3(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,min_ant_loss,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,temp_miti);
-        %%%%%%%%%%%%%%%%%%%%%%%%%%[opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
-         %[opt_sort_bs_idx,array_max_agg]=near_opt_sort_idx_string_prop_model_custant_rev4_agg_output(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
-                                               [opt_sort_bs_idx]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
-
+        [opt_sort_bs_idx]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
         sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
     end
 
@@ -176,7 +170,9 @@ else
     tic;
     sort_sim_array_list_bs=sim_array_list_bs(sort_bs_idx,:);
     sort_full_Pr_dBm=sim_array_list_bs(sort_bs_idx,4)-pathloss(sort_bs_idx,:)+bs_azi_gain(sort_bs_idx); %%%%%%%%%%%Non-Mitigation EIRP - Pathloss + BS Azi Gain = Power Received at Federal System
+    sort_clutter_loss=clutter_loss(sort_bs_idx,:);
     toc;
+    %%%%%%%Clutter added later because of the randomization.
 
     if any(isnan(bs_azi_gain))
         find(isnan(bs_azi_gain))
@@ -218,15 +214,6 @@ else
         %%%%%%%%%%%%%%%%Calculate the simualation azimuths
         [array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev3_360_azimuths_app(app,radar_beamwidth,min_azimuth,max_azimuth);
 
-        % % % %%%%%%%%%%Add Radar Antenna Pattern: Offset from 0 degrees and loss in dB
-        % % % if radar_beamwidth==360
-        % % %     radar_ant_array=vertcat(horzcat(0,0),horzcat(360,0));
-        % % %     min_ant_loss=0;
-        % % % else
-        % % %     [radar_ant_array]=horizontal_antenna_loss_app(app,radar_beamwidth,min_ant_loss);
-        % % %     %%%%%%%%%%%Note, this is not STATGAIN
-        % % % end
-
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Each Base Station Azimuth
         sim_pt=base_protection_pts(point_idx,:);
         bs_azimuth=azimuth(sim_pt(1),sim_pt(2),sort_sim_array_list_bs(:,1),sort_sim_array_list_bs(:,2));
@@ -260,7 +247,19 @@ else
 
             %%%%%'interp super_array_bs_eirp_dist in the same way as bs_eirp_dist'
             [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev3(app,super_array_bs_eirp_dist,rand_seed1,mc_iter,num_tx,move_list_reliability);
-            sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp;
+
+            %tic;
+            [monte_carlo_clutter_loss]=monte_carlo_clutter_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_clutter_loss);
+            %toc;
+            %size(monte_carlo_clutter_loss)
+            % tic; %%%%%%%Cleaner but the same speed
+            % [monte_carlo_clutter_loss2]=monte_carlo_clutter_rev2_app(app,rand_seed1,mc_iter,move_list_reliability,clutter_loss);
+            % toc;
+            % size(monte_carlo_clutter_loss2)
+            % all(round(monte_carlo_clutter_loss)==round(monte_carlo_clutter_loss2))
+            %horzcat(pre_sort_monte_carlo_pr_dBm(1:50),rand_norm_eirp(1:50),monte_carlo_clutter_loss(1:50),sort_monte_carlo_pr_dBm(1:50))
+            sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
+
 
             
             % %%%%%%%%Check distribution
@@ -361,7 +360,8 @@ else
                 end
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Binary Search
-                [mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort_mc_watts);
+                %%%[old_mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold,binary_sort_mc_watts);
+                [mid]=pre_sort_binary_movelist_rev2_app(app,radar_threshold-move_list_margin,binary_sort_mc_watts);
                 azimuth_turn_off_size(azimuth_idx)=mid;
             end
             array_turn_off_size(mc_iter)=max(azimuth_turn_off_size); %%%%%%%%%%%max across all azimuths for a single MC iteration
@@ -440,7 +440,6 @@ else
         retry_save=1;
         while(retry_save==1)
             try
-
                 save(move_array_turn_off_size_file_name,'array_turn_off_size')
                 save(move_sort_file_name,'move_sort_sim_array_list_bs')
                 retry_save=0;
