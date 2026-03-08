@@ -35,7 +35,7 @@ end
 missing_idx = find(diff(horzcat(cell_sim_chuck_idx{:})) > 1);
 num_idx = length(unique(horzcat(cell_sim_chuck_idx{:})));
 if ~isempty(missing_idx) || num_idx ~= num_mc
-    'Error: Check Chunk IDX'
+    disp('Error: Check Chunk IDX')
     pause;
 end
 
@@ -52,10 +52,10 @@ array_rand_chunk_idx
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Group randomized chunks into <= 64 parfor slots
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Round-robin assignment preserves random ordering
 num_parfor = min(64, num_chunks);
+slots = mod(0:num_chunks-1, num_parfor) + 1;  %%%%[1 x num_chunks] round-robin slot assignment
 cell_parfor_chunk_idx = cell(num_parfor, 1);
-for k = 1:num_chunks
-    slot = mod(k-1, num_parfor) + 1;
-    cell_parfor_chunk_idx{slot}(end+1) = array_rand_chunk_idx(k);
+for s = 1:num_parfor
+    cell_parfor_chunk_idx{s} = array_rand_chunk_idx(slots == s);
 end
 
 end

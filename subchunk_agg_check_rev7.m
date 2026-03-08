@@ -77,9 +77,8 @@ for azimuth_idx=1:1:num_sim_azi
     off_axis_gain=all_off_axis_gain(:,azimuth_idx);          %%%%[num_bs x 1]
     sort_temp=all_sort_mc_dBm+off_axis_gain;                  %%%%[num_bs x num_mc_idx] broadcast
 
-    %%%%%%Convert to Watts, sum across BSs (dim 1), convert back
-    mc_watts=db2pow(sort_temp)/1000;                          %%%%[num_bs x num_mc_idx]
-    sub_array_agg_check_mc_dBm(:,azimuth_idx)=pow2db(sum(mc_watts,1,"omitnan")*1000)';  %%%%[num_mc_idx x 1]
+    %%%%%%Sum across BSs (dim 1): /1000 and *1000 cancel, work directly in dBm-scale mW
+    sub_array_agg_check_mc_dBm(:,azimuth_idx)=pow2db(sum(db2pow(sort_temp),1,"omitnan"))';  %%%%[num_mc_idx x 1]
 end
 
 %sub_array_agg_check_mc_dBm %%%This is what we save/output
