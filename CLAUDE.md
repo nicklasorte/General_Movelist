@@ -60,6 +60,7 @@ git push -u origin claude/remove-tf-stop-subchunk-ODzxF
 - When editing a value, update **both** the value and any matching inline comment
 - Do not add toolbox-dependent calls without guarding with `check_ml_toolbox` or `check_parallel_toolbox`
 - Prefer `floor`/`ceil` over rounding when computing chunk/index sizes
+- **Every function must validate its inputs at the top and check outputs before returning** — use `isempty`, `isnan`, `size`, and `isnumeric` guards; call `disp_progress(app, ...)` + `pause` on failure (matching existing error pattern)
 
 ---
 
