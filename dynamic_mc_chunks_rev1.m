@@ -1,4 +1,4 @@
-function [num_chunks,cell_sim_chuck_idx,array_rand_chunk_idx]=dynamic_mc_chunks_rev1(app,num_bs,num_mc)
+function [num_chunks,cell_sim_chuck_idx,array_rand_chunk_idx,num_parfor,cell_parfor_chunk_idx]=dynamic_mc_chunks_rev1(app,num_bs,num_mc)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chunk mc iterations so the [num_bs x chunk_size] working arrays in the
@@ -48,5 +48,14 @@ else
     array_rand_chunk_idx = randperm(num_chunks);
 end
 array_rand_chunk_idx
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Group randomized chunks into <= 64 parfor slots
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Round-robin assignment preserves random ordering
+num_parfor = min(64, num_chunks);
+cell_parfor_chunk_idx = cell(num_parfor, 1);
+for k = 1:num_chunks
+    slot = mod(k-1, num_parfor) + 1;
+    cell_parfor_chunk_idx{slot}(end+1) = array_rand_chunk_idx(k);
+end
 
 end
