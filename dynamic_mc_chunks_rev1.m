@@ -2,7 +2,7 @@ function [num_chunks,cell_sim_chuck_idx,array_rand_chunk_idx,num_parfor,cell_par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chunk mc iterations so the [num_bs x chunk_size] working arrays in the
-% vectorized azimuth loop stay under 2 GB total.
+% vectorized azimuth loop stay under 1 GB total.
 %
 % Peak simultaneous double arrays of size [num_bs x chunk_size]:
 %   all_Pr_dBm, all_eirp, all_clutter, all_sort_mc_dBm  (batch outputs)
@@ -10,7 +10,7 @@ function [num_chunks,cell_sim_chuck_idx,array_rand_chunk_idx,num_parfor,cell_par
 % = 6 arrays
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-mem_limit_bytes = 2e9;
+mem_limit_bytes = 1e9;
 num_live_arrays = 6;
 bytes_per_double = 8;
 
