@@ -1,30 +1,74 @@
 # CLAUDE.md — General_Movelist
 
-This file tracks project context and lessons learned for AI-assisted development sessions.
+Spectrum sharing / move-list analysis toolbox in MATLAB. Computes interference
+aggregation, neighborhood analysis, and Monte Carlo simulations to determine
+which base stations must move or reduce EIRP to protect federal incumbents.
 
-## Project Overview
+---
 
-MATLAB codebase for spectrum sharing / move-list analysis. Computes interference aggregation, neighborhood analysis, and Monte Carlo simulations to determine which base stations (BS) must move or reduce power (EIRP) to protect federal incumbents.
+## Tech Stack
 
-Key workflows:
-- **Part 0** — deployment point setup (`part0_deployment_pts_folders_*.m`)
-- **Part 2** — movelist calculation (`part2_movelist_calculation_*.m`, `part2_neigh_calc_*.m`)
-- **Part 3** — full aggregate check + mitigation movelist (`part3_*.m`)
-- **Part 4** — Excel output (`part4_movelist_miti_EXCEL_rev4.m`)
+- **Language**: MATLAB (no toolboxes assumed by default; check `check_ml_toolbox.m` and `check_parallel_toolbox.m` at runtime)
+- **Parallel**: Parallel Computing Toolbox (parfor), when available
+- **Data**: `.mat` files for inputs/outputs; `.xlsx` for final reports
 
-Core utilities: `dynamic_mc_chunks_rev1.m`, `monte_carlo_*.m`, `neighborhood_wrapper_*.m`, `pre_sort_movelist_*.m`, `near_opt_sort_idx_*.m`
+---
+
+## Project Architecture
+
+| Stage | Files | Purpose |
+|-------|-------|---------|
+| Part 0 | `part0_deployment_pts_folders_*.m` | Deployment point setup |
+| Part 2 | `part2_movelist_calculation_*.m`, `part2_neigh_calc_*.m` | Movelist calculation & neighborhood analysis |
+| Part 3 | `part3_*.m` | Full aggregate check + mitigation movelist |
+| Part 4 | `part4_movelist_miti_EXCEL_rev4.m` | Excel output |
+
+Key utilities:
+- `dynamic_mc_chunks_rev1.m` — chunks Monte Carlo iterations to stay under memory limit
+- `monte_carlo_*.m` — MC simulation batch runners
+- `neighborhood_wrapper_*.m` — neighborhood computation wrappers
+- `pre_sort_movelist_*.m` — movelist pre-sorting logic
+- `near_opt_sort_idx_*.m` — near-optimal sort index routines
+
+---
 
 ## Development Branch
 
-Active branch: `claude/remove-tf-stop-subchunk-ODzxF`
+**IMPORTANT**: Always develop and push to `claude/remove-tf-stop-subchunk-ODzxF`. Never push to main/master without explicit permission.
 
-Always commit and push to this branch. Never push to main/master without explicit permission.
+```bash
+git push -u origin claude/remove-tf-stop-subchunk-ODzxF
+```
+
+---
+
+## Code Style Rules
+
+- Revision history is encoded in filenames (`_rev1`, `_rev2`, etc.) — do not rename files; create a new revision
+- When editing a value, update **both** the value and any matching inline comment
+- Do not add toolbox-dependent calls without guarding with `check_ml_toolbox` or `check_parallel_toolbox`
+- Prefer `floor`/`ceil` over rounding when computing chunk/index sizes
+
+---
+
+## Common Gotchas
+
+- `dynamic_mc_chunks_rev1.m`: `mem_limit_bytes` controls peak RAM. Changing it affects chunk count and parfor slot grouping downstream. Update comment when changing value.
+- Chunk index integrity is verified at runtime (gap/duplicate check); if it fires `pause`, the chunking math is wrong.
+- `num_parfor` is capped at 64 — round-robin assignment preserves randomized chunk ordering.
+- `array_rand_chunk_idx` is printed to console intentionally (debugging aid); do not remove.
+
+---
 
 ## Lessons Learned
 
-### 2026-03-08 — Memory limit in `dynamic_mc_chunks_rev1.m`
-- `mem_limit_bytes` controls how large the working arrays `[num_bs x chunk_size]` can grow across 6 simultaneous double arrays.
-- Changed from **2 GB → 1 GB** to reduce per-chunk memory pressure.
-- Formula: `chunk_size = floor(mem_limit_bytes / (num_live_arrays * num_bs * bytes_per_double))`
-- Halving the limit roughly doubles the number of chunks, which increases chunking overhead but reduces peak RAM usage.
-- When editing this value, update **both** `mem_limit_bytes` and the matching comment above it.
+### 2026-03-08 — Memory limit reduced in `dynamic_mc_chunks_rev1.m`
+- **Change**: `mem_limit_bytes` lowered from `2e9` (2 GB) to `1e9` (1 GB)
+- **Effect**: Roughly doubles the number of chunks, halves peak RAM per chunk
+- **Rule**: When editing this value always update the comment on line 4–5 too
+
+### 2026-03-08 — CLAUDE.md best practices applied
+- Keep file under 200 lines; longer files reduce instruction adherence
+- Be specific and verifiable — avoid vague rules like "manage memory well"
+- Update this file after every code change with a dated Lessons Learned entry
+- Check in to git so the whole team benefits
