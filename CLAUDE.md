@@ -32,6 +32,18 @@ Key utilities:
 
 ---
 
+## PR Workflow
+
+**IMPORTANT**: Before opening any PR, always run `/simplify` on all changed files first.
+
+```
+/simplify all the PR
+```
+
+This reviews changed code for reuse, quality, and efficiency issues and fixes them before review.
+
+---
+
 ## Development Branch
 
 **IMPORTANT**: Always develop and push to `claude/remove-tf-stop-subchunk-ODzxF`. Never push to main/master without explicit permission.
