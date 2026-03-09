@@ -38,7 +38,7 @@ for azimuth_idx=1:1:num_sim_azi
     %%%%%%Now find the 0 and align
     nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
     shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
-    shift_antpat=table2array(unique(array2table(shift_antpat),'rows')); %%%%%%Only keep unique azimuth rows
+    shift_antpat=unique(shift_antpat,'rows'); %%%%%%Only keep unique azimuth rows
 
     %%%%%%Test to make sure 0 is first in array
     nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));

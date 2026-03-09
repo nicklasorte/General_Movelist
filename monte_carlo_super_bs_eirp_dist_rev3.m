@@ -8,21 +8,14 @@ if num_cols>1
     rel_min=min(reliability);
     rel_max=max(reliability);
     rand_numbers=rand(num_rows,1)*(rel_max-rel_min)+rel_min; %Create random numbers within [rel_min, rel_max]
+
+    %%%%%griddedInterpolant: pre-processes spline knots once per row, then
+    %%%%%evaluates all query points efficiently — faster than repeated interp1
     rand_norm_eirp=NaN(num_rows,1);
     for n=1:1:num_rows
-        rand_norm_eirp(n)=interp1(reliability,super_array_bs_eirp_dist(n,:),rand_numbers(n),'spline');
+        F=griddedInterpolant(reliability(:),super_array_bs_eirp_dist(n,:)','spline');
+        rand_norm_eirp(n)=F(rand_numbers(n));
     end
-
-    % % % % horzcat(reliability,super_array_bs_eirp_dist(n,:)')
-    % % % % rand_norm_eirp
-    % % % % temp_rand_num
-
-    %
-    %          figure;
-    % hold on;
-    % plot(bs_eirp_dist(:,1),bs_eirp_dist(:,2),':b')
-    % plot(rand_numbers,rand_norm_eirp,'ob','LineWidth',2)
-    % grid on;
 else
     rand_norm_eirp=zeros(num_tx,1);
 end

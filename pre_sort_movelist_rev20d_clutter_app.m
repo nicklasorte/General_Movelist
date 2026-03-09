@@ -227,122 +227,52 @@ else
         rand_seed1=tempx+tempy;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        %%%%%%%%%%%%%%Generate MC Iterations and Calculate Move List
-        %%%Preallocate
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%Pre-compute off_axis_gain for every simulation azimuth [num_tx x num_sim_azi]
+        %%%%%This block is independent of MC data so it runs once, not once per MC iteration.
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         array_turn_off_size=NaN(mc_size,1);
         [num_tx,~]=size(sort_sim_array_list_bs);
+        all_off_axis_gain=NaN(num_tx,num_sim_azi);
+        [num_ele,~]=size(custom_antenna_pattern);
+        for azimuth_idx=1:1:num_sim_azi
+            sim_azimuth=array_sim_azimuth(azimuth_idx);
+            circshift_antpat=custom_antenna_pattern;
+            circshift_antpat(:,1)=mod(custom_antenna_pattern(:,1)+sim_azimuth,360);
+            nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
+            shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
+            shift_antpat=unique(shift_antpat,'rows'); %%%%%%Only keep unique azimuth rows
+            nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));
+            if nn_check_idx~=1
+                'Circ shift error'
+                pause;
+            end
+            [ant_deg_idx]=nearestpoint_app(app,bs_azimuth,shift_antpat(:,1));
+            all_off_axis_gain(:,azimuth_idx)=shift_antpat(ant_deg_idx,2);
+        end
 
-        %array_off_axis_loss_fed=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
-        %array_sort_mc_dBm=NaN(num_tx,num_sim_azi);%%%%%Export this in the excel file. Only do this for the first monte carlo iteration
+        %%%MC loop — antenna work is gone, only math remains
         %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 234: Entering the Monte Carlo Loop'))
         for mc_iter=1:1:mc_size
             %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 236:',num2str(mc_iter)))
             mc_iter
             %%%%%%%Generate 1 MC Iteration
             [pre_sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_full_Pr_dBm);
-            %size(pre_sort_monte_carlo_pr_dBm)
-
-            %%%%%%%'Monte carlo the bs_eirp_dist and combine'
-            %%%%[rand_norm_eirp]=monte_carlo_bs_eirp_dist_rev1(app,bs_eirp_dist,rand_seed1,mc_iter,num_tx);
 
             %%%%%'interp super_array_bs_eirp_dist in the same way as bs_eirp_dist'
             [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev3(app,super_array_bs_eirp_dist,rand_seed1,mc_iter,num_tx,move_list_reliability);
 
-            %tic;
             [monte_carlo_clutter_loss]=monte_carlo_clutter_rev1_app(app,rand_seed1,mc_iter,move_list_reliability,sort_clutter_loss);
-            %toc;
-            %size(monte_carlo_clutter_loss)
-            % tic; %%%%%%%Cleaner but the same speed
-            % [monte_carlo_clutter_loss2]=monte_carlo_clutter_rev2_app(app,rand_seed1,mc_iter,move_list_reliability,clutter_loss);
-            % toc;
-            % size(monte_carlo_clutter_loss2)
-            % all(round(monte_carlo_clutter_loss)==round(monte_carlo_clutter_loss2))
-            %horzcat(pre_sort_monte_carlo_pr_dBm(1:50),rand_norm_eirp(1:50),monte_carlo_clutter_loss(1:50),sort_monte_carlo_pr_dBm(1:50))
+
             sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
-
-
-            
-            % %%%%%%%%Check distribution
-            % horzcat(pre_sort_monte_carlo_pr_dBm(1:10),rand_norm_eirp(1:10),sort_monte_carlo_pr_dBm(1:10))
-            % size(pre_sort_monte_carlo_pr_dBm)
-            % size(rand_norm_eirp)
-            % size(sort_monte_carlo_pr_dBm)
-            % 
-            % 'check size'
-            % pause;
-
-            % if length(reliability)==1 %%%%%%%This assume 50%
-            %     if ~all(sort_full_Pr_dBm==sort_monte_carlo_pr_dBm)
-            %         disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 244:Error:Pr dBm Mismatch'))
-            %         pause;
-            %     end
-            % end
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Move List for Single MC Iteration
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%Preallocate
             azimuth_turn_off_size=NaN(num_sim_azi,1);
             for azimuth_idx=1:1:num_sim_azi
-
-                %%%Find CBSD azimuths outside of +/- of half_ant_hor_deg of temp_azimuth
-                sim_azimuth=array_sim_azimuth(azimuth_idx);
-
-                %%%%Need to test circshift with different sim_azimuth
-                %%%%sim_azimuth=100
-
-                circshift_antpat=custom_antenna_pattern;
-                circshift_antpat(:,1)=custom_antenna_pattern(:,1)+sim_azimuth; %%%%%%%Add the azimuth, then we don't have to worry about azimuth spacing on pattern
-                %%%%Then Mod
-                mod_ant_pat=mod(circshift_antpat(:,1),360);
-                circshift_antpat(:,1)=mod_ant_pat;
-
-                %%%%%%Now find the 0
-                nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
-                [num_ele,~]=size(circshift_antpat);
-                shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
-                shift_antpat=table2array(unique(array2table(shift_antpat),'rows')); %%%%%%Only keep unique azimuth rows
-
-                %%%%%%Test to make sure 0 is first in array
-                nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));
-                if nn_check_idx~=1
-                    'Circ shift error'
-                    pause;
-                end
-
-                % % fig1=figure;
-                % % hold on;
-                % % plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-ob','Linewidth',2)
-                % % plot(shift_antpat(:,1),shift_antpat(:,2),'-xr')
-                % % xlabel('Azimuth [Degree]')
-                % % ylabel('Antenna Gain')
-                % % grid on;
-                % % pause(0.1)
-                % % close(fig1)
-
-
-                %%%%%%%Calculate the loss due to off axis in the horizontal direction
-                %%%%[off_axis_loss]=calc_off_axix_loss_rev1_app(app,sim_azimuth,bs_azimuth,radar_ant_array,min_ant_loss);
-                %%%%%%%%%%%%%%%%%%%%%%%Since we've already rotated the antenna pattern, just need to find the nearest bs_azimuth
-                [ant_deg_idx]=nearestpoint_app(app,bs_azimuth,shift_antpat(:,1));
-                off_axis_gain=shift_antpat(ant_deg_idx,2);
+                off_axis_gain=all_off_axis_gain(:,azimuth_idx);          %%%%[num_tx x 1] lookup
                 sort_temp_mc_dBm=sort_monte_carlo_pr_dBm+off_axis_gain;
-                % off_axis_gain(1)
-                % sort_monte_carlo_pr_dBm(1)
-                % sort_temp_mc_dBm(1)
-
-
-                % % horzcat(sort_temp_mc_dBm(1:10),sort_monte_carlo_pr_dBm(1:10),off_axis_gain(1:10))
-                % % 'check the off_axis_gain'
-                % % pause;
-
-                %%%%Maybe save this too, but only for the first
-                %%%%mc-iteration, and only if there is one mc iteration.
-
-                % if mc_iter==1
-                %     array_sort_mc_dBm(:,azimuth_idx)=sort_temp_mc_dBm;
-                %     array_off_axis_loss_fed(:,azimuth_idx)=off_axis_gain;
-                % end
 
                 if any(isnan(sort_temp_mc_dBm))  %%%%%%%%Check
                     %disp_progress(app,strcat('Error: Pause: Inside Pre_sort_ML rev8 Line 272: NaN Error: temp_mc_dBm'))
