@@ -98,3 +98,15 @@ git push -u origin claude/remove-tf-stop-subchunk-ODzxF
 - **Fix**: Use `griddedInterpolant` which pre-processes knots once, then evaluates efficiently — matches the pattern already used in `monte_carlo_super_bs_eirp_dist_batch.m`
 - **Effect**: 2–5× speedup on EIRP distribution sampling for large `num_rows`
 
+### 2026-03-09 — Input and output validation added to all 23 changed functions
+
+#### Pattern (applies to every function touched in this PR)
+Each function now has:
+1. **Input validation block** immediately after the function signature — using `isempty`, `~isnumeric`, `~iscell`, `~isscalar`, `isnan`, and size checks
+2. **Output validation block** just before the function returns — checking `isempty` and, where appropriate, `isnan`
+
+Both blocks call `disp_progress(app, 'ERROR PAUSE: <funcname>: <reason>')` then `pause` on failure, matching the existing error-handling pattern throughout the codebase.
+
+- **Files**: `monte_carlo_super_bs_eirp_dist_rev3.m`, `_rev4.m`, `subchunk_agg_check_rev7.m`, `agg_check_rev3_*`, `agg_check_rev4_*`, `agg_check_rev5_*`, `agg_check_rev6_clutter_app.m`, `near_opt_sort_idx_rev5.m`, `near_opt_sort_idx_string_prop_model_custant_rev4*.m`, all `pre_sort_movelist_rev20*.m`, all `pre_sort_movelist_rev21*.m`, `sub_point_excel_rev3.m`, `sub_point_excel_bsidx_rev4.m`, `excel_print_rev1.m`
+- **Rule**: Every new or modified function must have an input validation block at the top and an output validation block before returning
+

@@ -1,6 +1,37 @@
 function [cell_miti_list]=pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,min_ant_loss,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,array_mitigation,tf_opt,min_azimuth,max_azimuth,neighborhood_radius,custom_antenna_pattern)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Move List Function with Neighborhoor Cut
+
+%%%%%Input validation
+if isempty(sim_array_list_bs) || ~isnumeric(sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: sim_array_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(reliability) || ~isnumeric(reliability)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(move_list_reliability) || ~isnumeric(move_list_reliability)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: move_list_reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if ~isnumeric(mc_size) || ~isscalar(mc_size) || mc_size<1
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: mc_size is invalid'))
+    pause;
+end
+if ~isnumeric(point_idx) || ~isscalar(point_idx) || point_idx<1
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: point_idx is invalid'))
+    pause;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Check for Move List File, if none, save place holder
@@ -578,4 +609,9 @@ else
         % %%%close(f1)
     end
     toc;
+end
+%%%%%Output validation
+if isempty(cell_miti_list)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev21_neigh_cut_azimuths_miti_app: cell_miti_list is empty'))
+    pause;
 end

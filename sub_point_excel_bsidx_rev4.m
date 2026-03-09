@@ -1,5 +1,24 @@
 function []=sub_point_excel_bsidx_rev4(app,point_idx,data_label1,union_turn_off_list_data,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold,neighborhood_radius)
 
+
+%%%%%Input validation
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: sub_point_excel_bsidx_rev4: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(sim_array_list_bs) || ~isnumeric(sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: sub_point_excel_bsidx_rev4: sim_array_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: sub_point_excel_bsidx_rev4: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if isempty(move_list_reliability) || ~isnumeric(move_list_reliability)
+    disp_progress(app,strcat('ERROR PAUSE: sub_point_excel_bsidx_rev4: move_list_reliability is empty or non-numeric'))
+    pause;
+end
+
 %%%%%%Load all the pathloss data
 %%%%%%%%%'Load all the point pathloss calculations'
 %%%%%%Persistent Load

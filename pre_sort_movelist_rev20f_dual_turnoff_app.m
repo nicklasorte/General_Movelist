@@ -1,6 +1,37 @@
 function [move_sort_sim_array_list_bs]=pre_sort_movelist_rev20f_dual_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder)
 
 
+%%%%%Input validation
+if isempty(sim_array_list_bs) || ~isnumeric(sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: sim_array_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(reliability) || ~isnumeric(reliability)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(move_list_reliability) || ~isnumeric(move_list_reliability)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: move_list_reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if ~isnumeric(mc_size) || ~isscalar(mc_size) || mc_size<1
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: mc_size is invalid'))
+    pause;
+end
+if ~isnumeric(point_idx) || ~isscalar(point_idx) || point_idx<1
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: point_idx is invalid'))
+    pause;
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Move List Function with Neighborhoor Cut
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,5 +522,11 @@ else
         end
         toc;
     end
+end
+
+%%%%%Output validation
+if isempty(move_sort_sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: pre_sort_movelist_rev20f_dual_turnoff_app: move_sort_sim_array_list_bs is empty'))
+    pause;
 end
 %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 344: Finished'))

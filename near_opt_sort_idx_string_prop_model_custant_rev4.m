@@ -1,6 +1,29 @@
 function [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth)
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Near-Optimal Move List Function Start
+
+%%%%%Input validation
+if isempty(sim_array_list_bs) || ~isnumeric(sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: sim_array_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(temp_pr_dbm) || ~isnumeric(temp_pr_dbm)
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: temp_pr_dbm is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if ~isnumeric(point_idx) || ~isscalar(point_idx) || point_idx<1
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: point_idx is invalid'))
+    pause;
+end
+
         %%%%%%Not optimal when we do it separately for all protection
         %%%%%%points. But this allows us to calculate the protection points
         %%%%%%in parallel.
@@ -144,3 +167,9 @@ function [opt_sort_bs_idx]=near_opt_sort_idx_string_prop_model_custant_rev4(app,
                 end
             end
         end
+
+%%%%%Output validation
+if isempty(opt_sort_bs_idx)
+    disp_progress(app,strcat('ERROR PAUSE: near_opt_sort_idx_string_prop_model_custant_rev4: opt_sort_bs_idx is empty'))
+    pause;
+end
