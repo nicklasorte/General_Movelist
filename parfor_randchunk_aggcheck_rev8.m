@@ -1,5 +1,39 @@
 function [sub_array_agg_check_mc_dBm]=parfor_randchunk_aggcheck_rev8(app,agg_check_file_name,agg_dist_file_name,parfor_idx,parfor_chunk_indices,point_idx,sim_number,data_label1,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,on_list_bs,cell_sim_chuck_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,parallel_flag)
 
+%%%%%Input validation
+if isempty(parfor_chunk_indices) || ~isnumeric(parfor_chunk_indices)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: parfor_chunk_indices is empty or non-numeric')
+    pause;
+end
+if isempty(cell_aas_dist_data) || ~iscell(cell_aas_dist_data)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: cell_aas_dist_data is empty or not a cell')
+    pause;
+end
+if isempty(on_list_bs) || ~isnumeric(on_list_bs)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: on_list_bs is empty or non-numeric')
+    pause;
+end
+if isempty(on_full_Pr_dBm) || ~isnumeric(on_full_Pr_dBm)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: on_full_Pr_dBm is empty or non-numeric')
+    pause;
+end
+if isempty(cell_sim_chuck_idx) || ~iscell(cell_sim_chuck_idx)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: cell_sim_chuck_idx is empty or not a cell')
+    pause;
+end
+if isempty(agg_check_reliability) || ~isnumeric(agg_check_reliability)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: agg_check_reliability is empty or non-numeric')
+    pause;
+end
+if ~isnumeric(point_idx) || ~isscalar(point_idx) || point_idx<1
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: point_idx is invalid')
+    pause;
+end
+if ~isnumeric(parfor_idx) || ~isscalar(parfor_idx) || parfor_idx<1
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: parfor_idx is invalid')
+    pause;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Rev8 change: instead of one file per subchunk, one file covers all chunks
 % assigned to this parfor slot (parfor_chunk_indices).  File count is
@@ -56,3 +90,9 @@ else
     end
 end
 sub_array_agg_check_mc_dBm
+
+%%%%%Output validation
+if isempty(sub_array_agg_check_mc_dBm)
+    disp_progress(app,'ERROR PAUSE: parfor_randchunk_aggcheck_rev8: sub_array_agg_check_mc_dBm is empty')
+    pause;
+end
