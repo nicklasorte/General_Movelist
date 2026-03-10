@@ -1,0 +1,76 @@
+name: Bug report
+description: Report incorrect results, crashes, or unexpected behaviour.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A good bug report includes a minimal reproducible example.
+        Please fill in as much detail as you can.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong? What did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: |
+        List the exact steps or MATLAB commands that trigger the bug.
+        Include file names, function calls, and relevant input values.
+      placeholder: |
+        1. Open MATLAB 2025b
+        2. Run `part2_neigh_calc_rev14_multi_server(...)` with inputs X, Y, Z
+        3. Observe error / incorrect output
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: |
+        Paste the exact error message, incorrect value, or unexpected output.
+        Include the full stack trace if available.
+    validations:
+      required: true
+
+  - type: input
+    id: matlab_version
+    attributes:
+      label: MATLAB / Octave version
+      placeholder: "e.g. MATLAB 2025b, Octave 8.4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: |
+        Dataset characteristics (number of BSs, MC size, number of servers),
+        OS, relevant `.mat` file structure, or any other context.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I have checked existing issues for duplicates.
+          required: true
+        - label: I can reproduce this consistently (not a one-off).
+          required: true

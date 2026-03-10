@@ -1,0 +1,56 @@
+name: Feature request
+description: Propose a new capability or improvement.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please be as specific as possible. Vague or speculative requests are
+        harder to act on and may be closed or deferred.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the capability you want.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: |
+        Why is this needed? What scenario or problem does it unblock?
+        Include relevant context (e.g. dataset size, number of servers, stage of pipeline).
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_approach
+    attributes:
+      label: Proposed approach (optional)
+      description: |
+        If you have a specific idea for the implementation, describe it here.
+        Keep changes scoped — avoid mixing unrelated refactors.
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: |
+        How will we know this feature is complete and correct?
+        e.g. "test_pr_changes.m passes with new test cases covering X, Y, Z"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: This is scoped to one capability (not a bundle of unrelated changes).
+          required: true
+        - label: No new toolbox dependencies are required without prior approval.
+          required: true
