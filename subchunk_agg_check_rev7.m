@@ -1,6 +1,42 @@
 function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_rev7(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chuck_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
 
-%%%%%%%%%Adding clutter distribution in monte carlo later
+%%%%%Input validation
+if isempty(cell_aas_dist_data) || ~iscell(cell_aas_dist_data)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: cell_aas_dist_data is empty or not a cell')
+    pause;
+end
+if isempty(array_bs_azi_data) || ~isnumeric(array_bs_azi_data) || size(array_bs_azi_data,2)<4
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: array_bs_azi_data is invalid (empty, non-numeric, or too few columns)')
+    pause;
+end
+if isempty(on_list_bs) || ~isnumeric(on_list_bs)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: on_list_bs is empty or non-numeric')
+    pause;
+end
+if isempty(on_full_Pr_dBm) || ~isnumeric(on_full_Pr_dBm)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: on_full_Pr_dBm is empty or non-numeric')
+    pause;
+end
+if isempty(clutter_loss) || ~isnumeric(clutter_loss)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: clutter_loss is empty or non-numeric')
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: custom_antenna_pattern is empty or non-numeric')
+    pause;
+end
+if isempty(agg_check_reliability) || ~isnumeric(agg_check_reliability)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: agg_check_reliability is empty or non-numeric')
+    pause;
+end
+if isempty(cell_sim_chuck_idx) || ~iscell(cell_sim_chuck_idx)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: cell_sim_chuck_idx is empty or not a cell')
+    pause;
+end
+if ~isnumeric(sub_point_idx) || ~isscalar(sub_point_idx) || sub_point_idx<1 || sub_point_idx>length(cell_sim_chuck_idx)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: sub_point_idx is out of range')
+    pause;
+end
 %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth
 %%%%%%%%%%of the base station antenna offset to the federal point.
 array_aas_dist_data=cell_aas_dist_data{2};
@@ -38,7 +74,7 @@ for azimuth_idx=1:1:num_sim_azi
     %%%%%%Now find the 0 and align
     nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
     shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
-    shift_antpat=table2array(unique(array2table(shift_antpat),'rows')); %%%%%%Only keep unique azimuth rows
+    shift_antpat=unique(shift_antpat,'rows'); %%%%%%Only keep unique azimuth rows
 
     %%%%%%Test to make sure 0 is first in array
     nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));
@@ -82,4 +118,14 @@ for azimuth_idx=1:1:num_sim_azi
 end
 
 %sub_array_agg_check_mc_dBm %%%This is what we save/output
+
+%%%%%Output validation
+if isempty(sub_array_agg_check_mc_dBm)
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: sub_array_agg_check_mc_dBm is empty')
+    pause;
+end
+if any(isnan(sub_array_agg_check_mc_dBm(:)))
+    disp_progress(app,'ERROR PAUSE: subchunk_agg_check_rev7: sub_array_agg_check_mc_dBm contains NaN')
+    pause;
+end
 end

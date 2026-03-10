@@ -1,6 +1,25 @@
 function excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,base_protection_pts,sim_array_list_bs,string_prop_model,sim_number,norm_aas_zero_elevation_data,radar_beamwidth,min_azimuth,max_azimuth,move_list_reliability,sim_radius_km,custom_antenna_pattern,dpa_threshold)
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%Input validation
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: excel_print_rev1: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(sim_array_list_bs) || ~isnumeric(sim_array_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: excel_print_rev1: sim_array_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: excel_print_rev1: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if isempty(move_list_reliability) || ~isnumeric(move_list_reliability)
+    disp_progress(app,strcat('ERROR PAUSE: excel_print_rev1: move_list_reliability is empty or non-numeric'))
+    pause;
+end
+
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Before we mark it complete, print the excel
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 if tf_print_excel==1
@@ -133,7 +152,7 @@ function excel_print_rev1(app,tf_print_excel,reliability,data_label1,mc_size,bas
                             nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
                             [num_ele,~]=size(circshift_antpat);
                             shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
-                            shift_antpat=table2array(unique(array2table(shift_antpat),'rows')); %%%%%%Only keep unique azimuth rows
+                            shift_antpat=unique(shift_antpat,'rows'); %%%%%%Only keep unique azimuth rows
 
                             %%%%%%Test to make sure 0 is first in array
                             nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));

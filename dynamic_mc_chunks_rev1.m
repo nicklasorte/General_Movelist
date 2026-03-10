@@ -1,5 +1,15 @@
 function [num_chunks,cell_sim_chuck_idx,array_rand_chunk_idx,num_parfor,cell_parfor_chunk_idx]=dynamic_mc_chunks_rev1(app,num_bs,num_mc)
 
+%%%%%Input validation
+if ~isnumeric(num_bs) || ~isscalar(num_bs) || num_bs<1
+    disp_progress(app,'ERROR PAUSE: dynamic_mc_chunks_rev1: num_bs is invalid (must be a positive scalar)')
+    pause;
+end
+if ~isnumeric(num_mc) || ~isscalar(num_mc) || num_mc<1
+    disp_progress(app,'ERROR PAUSE: dynamic_mc_chunks_rev1: num_mc is invalid (must be a positive scalar)')
+    pause;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chunk mc iterations so the [num_bs x chunk_size] working arrays in the
 % vectorized azimuth loop stay under 1 GB total.
@@ -56,6 +66,20 @@ slots = mod(0:num_chunks-1, num_parfor) + 1;  %%%%[1 x num_chunks] round-robin s
 cell_parfor_chunk_idx = cell(num_parfor, 1);
 for s = 1:num_parfor
     cell_parfor_chunk_idx{s} = array_rand_chunk_idx(slots == s);
+end
+
+%%%%%Output validation
+if isempty(cell_sim_chuck_idx)
+    disp_progress(app,'ERROR PAUSE: dynamic_mc_chunks_rev1: cell_sim_chuck_idx is empty')
+    pause;
+end
+if isempty(cell_parfor_chunk_idx)
+    disp_progress(app,'ERROR PAUSE: dynamic_mc_chunks_rev1: cell_parfor_chunk_idx is empty')
+    pause;
+end
+if num_chunks<1
+    disp_progress(app,'ERROR PAUSE: dynamic_mc_chunks_rev1: num_chunks is less than 1')
+    pause;
 end
 
 end

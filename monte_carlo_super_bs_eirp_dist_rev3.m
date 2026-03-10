@@ -1,5 +1,27 @@
 function [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev3(app,super_array_bs_eirp_dist,rand_seed1,mc_iter,num_tx,reliability)
 
+%%%%%Input validation
+if isempty(super_array_bs_eirp_dist) || ~isnumeric(super_array_bs_eirp_dist)
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: super_array_bs_eirp_dist is empty or non-numeric')
+    pause;
+end
+if isempty(reliability) || ~isnumeric(reliability)
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: reliability is empty or non-numeric')
+    pause;
+end
+if ~isnumeric(mc_iter) || ~isscalar(mc_iter) || isnan(mc_iter)
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: mc_iter is invalid')
+    pause;
+end
+if ~isnumeric(rand_seed1) || ~isscalar(rand_seed1) || isnan(rand_seed1)
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: rand_seed1 is invalid')
+    pause;
+end
+if ~isnumeric(num_tx) || ~isscalar(num_tx) || num_tx<1
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: num_tx is invalid')
+    pause;
+end
+
 [num_rows,num_cols]=size(super_array_bs_eirp_dist);
 
 if num_cols>1
@@ -8,26 +30,27 @@ if num_cols>1
     rel_min=min(reliability);
     rel_max=max(reliability);
     rand_numbers=rand(num_rows,1)*(rel_max-rel_min)+rel_min; %Create random numbers within [rel_min, rel_max]
+
+    %%%%%griddedInterpolant: pre-processes spline knots once per row, then
+    %%%%%evaluates all query points efficiently — faster than repeated interp1
     rand_norm_eirp=NaN(num_rows,1);
     for n=1:1:num_rows
-        rand_norm_eirp(n)=interp1(reliability,super_array_bs_eirp_dist(n,:),rand_numbers(n),'spline');
+        F=griddedInterpolant(reliability(:),super_array_bs_eirp_dist(n,:)','spline');
+        rand_norm_eirp(n)=F(rand_numbers(n));
     end
-
-    % % % % horzcat(reliability,super_array_bs_eirp_dist(n,:)')
-    % % % % rand_norm_eirp
-    % % % % temp_rand_num
-
-    %
-    %          figure;
-    % hold on;
-    % plot(bs_eirp_dist(:,1),bs_eirp_dist(:,2),':b')
-    % plot(rand_numbers,rand_norm_eirp,'ob','LineWidth',2)
-    % grid on;
 else
     rand_norm_eirp=zeros(num_tx,1);
 end
 
 
 % %size(rand_norm_eirp)
+
+%%%%%Output validation
+if isempty(rand_norm_eirp)
+    disp_progress(app,'ERROR PAUSE: monte_carlo_super_bs_eirp_dist_rev3: rand_norm_eirp is empty')
+    pause;
+end
+
+end
 
 

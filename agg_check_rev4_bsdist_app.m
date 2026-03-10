@@ -2,6 +2,37 @@ function [array_agg_check_95]=agg_check_rev4_bsdist_app(app,agg_check_reliabilit
 
 %disp_progress(app,strcat('Inside Agg Check Rev1: Line 3'))
 
+%%%%%Input validation
+if isempty(agg_check_reliability) || ~isnumeric(agg_check_reliability)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: agg_check_reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(base_protection_pts) || ~isnumeric(base_protection_pts)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: base_protection_pts is empty or non-numeric'))
+    pause;
+end
+if isempty(on_list_bs) || ~isnumeric(on_list_bs)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: on_list_bs is empty or non-numeric'))
+    pause;
+end
+if isempty(reliability) || ~isnumeric(reliability)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: reliability is empty or non-numeric'))
+    pause;
+end
+if isempty(custom_antenna_pattern) || ~isnumeric(custom_antenna_pattern)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: custom_antenna_pattern is empty or non-numeric'))
+    pause;
+end
+if ~isnumeric(mc_size) || ~isscalar(mc_size) || mc_size<1
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: mc_size is invalid'))
+    pause;
+end
+if ~isnumeric(point_idx) || ~isscalar(point_idx) || point_idx<1
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: point_idx is invalid'))
+    pause;
+end
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Agg Check Function
@@ -179,7 +210,7 @@ else
                 nn_zero_azi_idx=nearestpoint_app(app,0,circshift_antpat(:,1));
                 [num_ele,~]=size(circshift_antpat);
                 shift_antpat=circshift(circshift_antpat,num_ele-nn_zero_azi_idx+1);
-                shift_antpat=table2array(unique(array2table(shift_antpat),'rows')); %%%%%%Only keep unique azimuth rows
+                shift_antpat=unique(shift_antpat,'rows'); %%%%%%Only keep unique azimuth rows
 
                 %%%%%%Test to make sure 0 is first in array
                 nn_check_idx=nearestpoint_app(app,0,shift_antpat(:,1));
@@ -264,4 +295,11 @@ else
     end
     toc;
 end
+
+%%%%%Output validation
+if isempty(array_agg_check_95)
+    disp_progress(app,strcat('ERROR PAUSE: agg_check_rev4_bsdist_app: array_agg_check_95 is empty'))
+    pause;
+end
+
 %disp_progress(app,strcat('Inside Agg Check Rev1: Line 209: Finished'))

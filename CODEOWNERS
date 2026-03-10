@@ -1,0 +1,29 @@
+# CODEOWNERS
+#
+# Each line is a file pattern followed by one or more owners.
+# Replace the placeholder usernames below with real GitHub handles.
+#
+# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything not matched by a more specific rule.
+# PLACEHOLDER — replace with real GitHub username(s).
+*                               @PLACEHOLDER_OWNER
+
+# MATLAB source files
+*.m                             @PLACEHOLDER_MATLAB_OWNER
+
+# Test files
+test_*.m                        @PLACEHOLDER_MATLAB_OWNER
+
+# Documentation
+docs/                           @PLACEHOLDER_DOCS_OWNER
+*.md                            @PLACEHOLDER_DOCS_OWNER
+
+# Agent and Codex configuration
+AGENTS.md                       @PLACEHOLDER_OWNER
+.agents/                        @PLACEHOLDER_OWNER
+codex/                          @PLACEHOLDER_OWNER
+
+# GitHub workflow files — require explicit approval before any change.
+# PLACEHOLDER — assign a dedicated owner responsible for CI/CD.
+.github/workflows/              @PLACEHOLDER_CICD_OWNER

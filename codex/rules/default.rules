@@ -1,0 +1,53 @@
+# Codex default rules for General_Movelist
+#
+# These rules prompt before potentially destructive or release-related
+# commands. Keep this file conservative — when in doubt, prompt.
+
+rules:
+  # Git operations that rewrite history or affect remote state
+  - pattern: "git push"
+    action: prompt
+    message: "About to push to remote. Confirm branch and remote are correct."
+
+  - pattern: "git push --force"
+    action: block
+    message: "Force-push is not allowed. Rewrite history locally only if branch is not shared."
+
+  - pattern: "git rebase"
+    action: prompt
+    message: "Rebase will rewrite commit history. Confirm this branch has not been pushed, or that all collaborators are aware."
+
+  - pattern: "git reset --hard"
+    action: prompt
+    message: "Hard reset will discard uncommitted changes permanently. Confirm you have saved anything important."
+
+  - pattern: "git tag"
+    action: prompt
+    message: "About to create or modify a tag. Tags are often used for releases — confirm intent."
+
+  # Destructive file-system operations
+  - pattern: "rm -rf"
+    action: prompt
+    message: "Recursive delete detected. Confirm the target path is correct and not a production data directory."
+
+  # Package / dependency installation
+  - pattern: "pip install"
+    action: prompt
+    message: "pip install will modify the Python environment. Confirm this is intentional and approved."
+
+  - pattern: "npm install"
+    action: prompt
+    message: "npm install will modify the Node environment. Confirm this is intentional and approved."
+
+  - pattern: "apt install"
+    action: prompt
+    message: "apt install will modify system packages. Confirm this is intentional and approved."
+
+  - pattern: "apt-get install"
+    action: prompt
+    message: "apt-get install will modify system packages. Confirm this is intentional and approved."
+
+  # CI / workflow file edits
+  - pattern: ".github/workflows/"
+    action: prompt
+    message: "Editing a GitHub Actions workflow file. These changes affect CI/CD for all contributors. Confirm explicit approval from the repository owner."
