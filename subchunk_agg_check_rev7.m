@@ -1,4 +1,4 @@
-function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_rev7(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chuck_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_rev7(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
 
 %%%%%%%%%Adding clutter distribution in monte carlo later
 %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth
@@ -33,16 +33,15 @@ bs_azimuth=azimuth(sim_pt(1),sim_pt(2),on_list_bs(:,1),on_list_bs(:,2));
 
 %%%%%%%%%%%%%%Generate MC Iterations and Calculate Move List
 %%%Preallocate
-sub_mc_idx=cell_sim_chuck_idx{sub_point_idx}
-num_mc_idx=length(sub_mc_idx)
+sub_mc_idx=cell_sim_chunk_idx{sub_point_idx};
+num_mc_idx=length(sub_mc_idx);
 sub_array_agg_check_mc_dBm=NaN(num_mc_idx,num_sim_azi);
 for loop_idx=1:1:num_mc_idx
-    loop_idx
-    mc_iter=sub_mc_idx(loop_idx)
+    %loop_idx
+    mc_iter=sub_mc_idx(loop_idx);
 
     %%%%%%%Generate 1 MC Iteration
     [pre_sort_monte_carlo_pr_dBm]=monte_carlo_Pr_dBm_rev1_app(app,rand_seed1,mc_iter,agg_check_reliability,on_full_Pr_dBm);
-    %%%%%[rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev3(app,super_array_bs_eirp_dist,rand_seed1,mc_iter,num_tx,agg_check_reliability);
     [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev4(app,super_array_bs_eirp_dist,rand_seed1,mc_iter,agg_check_reliability); %%%%Don't need the num_tx
     [monte_carlo_clutter_loss]=monte_carlo_clutter_rev1_app(app,rand_seed1,mc_iter,agg_check_reliability,clutter_loss);
     sort_monte_carlo_pr_dBm=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
