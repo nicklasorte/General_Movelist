@@ -8,7 +8,20 @@ function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev12(app,cell_a
 %
 % Output contract is unchanged: max aggregate dBm over simulation azimuth for each MC.
 
-AZI_CHUNK_DEFAULT=128;
+        % % % % % % %results = benchmark_subchunk_agg_check_maxazi_rev11_chunk_sweep_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % % % % % % % % % Chunk    Runtime (s)    Relative to Best
+        % % % % % % % % % 32      2.204069         1.000x
+        % % % % % % % % % 64      6.515447         2.956x
+        % % % % % % % % % 128      5.464187         2.479x
+        % % % % % % % % % 256      5.400025         2.450x
+        % % % % % % % % % 512      6.419014         2.912x
+        % % % % % % % % % 1024      7.769072         3.525x
+        % % % % % % % % % Best chunk: 32
+        % % % % % % % % % Best runtime: 2.204069 s
+        % % % % % % % % % Speedup vs chunk 128: 2.479x
+        % % % % % % % % % Recommended chunk size for rev12 default: 32
+
+AZI_CHUNK_DEFAULT=32;%128;
 DEBUG_CHECKS=false;
 
 azi_chunk=AZI_CHUNK_DEFAULT;

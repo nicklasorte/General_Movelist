@@ -62,9 +62,11 @@ else
         % % % % % equivalent_within_tol: 1
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Rev9 is just the max of all azimuths.
+        % 'Rev 9 time:'
         % tic;
         % [sub_array_agg_check_mc_dBm_9]=subchunk_agg_check_maxazi_rev9(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
         % toc;
+
 
         % tic;
         % [sub_array_agg_check_mc_dBm_10]=subchunk_agg_check_maxazi_rev10(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
@@ -94,9 +96,9 @@ else
 
 
 
-        % tic;
-        % [sub_array_agg_check_mc_dBm_11]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
-        % tic;
+        tic;
+        [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
+        tic;
         %%%isequaln(sub_array_agg_check_mc_dBm_11,sub_array_agg_check_mc_dBm_10) %%%%%%%%%%%%%RNG is not the same, so this is not the same.
 
         %results=validate_subchunk_agg_check_maxazi_rev10_rev11_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
@@ -162,13 +164,48 @@ else
         % %
         % % PASS: rev12 is statistically equivalent to rev11 under configured thresholds.
 
-        %[sub_array_agg_check_mc_dBm_12]=subchunk_agg_check_maxazi_rev12(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,varargin)
+        % 'Rev 12 time:'
+        % tic;
+        % [sub_array_agg_check_mc_dBm_12]=subchunk_agg_check_maxazi_rev12(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
+        % toc;
+        %%%%%%%Rev 9 vs Rev 12 time: 7.44 vs 4.32 Seconds
+
+        results = benchmark_subchunk_agg_check_maxazi_rev10_rev13_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % % %        === REV10 vs REV13 REAL-INPUT BENCHMARK ===
+        % % % AZI_CHUNK rev13: 32
+        % % % Runtime rev10: 2.244750 s
+        % % % Runtime rev13: 2.230879 s
+        % % % Speedup rev10/rev13: 1.006x
+        
+        
+        results = validate_subchunk_agg_check_maxazi_rev11_rev13_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+
+        % % % === REV11 vs REV13 STATISTICAL VALIDATION ===
+        % % % AZI_CHUNK rev11: 128
+        % % % AZI_CHUNK rev13: 32
+        % % % Runtime rev11: 2.197647 s
+        % % % Runtime rev13: 2.214442 s
+        % % % Speedup rev11/rev13: 0.992x
+        % % % 
+        % % % Metric comparison (rev13 - rev11):
+        % % % mean    | rev11=  -86.1101 | rev13=  -86.1101 | abs=0.0000 | allow=4.3055 | PASS
+        % % % std     | rev11=    3.8168 | rev13=    3.8168 | abs=0.0000 | allow=0.5000 | PASS
+        % % % min     | rev11=  -94.0030 | rev13=  -94.0030 | abs=0.0000 | allow=4.7002 | PASS
+        % % % max     | rev11=  -71.5660 | rev13=  -71.5660 | abs=0.0000 | allow=3.5783 | PASS
+        % % % median  | rev11=  -87.0831 | rev13=  -87.0831 | abs=0.0000 | allow=4.3542 | PASS
+        % % % p90     | rev11=  -80.1925 | rev13=  -80.1925 | abs=0.0000 | allow=4.0096 | PASS
+        % % % p95     | rev11=  -78.6884 | rev13=  -78.6884 | abs=0.0000 | allow=3.9344 | PASS
+        % % % p99     | rev11=  -75.6916 | rev13=  -75.6916 | abs=0.0000 | allow=3.7846 | PASS
+        % % % 
+        % % % Upper-tail checks:
+        % % % p95     | abs=0.0000 | allow=3.9344 | PASS
+        % % % p99     | abs=0.0000 | allow=3.7846 | PASS
+        % % % 
+        % % % PASS: rev13 is statistically equivalent to rev11 under configured thresholds.
 
 
-
-
-        %size(sub_array_agg_check_mc_dBm_11)
-        'check the size, we can max all azimuths'
+        %size(sub_array_agg_check_mc_dBm_12)
+        'check the size'
 
         'start here'
         pause;

@@ -90,7 +90,7 @@ end
 % -------------------------------------------------------------------------
 % STEP 5: Aggregate across azimuth in vectorized chunks (no inner azimuth loop)
 % -------------------------------------------------------------------------
-azi_chunk=128; %%%%%%%Breaking into 3 pieces
+azi_chunk=32;%128; %%%%%%%32 is faster than 128
 for loop_idx=1:1:num_mc_idx
     base_mc=sort_monte_carlo_pr_dBm_all(:,loop_idx);
     azimuth_agg_dBm=NaN(1,num_sim_azi);
