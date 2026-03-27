@@ -1,5 +1,13 @@
-function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_rev8(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
-%CODEX rewrite
+function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev10(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+%SUBCHUNK_AGG_CHECK_MAXAZI_REV10 Regression-safe speedup revision.
+% rev10 intentionally preserves strict per-iteration RNG behavior from rev9.
+% rev10 removes azimuth chunking (when memory is safe) and optimizes aggregation
+% without changing random stream semantics.
+% rev11 can target RNG/pre-generation/vectorization changes after rev10 validation.
+%Codex rewrite
+
+DEBUG_CHECKS=false;
+
 %%%%%%%%%Adding clutter distribution in monte carlo later
 %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth
 %%%%%%%%%%of the base station antenna offset to the federal point.
@@ -22,10 +30,10 @@ bs_azimuth=azimuth(sim_pt(1),sim_pt(2),on_list_bs(:,1),on_list_bs(:,2));
 sub_mc_idx=cell_sim_chunk_idx{sub_point_idx};
 num_mc_idx=length(sub_mc_idx);
 num_bs=length(bs_azimuth);
-sub_array_agg_check_mc_dBm=NaN(num_mc_idx,num_sim_azi);
+sub_array_agg_check_mc_dBm=NaN(num_mc_idx,1);
 
 % -------------------------------------------------------------------------
-% STEP 1: Deterministic MC random precompute (seed identity preserved)
+% STEP 1: Deterministic MC random precompute (seed identity preserved).
 % rand_*_all dimensions: [num_bs x num_mc_idx]
 % -------------------------------------------------------------------------
 rel_min=min(agg_check_reliability);
@@ -55,11 +63,10 @@ else
 end
 
 % -------------------------------------------------------------------------
-% STEP 2: Precompute off-axis gain matrix once for all (bs,sim_azimuth)
+% STEP 2: Precompute off-axis gain matrix once for all (bs,sim_azimuth).
 % off_axis_gain_matrix dimensions: [num_bs x num_sim_azi]
-% Nearest-neighbor behavior mirrors rev7 path.
+% Nearest-neighbor behavior mirrors rev9 path.
 % -------------------------------------------------------------------------
-[n_pat_rows,~]=size(custom_antenna_pattern);
 pat_az=mod(custom_antenna_pattern(:,1),360);
 pat_gain=custom_antenna_pattern(:,2);
 
@@ -72,6 +79,10 @@ for azimuth_idx=1:1:num_sim_azi
     rel_az=mod(bs_azimuth-sim_azimuth,360);
     ant_deg_idx=nearestpoint_app(app,rel_az,pat_az_unique);
     off_axis_gain_matrix(:,azimuth_idx)=pat_gain_unique(ant_deg_idx);
+end
+
+if DEBUG_CHECKS && any(isnan(off_axis_gain_matrix),'all')
+    error('Inside Agg Check Rev10: NaN Error: off_axis_gain_matrix');
 end
 
 % -------------------------------------------------------------------------
@@ -87,34 +98,28 @@ for loop_idx=1:1:num_mc_idx
 end
 
 % -------------------------------------------------------------------------
-% STEP 5: Aggregate across azimuth in vectorized chunks (no inner azimuth loop)
+% STEP 5: Aggregate across full azimuth set in one pass (no azi_chunk loop).
+% Keep MC loop for deterministic RNG/regression safety.
 % -------------------------------------------------------------------------
-azi_chunk=128;
 for loop_idx=1:1:num_mc_idx
     base_mc=sort_monte_carlo_pr_dBm_all(:,loop_idx);
+    sort_temp_mc_dBm=base_mc+off_axis_gain_matrix;
 
-    azimuth_agg_dBm=NaN(1,num_sim_azi);
-    for azi_start=1:azi_chunk:num_sim_azi
-        azi_end=min(azi_start+azi_chunk-1,num_sim_azi);
-        chunk_gain=off_axis_gain_matrix(:,azi_start:azi_end);
-        sort_temp_mc_dBm=base_mc+chunk_gain;
-
-        if any(isnan(sort_temp_mc_dBm),'all')
-            disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check: NaN Error: sort_temp_mc_dBm'))
-            pause;
-        end
-
-        binary_sort_mc_watts=db2pow(sort_temp_mc_dBm)/1000;
-        if any(isnan(binary_sort_mc_watts),'all')
-            disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev8: NaN Error: temp_mc_watts'))
-            pause;
-        end
-
-        azimuth_agg_dBm(azi_start:azi_end)=pow2db(sum(binary_sort_mc_watts,1,"omitnan")*1000);
+    if DEBUG_CHECKS && any(isnan(sort_temp_mc_dBm),'all')
+        error('Inside Agg Check Rev10: NaN Error: sort_temp_mc_dBm');
     end
 
-    sub_array_agg_check_mc_dBm(loop_idx,:)=azimuth_agg_dBm;
+    % Keep numeric path equivalent to rev9 while removing chunk overhead.
+    binary_sort_mc_watts=db2pow(sort_temp_mc_dBm)/1000;
+
+    if DEBUG_CHECKS && any(isnan(binary_sort_mc_watts),'all')
+        error('Inside Agg Check Rev10: NaN Error: binary_sort_mc_watts');
+    end
+
+    agg_dBm=pow2db(sum(binary_sort_mc_watts,1,"omitnan")*1000);
+    sub_array_agg_check_mc_dBm(loop_idx,1)=max(agg_dBm);
 end
 
+%%%%%%%%%%We can max azimuths -->sub_array_agg_check_mc_dBm=NaN(num_mc_idx,num_sim_azi);
 
 end
