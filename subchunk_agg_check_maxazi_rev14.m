@@ -79,11 +79,11 @@ for loop_idx=1:1:num_mc_idx
     rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev6(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
     monte_carlo_clutter_loss=monte_carlo_clutter_rev3_app(app,agg_check_reliability,clutter_loss,rand_clutter_all(:,loop_idx));
 
-    size(pre_sort_monte_carlo_pr_dBm)
-    size(rand_norm_eirp)
-    size(monte_carlo_clutter_loss)
-    'check size'
-    pause;
+    % size(pre_sort_monte_carlo_pr_dBm)
+    % size(rand_norm_eirp)
+    % size(monte_carlo_clutter_loss)
+    % 'check size'
+    % pause;
 
     sort_monte_carlo_pr_dBm_all(:,loop_idx)=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
 end

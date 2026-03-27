@@ -65,7 +65,13 @@ end
 idx=min(idx,pieces);
 
 base_break=breaks(idx);
-dx=(xi-base_break);
+
+
+dx=(xi-base_break');
+% 'xdx'
+% size(xi)
+% size(base_break')
+% size(dx)
 
 row_idx=(1:num_rows).';
 lin_idx=idx + (row_idx-1)*pieces;
@@ -82,11 +88,12 @@ c=c(:);
 d=d(:);
 dx=dx(:);
 
-size(a)
-size(b)
-size(c)
-size(d)
-size(dx)
+% 'abc'
+% size(a)
+% size(b)
+% size(c)
+% size(d)
+% size(dx)
 rand_norm_eirp=((a.*dx+b).*dx+c).*dx+d;
 rand_norm_eirp=rand_norm_eirp(:);
 

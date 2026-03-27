@@ -296,7 +296,42 @@ else
 
 
         results = profile_subchunk_agg_check_maxazi_rev14_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
-
+        % % % % === PROFILE REV14 (REAL INPUTS) ===
+        % % % % AZI_CHUNK rev14: 128
+        % % % % 
+        % % % % Top contributors by total time:
+        % % % % Function                        TotalTime_s    SelfTime_s    NumCalls
+        % % % % ________________________________________________    ___________    __________    ________
+        % % % % 
+        % % % % {'init_run_folder_FSS_neigh_rev16_double_IN'   }       6.2543         NaN             1
+        % % % % {'parfor_randchunk_aggcheck_rev8_claude'       }       6.2536         NaN             1
+        % % % % {'profile_subchunk_agg_check_maxazi_rev14_real'}       6.2535         NaN             1
+        % % % % {'subchunk_agg_check_maxazi_rev14'             }       6.1932         NaN             1
+        % % % % {'monte_carlo_clutter_rev3_app'                }       2.3085         NaN           416
+        % % % % {'monte_carlo_Pr_dBm_rev2_app'                 }       2.2745         NaN           416
+        % % % % {'monte_carlo_super_bs_eirp_dist_rev6'         }       1.2662         NaN           416
+        % % % % {'spline'                                      }        1.017         NaN           416
+        % % % % {'pwch'                                        }      0.40472         NaN           416
+        % % % % {'nearestpoint_app'                            }      0.35375         NaN          1674
+        % % % % {'db2pow'                                      }      0.21042         NaN           416
+        % % % % {'polyfun\private\chckxy'                      }     0.098891         NaN           416
+        % % % % {'spparms'                                     }     0.071059         NaN          1248
+        % % % % {'clear'                                       }     0.047711         NaN          1674
+        % % % % {'spdiags'                                     }     0.041677         NaN           416
+        % % % % 
+        % % % % 
+        % % % % Summary timing table (requested functions):
+        % % % % subchunk_agg_check_maxazi_rev14     total= 12.446771 s | self=  0.000000 s | calls=2
+        % % % % monte_carlo_super_bs_eirp_dist_rev6 total=  1.266235 s | self=  0.000000 s | calls=416
+        % % % % interp1                             not visible in current profiler table
+        % % % % monte_carlo_clutter_rev3_app        total=  2.308515 s | self=  0.000000 s | calls=416
+        % % % % monte_carlo_Pr_dBm_rev2_app         total=  2.274501 s | self=  0.000000 s | calls=416
+        % % % % 
+        % % % % Baseline comparison vs rev11 evidence:
+        % % % % interp1 total time: rev11=44.043 s, rev14=0.000 s, drop=100.0%
+        % % % % interp1 calls:      rev11=380640, rev14=0, drop=100.0%
+        % % % % helper total time:  rev11=45.499 s, rev14=1.266 s, drop=97.2%
+        % % % % MATERIAL interp1 reduction: YES
 
 
 
