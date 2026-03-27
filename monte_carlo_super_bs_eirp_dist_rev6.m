@@ -27,8 +27,8 @@ rel_max=rel_col(end);
 xi=min(max(rand_numbers(:),rel_min),rel_max);
 
 % Build spline PP for all rows in one call.
-% y_for_spline is [num_rel x num_rows], matching spline's multi-series form.
-y_for_spline=super_array_bs_eirp_dist.';
+% For spline(x,y), numel(x) must match size(y,2). Each y row is one BS series.
+y_for_spline=super_array_bs_eirp_dist;
 pp=spline(rel_col,y_for_spline);
 [breaks,coefs,pieces,order,dim]=unmkpp(pp);
 
