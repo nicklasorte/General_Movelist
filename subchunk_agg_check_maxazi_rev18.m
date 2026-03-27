@@ -75,8 +75,7 @@ end
 sort_monte_carlo_pr_dBm_all=NaN(num_bs,num_mc_idx);
 for loop_idx=1:1:num_mc_idx
     pre_sort_monte_carlo_pr_dBm=monte_carlo_Pr_dBm_rev2_app(app,agg_check_reliability,on_full_Pr_dBm,rand_pr_all(:,loop_idx));
-    [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev8(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx)); %%%CLAUDE
-    %rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev5(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
+    rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev5(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
     monte_carlo_clutter_loss=monte_carlo_clutter_rev5_app(app,agg_check_reliability,clutter_loss,rand_clutter_all(:,loop_idx));
 
     sort_monte_carlo_pr_dBm_all(:,loop_idx)=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;

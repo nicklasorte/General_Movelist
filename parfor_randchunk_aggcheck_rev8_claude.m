@@ -485,7 +485,7 @@ else
         % % %
         % % % PASS: rev15 is statistically equivalent to rev14 under configured thresholds.
 
-        %results = validate_subchunk_agg_check_maxazi_rev11_rev18_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        results = validate_subchunk_agg_check_maxazi_rev11_rev18_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
         % === VALIDATION: REV11 vs REV18 (STATISTICAL) ===
         % Thresholds (fail-closed): core=max(0.250 dB, 0.020*|rev11|), tail=max(0.150 dB, 0.010*|rev11|)
         % 
@@ -515,7 +515,7 @@ else
 
 
 
-        %results = profile_subchunk_agg_check_maxazi_rev18_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        results = profile_subchunk_agg_check_maxazi_rev18_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
         % % % === PROFILE REV18 (REAL INPUTS, WITH REV11 BASELINE) ===
         % % % AZI_CHUNK rev11: 128 | rev18: 128
         % % % 
@@ -562,40 +562,6 @@ else
 
 
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%Update EIPR dist with Claude Code: monte_carlo_super_bs_eirp_dist_rev8
-        %results = validate_subchunk_agg_check_maxazi_rev11_rev19_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
-        % % % === VALIDATION: REV11 vs REV19 (STATISTICAL) ===
-        % % % Thresholds (fail-closed): core=max(0.250 dB, 0.020*|rev11|), tail=max(0.150 dB, 0.010*|rev11|)
-        % % % 
-        % % % Runtime summary (seconds):
-        % % % rev11 runs: [2.732172 2.881137 2.924540]
-        % % % rev19 runs: [1.811989 1.478093 1.923037]
-        % % % rev11 mean: 2.845950
-        % % % rev19 mean: 1.737706
-        % % % speedup (rev11/rev19): 1.638x
-        % % % 
-        % % % Metric drift summary:
-        % % % mean    | rev11=  -86.0872 | rev19=  -86.0872 | abs=  0.0000 | allow=  1.7217 | PASS
-        % % % std     | rev11=    3.7891 | rev19=    3.7891 | abs=  0.0000 | allow=  0.2500 | PASS
-        % % % min     | rev11=  -93.2863 | rev19=  -93.2863 | abs=  0.0000 | allow=  1.8657 | PASS
-        % % % max     | rev11=  -71.6779 | rev19=  -71.6779 | abs=  0.0000 | allow=  1.4336 | PASS
-        % % % median  | rev11=  -87.0000 | rev19=  -87.0000 | abs=  0.0000 | allow=  1.7400 | PASS
-        % % % p90     | rev11=  -80.8385 | rev19=  -80.8385 | abs=  0.0000 | allow=  1.6168 | PASS
-        % % % p95     | rev11=  -78.1267 | rev19=  -78.1267 | abs=  0.0000 | allow=  0.7813 | PASS
-        % % % p99     | rev11=  -74.1601 | rev19=  -74.1601 | abs=  0.0000 | allow=  0.7416 | PASS
-        % % % 
-        % % % Upper-tail emphasis:
-        % % % p95     | rev11=  -78.1267 | rev19=  -78.1267 | abs=  0.0000 | allow=  0.7813 | PASS
-        % % % p99     | rev11=  -74.1601 | rev19=  -74.1601 | abs=  0.0000 | allow=  0.7416 | PASS
-        % % % 
-        % % % PASS / FAIL: PASS
-
-
-        %%%%%%%%%Update EIPR dist with Claude Code: monte_carlo_super_bs_eirp_dist_rev8
-        results = profile_subchunk_agg_check_maxazi_rev19_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
-
-   
 
 
 
@@ -605,8 +571,10 @@ else
         % [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
         % toc;
 
-        %[sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev19(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
-
+        'Rev 11 time 24:'
+        tic;
+        [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,24);
+        toc;
         %%%%Rev 11: 128 vs 24: 2.7 to 2.3
 
         'check the size'
