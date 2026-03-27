@@ -170,7 +170,7 @@ else
         % toc;
         %%%%%%%Rev 9 vs Rev 12 time: 7.44 vs 4.32 Seconds
 
-        results = benchmark_subchunk_agg_check_maxazi_rev10_rev13_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        %results = benchmark_subchunk_agg_check_maxazi_rev10_rev13_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
         % % %        === REV10 vs REV13 REAL-INPUT BENCHMARK ===
         % % % AZI_CHUNK rev13: 32
         % % % Runtime rev10: 2.244750 s
@@ -178,7 +178,7 @@ else
         % % % Speedup rev10/rev13: 1.006x
         
         
-        results = validate_subchunk_agg_check_maxazi_rev11_rev13_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        %results = validate_subchunk_agg_check_maxazi_rev11_rev13_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
 
         % % % === REV11 vs REV13 STATISTICAL VALIDATION ===
         % % % AZI_CHUNK rev11: 128
@@ -202,6 +202,97 @@ else
         % % % p99     | abs=0.0000 | allow=3.7846 | PASS
         % % % 
         % % % PASS: rev13 is statistically equivalent to rev11 under configured thresholds.
+
+
+
+        %results = profile_subchunk_agg_check_maxazi_rev11_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % % % === PROFILE REV11 (REAL INPUTS) ===
+        % % % AZI_CHUNK rev11: 128
+        % % % 
+        % % % Top contributors by total time:
+        % % % Function                        TotalTime_s    SelfTime_s     NumCalls
+        % % % ________________________________________________    ___________    __________    __________
+        % % % 
+        % % % {'init_run_folder_FSS_neigh_rev16_double_IN'   }       50.528         NaN                 1
+        % % % {'parfor_randchunk_aggcheck_rev8_claude'       }       50.527         NaN                 1
+        % % % {'profile_subchunk_agg_check_maxazi_rev11_real'}       50.527         NaN                 1
+        % % % {'subchunk_agg_check_maxazi_rev11'             }       50.486         NaN                 1
+        % % % {'monte_carlo_super_bs_eirp_dist_rev5'         }       45.499         NaN               416
+        % % % {'interp1'                                     }       44.043         NaN        3.8064e+05
+        % % % {'interp1>parseinputs'                         }       15.306         NaN        3.8064e+05
+        % % % {'interp1>reshapeAndSortXandV'                 }       8.3156         NaN        3.8064e+05
+        % % % {'interp1>sanitycheckmethod'                   }       4.7676         NaN        3.8064e+05
+        % % % {'interp1>reshapeValuesV'                      }       3.1237         NaN        3.8064e+05
+        % % % {'interp1>isScalarTextArg'                     }       2.6478         NaN        7.6128e+05
+        % % % {'monte_carlo_clutter_rev3_app'                }       2.3514         NaN               416
+        % % % {'monte_carlo_Pr_dBm_rev2_app'                 }       2.3012         NaN               416
+        % % % {'cast'                                        }      0.55641         NaN        3.8064e+05
+        % % % {'nearestpoint_app'                            }      0.34182         NaN              1674
+        % % % 
+        % % % 
+        % % % Top contributors by self time:
+        % % % Function                      TotalTime_s    SelfTime_s    NumCalls
+        % % % ___________________________________________    ___________    __________    ________
+        % % % 
+        % % % {'nearestpoint_app'                       }       0.34182        NaN          1674
+        % % % {'clear'                                  }      0.043223        NaN          1674
+        % % % {'sub2ind'                                }     0.0033428        NaN            10
+        % % % {'subchunk_agg_check_maxazi_rev11'        }        50.486        NaN             1
+        % % % {'monte_carlo_Pr_dBm_rev2_app'            }        2.3012        NaN           416
+        % % % {'monte_carlo_clutter_rev3_app'           }        2.3514        NaN           416
+        % % % {'calc_sim_azimuths_rev3_360_azimuths_app'}     0.0007988        NaN             1
+        % % % {'cellfun'                                }     0.0011541        NaN             4
+        % % % {'isnan'                                  }       8.2e-06        NaN             2
+        % % % {'deg2rad'                                }     0.0002608        NaN             4
+        % % % {'rad2deg'                                }     0.0002257        NaN             2
+        % % % {'mapgeodesy\private\expandScalarInputs'  }     0.0032992        NaN             1
+        % % % {'maputils\private\abstractAngleConv'     }     0.0021029        NaN             3
+        % % % {'mapgeodesy\private\parseDistAzInputs'   }      0.010467        NaN             1
+        % % % {'toRadians'                              }     0.0020198        NaN             1
+        % % % 
+        % % % 
+        % % % Explicit target function timings:
+        % % % subchunk_agg_check_maxazi_rev11        total=101.013121 s | self=  0.000000 s | wall%=200.07% | calls=2
+        % % % monte_carlo_Pr_dBm_rev2_app            total=  2.301193 s | self=  0.000000 s | wall%=  4.56% | calls=416
+        % % % monte_carlo_super_bs_eirp_dist_rev5    total= 45.498819 s | self=  0.000000 s | wall%= 90.12% | calls=416
+        % % % monte_carlo_clutter_rev3_app           total=  2.351379 s | self=  0.000000 s | wall%=  4.66% | calls=416
+        % % % 
+        % % % Path proxies (if visible in profiler):
+        % % % off-axis gain build path proxy         total=  0.368085 s | self=  0.000000 s | wall%=  0.73% | calls=1676
+        % % % aggregation path proxy                 total=101.202928 s | self=  0.000000 s | wall%=200.45% | calls=834
+        % % % 
+        % % % Recommendation: Optimize aggregation_path_proxy first (largest measured contributor: 101.202928 s).
+
+
+
+        results = validate_subchunk_agg_check_maxazi_rev11_rev14_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % % % === REV11 vs REV14 STATISTICAL VALIDATION ===
+        % % % AZI_CHUNK rev11: 128
+        % % % AZI_CHUNK rev14: 128
+        % % % Timing runs each: 3
+        % % % 
+        % % % Runtime (seconds)
+        % % % rev11 runs: [2.351019 2.280123 2.228370]
+        % % % rev14 runs: [2.194176 2.040738 2.029484]
+        % % % rev11 mean: 2.286504 s
+        % % % rev14 mean: 2.088133 s
+        % % % speedup rev11/rev14 (mean): 1.095x
+        % % % 
+        % % % Metric comparison (rev14 - rev11):
+        % % % mean    | rev11=  -85.9484 | rev14=  -85.9484 | abs=0.0000 | allow=4.2974 | PASS
+        % % % std     | rev11=    3.6424 | rev14=    3.6424 | abs=0.0000 | allow=0.5000 | PASS
+        % % % min     | rev11=  -92.1428 | rev14=  -92.1428 | abs=0.0000 | allow=4.6071 | PASS
+        % % % max     | rev11=  -69.9242 | rev14=  -69.9242 | abs=0.0000 | allow=3.4962 | PASS
+        % % % median  | rev11=  -86.6390 | rev14=  -86.6390 | abs=0.0000 | allow=4.3320 | PASS
+        % % % p90     | rev11=  -80.8032 | rev14=  -80.8032 | abs=0.0000 | allow=4.0402 | PASS
+        % % % p95     | rev11=  -78.5316 | rev14=  -78.5316 | abs=0.0000 | allow=1.5706 | PASS
+        % % % p99     | rev11=  -75.6253 | rev14=  -75.6253 | abs=0.0000 | allow=1.5125 | PASS
+        % % % 
+        % % % Upper-tail checks:
+        % % % p95     | abs=0.0000 | allow=1.5706 | PASS
+        % % % p99     | abs=0.0000 | allow=1.5125 | PASS
+        % % % 
+        % % % PASS: rev14 is statistically equivalent to rev11 under configured thresholds.
 
 
         %size(sub_array_agg_check_mc_dBm_12)
