@@ -65,7 +65,7 @@ end
 idx=min(idx,pieces);
 
 base_break=breaks(idx);
-dx=xi-base_break;
+dx=(xi-base_break);
 
 row_idx=(1:num_rows).';
 lin_idx=idx + (row_idx-1)*pieces;
@@ -75,6 +75,14 @@ b=b_all(lin_idx);
 c=c_all(lin_idx);
 d=d_all(lin_idx);
 
+% Force column vectors to avoid implicit expansion into NxN outputs.
+a=a(:);
+b=b(:);
+c=c(:);
+d=d(:);
+dx=dx(:);
+
 rand_norm_eirp=((a.*dx+b).*dx+c).*dx+d;
+rand_norm_eirp=rand_norm_eirp(:);
 
 end
