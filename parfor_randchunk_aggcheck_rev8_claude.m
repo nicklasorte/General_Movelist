@@ -66,9 +66,9 @@ else
         % [sub_array_agg_check_mc_dBm_9]=subchunk_agg_check_maxazi_rev9(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
         % toc;
 
-        tic;
-        [sub_array_agg_check_mc_dBm_10]=subchunk_agg_check_maxazi_rev10(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
-        toc;
+        % tic;
+        % [sub_array_agg_check_mc_dBm_10]=subchunk_agg_check_maxazi_rev10(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
+        % toc;
         %isequaln(sub_array_agg_check_mc_dBm_9,sub_array_agg_check_mc_dBm_10) %%%%%%Yes
 
         %%%results=validate_subchunk_agg_check_maxazi_rev9_rev10_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
@@ -94,12 +94,12 @@ else
 
 
 
-        tic;
-        [sub_array_agg_check_mc_dBm_11]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
-        tic;
+        % tic;
+        % [sub_array_agg_check_mc_dBm_11]=subchunk_agg_check_maxazi_rev11(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx);
+        % tic;
         %%%isequaln(sub_array_agg_check_mc_dBm_11,sub_array_agg_check_mc_dBm_10) %%%%%%%%%%%%%RNG is not the same, so this is not the same.
 
-        results=validate_subchunk_agg_check_maxazi_rev10_rev11_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        %results=validate_subchunk_agg_check_maxazi_rev10_rev11_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
 
         % % % % === rev10 vs rev11 statistical validation ===
         % % % % AZI_CHUNK (rev11): 128
@@ -124,10 +124,50 @@ else
         % % % % PASS: rev11 is statistically equivalent to rev10 under configured thresholds.
 
 
+        %results = benchmark_subchunk_agg_check_maxazi_rev11_chunk_sweep_real(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % % % Chunk    Runtime (s)    Relative to Best
+        % % % 32      2.204069         1.000x
+        % % % 64      6.515447         2.956x
+        % % % 128      5.464187         2.479x
+        % % % 256      5.400025         2.450x
+        % % % 512      6.419014         2.912x
+        % % % 1024      7.769072         3.525x
+        % % % Best chunk: 32
+        % % % Best runtime: 2.204069 s
+        % % % Speedup vs chunk 128: 2.479x
+        % % % Recommended chunk size for rev12 default: 32
+        
+        
+        %results = validate_subchunk_agg_check_maxazi_rev11_rev12_statistical(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
+        % %         === REV11 vs REV12 STATISTICAL VALIDATION ===
+        % % AZI_CHUNK rev11: 128
+        % % AZI_CHUNK rev12: 128
+        % % Runtime rev11: 2.188578 s
+        % % Runtime rev12: 2.175274 s
+        % % Speedup rev11/rev12: 1.006x
+        % %
+        % % Metric comparison (rev12 - rev11):
+        % %   mean    | rev11=  -86.2485 | rev12=  -86.2485 | abs=0.0000 | allow=4.3124 | PASS
+        % %   std     | rev11=    3.5223 | rev12=    3.5223 | abs=0.0000 | allow=0.5000 | PASS
+        % %   min     | rev11=  -92.4138 | rev12=  -92.4138 | abs=0.0000 | allow=4.6207 | PASS
+        % %   max     | rev11=  -71.4080 | rev12=  -71.4080 | abs=0.0000 | allow=3.5704 | PASS
+        % %   median  | rev11=  -86.8584 | rev12=  -86.8584 | abs=0.0000 | allow=4.3429 | PASS
+        % %   p90     | rev11=  -81.2014 | rev12=  -81.2014 | abs=0.0000 | allow=4.0601 | PASS
+        % %   p95     | rev11=  -79.7192 | rev12=  -79.7192 | abs=0.0000 | allow=3.9860 | PASS
+        % %   p99     | rev11=  -74.9426 | rev12=  -74.9426 | abs=0.0000 | allow=3.7471 | PASS
+        % %
+        % % Upper-tail checks:
+        % %   p95     | abs=0.0000 | allow=3.9860 | PASS
+        % %   p99     | abs=0.0000 | allow=3.7471 | PASS
+        % %
+        % % PASS: rev12 is statistically equivalent to rev11 under configured thresholds.
+
+        %[sub_array_agg_check_mc_dBm_12]=subchunk_agg_check_maxazi_rev12(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,varargin)
 
 
 
-        size(sub_array_agg_check_mc_dBm_11)
+
+        %size(sub_array_agg_check_mc_dBm_11)
         'check the size, we can max all azimuths'
 
         'start here'
