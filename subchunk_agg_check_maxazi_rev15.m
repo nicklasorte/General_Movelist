@@ -1,7 +1,8 @@
-function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev18(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,varargin)
-%SUBCHUNK_AGG_CHECK_MAXAZI_REV18 Fresh clutter-focused optimization branch.
-% rev18 is a rev11-semantic branch that only swaps clutter helper
-% (rev3 -> rev5) and is intended to be validated fail-closed against rev11.
+function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev15(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,varargin)
+%SUBCHUNK_AGG_CHECK_MAXAZI_REV15 Monte Carlo aggregate check (rev14-compatible).
+% Focused rev15 pass: target the next measured dominant bottleneck by
+% replacing monte_carlo_clutter_rev3_app with monte_carlo_clutter_rev4_app.
+% Intentionally preserve rev14 RNG/chunking/EIRP-helper behavior.
 
 % Tuning knob: larger chunks can improve compute throughput but may increase peak memory.
 AZI_CHUNK_DEFAULT=128;
@@ -75,9 +76,8 @@ end
 sort_monte_carlo_pr_dBm_all=NaN(num_bs,num_mc_idx);
 for loop_idx=1:1:num_mc_idx
     pre_sort_monte_carlo_pr_dBm=monte_carlo_Pr_dBm_rev2_app(app,agg_check_reliability,on_full_Pr_dBm,rand_pr_all(:,loop_idx));
-    [rand_norm_eirp]=monte_carlo_super_bs_eirp_dist_rev8(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx)); %%%CLAUDE
-    %rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev5(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
-    monte_carlo_clutter_loss=monte_carlo_clutter_rev5_app(app,agg_check_reliability,clutter_loss,rand_clutter_all(:,loop_idx));
+    rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev6(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
+    monte_carlo_clutter_loss=monte_carlo_clutter_rev4_app(app,agg_check_reliability,clutter_loss,rand_clutter_all(:,loop_idx));
 
     sort_monte_carlo_pr_dBm_all(:,loop_idx)=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
 end
@@ -96,14 +96,14 @@ for loop_idx=1:1:num_mc_idx
 
         if DEBUG_CHECKS
             if any(isnan(sort_temp_mc_dBm),'all')
-                error('subchunk_agg_check_maxazi_rev18:NaNTempDbm','NaN detected in sort_temp_mc_dBm');
+                error('subchunk_agg_check_maxazi_rev15:NaNTempDbm','NaN detected in sort_temp_mc_dBm');
             end
         end
 
         binary_sort_mc_watts=db2pow(sort_temp_mc_dBm)/1000;
         if DEBUG_CHECKS
             if any(isnan(binary_sort_mc_watts),'all')
-                error('subchunk_agg_check_maxazi_rev18:NaNWatt','NaN detected in binary_sort_mc_watts');
+                error('subchunk_agg_check_maxazi_rev15:NaNWatt','NaN detected in binary_sort_mc_watts');
             end
         end
 

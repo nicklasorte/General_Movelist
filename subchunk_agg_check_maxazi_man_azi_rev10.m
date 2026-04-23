@@ -1,6 +1,6 @@
-function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_rev9(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx)
-%CODEX rewrite
+function [sub_array_agg_check_mc_dBm]=subchunk_agg_check_maxazi_man_azi_rev10(app,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,point_idx,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,sub_point_idx,tf_man_azi_step,azimuth_step)
 %%%Same as subchunk_agg_check_rev8, just a simple azi max at the end
+%%%%%%Same as subchunk_agg_check_maxazi_rev9, just adding the manual azimuth step with calc_sim_azimuths_rev4_man_azi_app
 %%%%%%%%%Adding clutter distribution in monte carlo later
 %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth
 %%%%%%%%%%of the base station antenna offset to the federal point.
@@ -12,8 +12,10 @@ mod_azi_diff_bs=array_bs_azi_data(:,4);
 [nn_azi_idx]=nearestpoint_app(app,mod_azi_diff_bs,aas_dist_azimuth); %%%%%%%Nearest Azimuth Idx
 super_array_bs_eirp_dist=array_aas_dist_data(nn_azi_idx, :);
 
+
 %%%%%%%%%%%%%%%%Calculate the simualation azimuths
-[array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev3_360_azimuths_app(app,radar_beamwidth,min_azimuth,max_azimuth);
+%%%[array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev3_360_azimuths_app(app,radar_beamwidth,min_azimuth,max_azimuth);
+[array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev4_man_azi_app(app,radar_beamwidth,min_azimuth,max_azimuth,tf_man_azi_step,azimuth_step); %%%Include manual azimuth set
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Each Base Station Azimuth
 sim_pt=base_protection_pts(point_idx,:);
@@ -75,6 +77,8 @@ for azimuth_idx=1:1:num_sim_azi
     ant_deg_idx=nearestpoint_app(app,rel_az,pat_az_unique);
     off_axis_gain_matrix(:,azimuth_idx)=pat_gain_unique(ant_deg_idx);
 end
+%%[off_axis_gain_matrix]=vector_off_axis_gain_rev1(app,custom_antenna_pattern,bs_azimuth,array_sim_azimuth);
+
 
 % -------------------------------------------------------------------------
 % STEP 3/4: Compute MC terms with RNG-free rev helpers.
@@ -84,7 +88,6 @@ for loop_idx=1:1:num_mc_idx
     pre_sort_monte_carlo_pr_dBm=monte_carlo_Pr_dBm_rev2_app(app,agg_check_reliability,on_full_Pr_dBm,rand_pr_all(:,loop_idx));
     rand_norm_eirp=monte_carlo_super_bs_eirp_dist_rev5(app,super_array_bs_eirp_dist,agg_check_reliability,rand_eirp_all(:,loop_idx));
     monte_carlo_clutter_loss=monte_carlo_clutter_rev3_app(app,agg_check_reliability,clutter_loss,rand_clutter_all(:,loop_idx));
-
     sort_monte_carlo_pr_dBm_all(:,loop_idx)=pre_sort_monte_carlo_pr_dBm+rand_norm_eirp-monte_carlo_clutter_loss;
 end
 
@@ -121,3 +124,5 @@ for loop_idx=1:1:num_mc_idx
 end
 
 %%%%%%%%%%We can max azimuths -->sub_array_agg_check_mc_dBm=NaN(num_mc_idx,num_sim_azi);
+
+
