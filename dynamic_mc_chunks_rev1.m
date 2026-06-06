@@ -46,6 +46,11 @@ end
 cell_sim_chunk_idx=cell_sim_chunk_idx(~cellfun('isempty',cell_sim_chunk_idx));
 num_chunks=length(cell_sim_chunk_idx);
 
+if isempty(num_chunks) || isnan(num_chunks)
+    'Error on num_chunks'
+    pause;
+end
+
 % % 'check for empty cell_sim_chunk_idx'
 % % pause;
 

@@ -1,4 +1,4 @@
-function neighborhood_wrapper_rev17_clutter_dual_man_azi_ua2023(app,rev_folder,parallel_flag,tf_server_status,workers,tf_recalculate,tf_rescrap_rev_data,tf_print_excel)
+function neighborhood_wrapper_rev19_clutter_dual_man_azi_ua2023_zerorow(app,rev_folder,parallel_flag,tf_server_status,workers,tf_recalculate,tf_rescrap_rev_data,tf_print_excel)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,12 +105,17 @@ if ~all(array_mitigation==0)
 end
 
 % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%part 4 Census Pop Impact
-tf_zero_row=0%1
+tf_zero_row=1
 tf_convex=1
-%scrap_data_pop_geo_id_pea_ua_2023_rev10(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex)
 scrap_data_pop_geo_id_pea_ua_2023_rev11_concave(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex,tf_zero_row)
-%%%%%%%%%%%%%%%%%%%%%%%%%
+tf_convex=0
+scrap_data_pop_geo_id_pea_ua_2023_rev11_concave(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex,tf_zero_row)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tf_zero_row=0
+tf_convex=1
+scrap_data_pop_geo_id_pea_ua_2023_rev11_concave(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex,tf_zero_row)
 tf_convex=0
 scrap_data_pop_geo_id_pea_ua_2023_rev11_concave(app,tf_rescrap_rev_data,sim_number,string_prop_model,array_mitigation,rev_folder,tf_server_status,reliability,tf_convex,tf_zero_row)
 

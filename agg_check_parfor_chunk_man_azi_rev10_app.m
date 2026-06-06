@@ -211,18 +211,18 @@ else
             in1_idx=find(matches(data_header,'in_ratio'));
             label_idx=find(matches(data_header,'data_label1'));
             row_folder_idx=find(matches(cell_sim_data(:,label_idx),sim_folder));
-            in_ratio1=cell_sim_data{row_folder_idx,in1_idx};
+            in_ratio1=cell_sim_data{row_folder_idx,in1_idx}
 
             %%%%%Need the secondary, if they are there
             in2_idx=find(matches(data_header,'second_in_ratio'));
             per2_idx=find(matches(data_header,'second_mc_percentile'));
 
             threshold_idx=find(matches(data_header,'dpa_threshold'));
-            radar_threshold=cell_sim_data{row_folder_idx,threshold_idx};
+            radar_threshold=cell_sim_data{row_folder_idx,threshold_idx}
 
 
             %%%%%%%%%%This is the zero dB shift.
-            zero_dB=in_ratio1-radar_threshold;
+            zero_dB=in_ratio1-radar_threshold
             per_first_in=array_agg_check_95+zero_dB;
 
             if ~isempty(in2_idx)
@@ -230,7 +230,7 @@ else
             else
                 in_ratio2=NaN(1,1);
             end
-            if ~isempty(per2_idx)
+            if ~isempty(in_ratio2)%~isempty(per2_idx)
                 per2=cell_sim_data{row_folder_idx,per2_idx};
 
                 %%%%%%Find the second percentile also
@@ -248,8 +248,11 @@ else
             end
             tf_second_data
 
+
             f2=figure;
             hold on;
+            x_dB
+            zero_dB
             plot(x_dB+zero_dB,f_y,':b','LineWidth',3)
             yline(mc_percentile/100,'--k','LineWidth',1)
             xline(in_ratio1,'-r','LineWidth',2)

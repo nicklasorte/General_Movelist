@@ -160,7 +160,7 @@ else
         %%%'need to check if the norm_aas_zero_elevation_data and the 50th percentile cell_aas_dist_data are the same'
         array_aas_dist_data=cell_aas_dist_data{2};
         aas_dist_azimuth=cell_aas_dist_data{1};
-        array_50_aas_dist=array_aas_dist_data(:,mid_idx);
+        %array_50_aas_dist=array_aas_dist_data(:,mid_idx);
 
 
         %%%%%%%%%%We just have to make a new bs_eirp_dist based on the azimuth

@@ -1,4 +1,4 @@
-function part0_deployment_pts_folders_clutter_idx_rev6(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km,FreqMHz)
+function part0_deployment_pts_folders_p2p_add_rev7(app,sim_number,bs_eirp_reductions,rev_folder,tf_server_status,cell_sim_data,base_station_latlonheight,sim_radius_km,FreqMHz)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Function:
@@ -66,12 +66,6 @@ if ~isempty(zero_idx)==1
         % % sim_folder=temp_folder_names{array_rand_folder_idx(folder_idx)};
         % % temp_cell_idx=find(strcmp(cell_status(:,1),sim_folder)==1);
 
-        'sim_folder'
-        sim_folder
-        'temp_cell_idx'
-        temp_cell_idx
-        'cell_status{temp_cell_idx,2}'
-        cell_status{temp_cell_idx,2}
         if cell_status{temp_cell_idx,2}==0
             %%%%%%%%%%Calculate
             retry_cd=1;
@@ -185,96 +179,6 @@ if ~isempty(zero_idx)==1
                     end
                 end
 
-            
-                %%%%%%%%Sim Bound
-                base_polygon=base_polygon(~isnan(base_polygon(:,1)),:);
-                [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1);
-
-                %%%%%%%Filter Base Stations that are within sim_bound
-                tic;
-                bs_inside_idx=find(inpolygon(base_station_latlonheight(:,2),base_station_latlonheight(:,1),sim_bound(:,2),sim_bound(:,1))); %Check to see if the points are in the polygon
-                toc;
-                size(bs_inside_idx)
-
-                %%%%%base_station_latlonheight(1:3,:)
-                %%%%%%%%%base_station_latlonheight 
-                %%1)Lat, 2)Lon, 3)Height meters, 4)Azimuth 5)IDx, 6)EIRP number ID 7)Clutter IDX
-
-                sim_array_list_bs=base_station_latlonheight(bs_inside_idx,[1:3]);
-                sim_array_list_bs(:,4)=bs_eirp_reductions;
-                sim_array_list_bs(:,5)=base_station_latlonheight(bs_inside_idx,5);
-                sim_array_list_bs(:,6)=base_station_latlonheight(bs_inside_idx,6);
-                sim_array_list_bs(:,7)=base_station_latlonheight(bs_inside_idx,4);
-                sim_array_list_bs(:,9)=base_station_latlonheight(bs_inside_idx,7);
-                [num_tx,~]=size(sim_array_list_bs);
-
-                sim_array_list_bs(1:10,:)
-                 unique(sim_array_list_bs(:,9))
-
-
-                % % %      %%%%array_list_bs  
-                %%%%%%%1) Lat, 
-                % %%%%%2)Lon, 
-                % %%%%%3)BS height, 
-                % %%%%%4)BS EIRP Adjusted 
-                % %%%%%5) Nick Unique ID for each sector, 
-                % %%%%%6)NLCD: R==1/S==2/U==3, 
-                % %%%%%7) Azimuth 
-                % %%%%%8)BS EIRP Mitigation
-                %%%%%%%9) Clutter IDX, 1==Urban, 2==Suburban, 3==Rural
-
-                % % sim_array_list_bs(1:10,:)
-                % % size(sim_array_list_bs)
-
-
-
-                f1=figure;
-                geoscatter(sim_array_list_bs(:,1),sim_array_list_bs(:,2),1,'b')
-                hold on;
-                geoplot(sim_bound(:,1),sim_bound(:,2),'-g','LineWidth',4)
-                geoplot(base_polygon(:,1),base_polygon(:,2),'or','LineWidth',3)
-                grid on;
-                pause(0.1)
-                %%%%geobasemap landcover
-                geobasemap streets-light%landcover
-                f1.Position = [100 100 1200 900];
-                pause(1)
-                filename1=strcat('Sim_Area','_',data_label1,'.png');      
-                retry_save=1;
-                while(retry_save==1)
-                    try
-                        saveas(gcf,char(filename1))
-                        retry_save=0;
-                    catch
-                        retry_save=1;
-                        pause(1)
-                    end
-                end
-                pause(0.1);
-                close(f1)
-
-                retry_save=1;
-                while(retry_save==1)
-                    try
-                        save(strcat(data_label1,'_sim_array_list_bs.mat'),'sim_array_list_bs')
-                        retry_save=0;
-                    catch
-                        retry_save=1;
-                        pause(1)
-                    end
-                end
-           
-                % % % % %%%%%%%%%%%%Downsample deployment
-                % % % % [num_inside,~]=size(bs_inside_idx)
-                % % % % sample_num=ceil(num_inside*deployment_percentage/100)
-                % % % % rng(sim_number); %%%%%%%For Repeatibility
-                % % % % rand_sample_idx=datasample(1:num_inside,sample_num,'Replace',false);
-                % % % % size(temp_sim_cell_bs_data)
-                % % % % temp_sim_cell_bs_data=temp_sim_cell_bs_data(rand_sample_idx,:);
-                % % % % size(temp_sim_cell_bs_data)
-                % % % % temp_lat_lon=cell2mat(temp_sim_cell_bs_data(:,[5,6]));
-
-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%Step 0. Calculate the pathloss as a function of azimuth
                 min_azi_idx=find(matches(data_header,'min_azimuth'));
@@ -381,8 +285,12 @@ if ~isempty(zero_idx)==1
                                 delta_azi=abs(gs_azimuth-temp_azi);
 
                                 %%%%%%%%a^2+b^2=c^2
+                                delta_azi
+                                gs_elevation
                                 min_azi=sqrt(delta_azi^2+gs_elevation^2);
                                 nn_idx=nearestpoint_app(app,min_azi,array_ant_gain(:,1));
+                                min_azi
+                                nn_idx
                                 array_azi_gain(i)=array_ant_gain(nn_idx,2);
                             end
                             custom_antenna_pattern=horzcat(array_azi',array_azi_gain);
@@ -411,6 +319,85 @@ if ~isempty(zero_idx)==1
                         pause(0.1)
                         close(fig1)
 
+                    elseif matches(temp_str_ant_pattern,'itu_antenna_f1245')
+                        %%%%%%%%%%%%ITU-R F.1245
+                        col_ant_gain_idx=find(matches(data_header,'rx_ant_gain_mb'));
+                        Gmax_dBi=temp_single_cell_sim_data{col_ant_gain_idx};
+                        phi_deg = 0:0.1:180;
+                        D_m=1.8;  %%%%%%%%Just a placeholder                        
+                        [G_dBi]=calc_antenna_f1245_rev1(app,phi_deg,Gmax_dBi,D_m,FreqMHz);
+                        radar_ant_array=horzcat(phi_deg',G_dBi');
+                        %custom_antenna_pattern=horzcat(phi_deg',G_dBi');
+
+                        
+                        neg_ant_array=flipud(radar_ant_array([2:end],:));
+                        neg_ant_array(:,1)=-1*neg_ant_array(:,1);
+                        mod_neg_ant_array=neg_ant_array;
+                        mod_neg_ant_array(:,1)=mod(neg_ant_array(:,1),360);
+                        temp_ant=vertcat(radar_ant_array,mod_neg_ant_array);
+                        [~,uni_idx]= unique(temp_ant(:,1), 'stable');
+                        custom_antenna_pattern=temp_ant(uni_idx,:)
+
+                        % figure;
+                        % hold on
+                        % plot(radar_ant_array(:,1),radar_ant_array(:,2),'-ok')
+                        % plot(mod_neg_ant_array(:,1),mod_neg_ant_array(:,2),'-sr')
+                        % plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-g')
+
+                        %%%%%%%%%%%%%%Plot and Save
+                        fig1=figure;
+                        hold on;
+                        plot(phi_deg,G_dBi,'-b')
+                        xlabel('Elevation [Degree]')
+                        ylabel('Antenna Gain')
+                        grid on;
+                        title({strcat(data_label1,': itu antennaf1245')})
+                        filename1=strcat(data_label1,'_itu_antenna_f1245.png');
+                        retry_save=1;
+                        while(retry_save==1)
+                            try
+                                saveas(gcf,char(filename1))
+                                pause(0.1);
+                                retry_save=0;
+                            catch
+                                retry_save=1;
+                                pause(0.1)
+                            end
+                        end
+                        pause(0.1)
+                        close(fig1)
+
+
+                        %%%%%%%%%%%%%%Plot and Save
+                        fig1=figure;
+                        hold on;
+                        plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-b')
+                        xlabel('Azimuth [Degree]')
+                        ylabel('Antenna Gain')
+                        grid on;
+                        filename1=strcat(data_label1,'_custom_ant_gain.png');
+                        retry_save=1;
+                        while(retry_save==1)
+                            try
+                                saveas(gcf,char(filename1))
+                                pause(0.1);
+                                retry_save=0;
+                            catch
+                                retry_save=1;
+                                pause(0.1)
+                            end
+                        end
+                        pause(0.1)
+                        close(fig1)
+
+                        % 
+                        % figure; 
+                        % hold on;
+                        % plot(phi_deg,G_dBi);
+                        % xlabel('Off-axis angle \phi (degrees)');
+                        % ylabel('Gain G(\phi) (dBi)');
+                        % grid on;
+                        
                     else
                         'Need to add another pattern'
                         pause;
@@ -473,6 +460,14 @@ if ~isempty(zero_idx)==1
                     close(fig1)
                 end
 
+                %%%%%%%%%Custom antenna pattern needs to have 0-360
+
+                %%%%%%%%%%Since the keyhole was based on the single-entry
+                %%%%%%%%%%pathloss, it was easy to limit the points. Let's
+                %%%%%%%%%%not do the keyhole at this time. Might have to
+                %%%%%%%%%%rethink how we do this.
+                %%%%[wider_keyhole]=create_save_load_wider_keyhole_rev2(app,data_label1,azi_required_pathloss,tf_clutter,min_azimuth,max_azimuth,ant_beamwidth,array_dist_pl,sim_scale_factor);
+
                 retry_save=1;
                 while(retry_save==1)
                     try
@@ -492,6 +487,85 @@ if ~isempty(zero_idx)==1
                         save(strcat(data_label1,'_min_ant_loss.mat'),'min_ant_loss')
                         save(strcat(data_label1,'_min_azimuth.mat'),'min_azimuth')
                         save(strcat(data_label1,'_max_azimuth.mat'),'max_azimuth')
+                        retry_save=0;
+                    catch
+                        retry_save=1;
+                        pause(1)
+                    end
+                end
+
+
+                %%%%%%%%Sim Bound
+                base_polygon=base_polygon(~isnan(base_polygon(:,1)),:);
+                [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1);
+
+                %%%%%%%Filter Base Stations that are within sim_bound
+                tic;
+                bs_inside_idx=find(inpolygon(base_station_latlonheight(:,2),base_station_latlonheight(:,1),sim_bound(:,2),sim_bound(:,1))); %Check to see if the points are in the polygon
+                toc;
+                size(bs_inside_idx)
+
+                %%%%%base_station_latlonheight(1:3,:)
+                %%%%%%%%%base_station_latlonheight 
+                %%1)Lat, 2)Lon, 3)Height meters, 4)Azimuth 5)IDx, 6)EIRP number ID 7)Clutter IDX
+
+                sim_array_list_bs=base_station_latlonheight(bs_inside_idx,[1:3]);
+                sim_array_list_bs(:,4)=bs_eirp_reductions;
+                sim_array_list_bs(:,5)=base_station_latlonheight(bs_inside_idx,5);
+                sim_array_list_bs(:,6)=base_station_latlonheight(bs_inside_idx,6);
+                sim_array_list_bs(:,7)=base_station_latlonheight(bs_inside_idx,4);
+                sim_array_list_bs(:,9)=base_station_latlonheight(bs_inside_idx,7);
+                [num_tx,~]=size(sim_array_list_bs);
+
+                sim_array_list_bs(1:10,:)
+                 unique(sim_array_list_bs(:,9))
+
+
+                % % %      %%%%array_list_bs  
+                %%%%%%%1) Lat, 
+                % %%%%%2)Lon, 
+                % %%%%%3)BS height, 
+                % %%%%%4)BS EIRP Adjusted 
+                % %%%%%5) Nick Unique ID for each sector, 
+                % %%%%%6)NLCD: R==1/S==2/U==3, 
+                % %%%%%7) Azimuth 
+                % %%%%%8)BS EIRP Mitigation
+                %%%%%%%9) Clutter IDX, 1==Urban, 2==Suburban, 3==Rural
+
+                % % sim_array_list_bs(1:10,:)
+                % % size(sim_array_list_bs)
+
+
+
+                f1=figure;
+                geoscatter(sim_array_list_bs(:,1),sim_array_list_bs(:,2),1,'b')
+                hold on;
+                geoplot(sim_bound(:,1),sim_bound(:,2),'-g','LineWidth',4)
+                geoplot(base_polygon(:,1),base_polygon(:,2),'or','LineWidth',3)
+                grid on;
+                pause(0.1)
+                %%%%geobasemap landcover
+                geobasemap streets-light%landcover
+                f1.Position = [100 100 1200 900];
+                pause(1)
+                filename1=strcat('Sim_Area','_',data_label1,'.png');      
+                retry_save=1;
+                while(retry_save==1)
+                    try
+                        saveas(gcf,char(filename1))
+                        retry_save=0;
+                    catch
+                        retry_save=1;
+                        pause(1)
+                    end
+                end
+                pause(0.1);
+                close(f1)
+
+                retry_save=1;
+                while(retry_save==1)
+                    try
+                        save(strcat(data_label1,'_sim_array_list_bs.mat'),'sim_array_list_bs')
                         retry_save=0;
                     catch
                         retry_save=1;

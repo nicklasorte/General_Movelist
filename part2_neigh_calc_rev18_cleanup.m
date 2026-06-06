@@ -1,4 +1,7 @@
-function part2_neigh_calc_rev17_mc_chunk_tf_test(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel,cell_aas_dist_data,move_list_margin,cell_sim_data,tf_full_turnoff,array_mitigation,tf_test)
+function part2_neigh_calc_rev18_cleanup(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel,cell_aas_dist_data,move_list_margin,cell_sim_data,tf_full_turnoff,array_mitigation,tf_test)
+
+
+%%%%%%%%Cleaning up this function part2_neigh_calc_rev17_mc_chunk_tf_test
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Check for the Number of Folders to Sim
@@ -104,6 +107,8 @@ if ~isempty(zero_idx)==1
                 radar_threshold=dpa_threshold;
                 custom_antenna_pattern=load_variable_with_retry_GPT_rev2(app, data_label1+"_custom_antenna_pattern.mat", "custom_antenna_pattern");  % e.g. stop if it truly doesn't exist
 
+
+
                 %%%%%%%%%%Binary Search
                 [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                 [num_ppts,~]=size(base_protection_pts);
@@ -113,50 +118,57 @@ if ~isempty(zero_idx)==1
                     %max_number_calc=sim_radius_km/min_binaray_spacing
                     max_number_calc=(ceil(log2(sim_radius_km))+3)*num_ppts  %%%%%%%This assumes a 1km min_binaray_spacing and the 0 and max distance and that each distance search for a point is not applicable to the other points
                 end
-                disp_progress(app,strcat('Neighborhood Calc 1: Line 172: ', num2str(max_number_calc)))
+
+                % %%%%%%%%%%Find the secondary DPA Threshold and Percentiles,
+                % %%%%%%%%%%if so then another all_data_stats_binary
+                % data_header=cell_sim_data(1,:)';
+                % label_idx=find(matches(data_header,'data_label1'));
+                % row_folder_idx=find(matches(cell_sim_data(:,label_idx),sim_folder));
+                %
+                % %%%%%Need the secondary, if they are there
+                % dpa2thres_idx=find(matches(data_header,'dpa_second_threshold'));
+                % per2_idx=find(matches(data_header,'second_mc_percentile'));
+                %
+                % if ~isempty(dpa2thres_idx)
+                %     radar2threshold=cell_sim_data{row_folder_idx,dpa2thres_idx};
+                % else
+                %     radar2threshold=NaN(1,1);
+                % end
+                % if ~isempty(per2_idx)
+                %     mc_per2=cell_sim_data{row_folder_idx,per2_idx};
+                % else
+                %     mc_per2=NaN(1,1);
+                % end
+                % radar2threshold
+                % mc_per2
+                %
+                % if ~isnan(radar2threshold)
+                %     tf_second_data=1;
+                % else
+                %     tf_second_data=0;
+                % end
+                % tf_second_data
+                [tf_second_data,radar2threshold,mc_per2]=find_tf_secondary_rev1(app,cell_sim_data,sim_folder);
+
+                if tf_second_data==1
+                    %%%%%%%%%%%'If there if tf_second_data, then we need to increase the max_number_calc by x2 since we are searching across two different data sets.'
+                    max_number_calc=max_number_calc*2;
+                end
+                disp_progress(app,strcat('Part 2: Line 167: ', num2str(max_number_calc)))
 
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                [hWaitbar_binary,hWaitbarMsgQueue_binary]= ParForWaitbarCreateMH_time('Binary Search: ',max_number_calc);    %%%%%%% Create ParFor Waitbar, this one covers points and chunks
                 binary_dist_array=[1,2,4,8,16,32,64,128,256,512,1024,2048];
                 CBSD_label='BaseStation';
                 [nn_idx]=nearestpoint_app(app,sim_radius_km,binary_dist_array,'next');
                 bs_neighborhood=binary_dist_array(nn_idx);
-                search_dist_array=horzcat(0:min_binaray_spacing:bs_neighborhood);
+                search_dist_array=horzcat(0:min_binaray_spacing:bs_neighborhood);  
+                [hWaitbar_binary,hWaitbarMsgQueue_binary]= ParForWaitbarCreateMH_time('Binary Search: ',max_number_calc);    %%%%%%% Create ParFor Waitbar, this one covers points and chunks
+
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Start of Binary Search
                 %%%%%%%Check for all_data_stats_binary, if none, initialize it.
                 [all_data_stats_binary]=initialize_or_load_all_data_stats_binary_pre_label(app,data_label1,sim_number,base_protection_pts,CBSD_label);
-
-                %%%%%%%%%%Find the secondary DPA Threshold and Percentiles,
-                %%%%%%%%%%if so then another all_data_stats_binary
-                data_header=cell_sim_data(1,:)';
-                label_idx=find(matches(data_header,'data_label1'));
-                row_folder_idx=find(matches(cell_sim_data(:,label_idx),sim_folder));
-
-                %%%%%Need the secondary, if they are there
-                dpa2thres_idx=find(matches(data_header,'dpa_second_threshold'));
-                per2_idx=find(matches(data_header,'second_mc_percentile'));
-
-                if ~isempty(dpa2thres_idx)
-                    radar2threshold=cell_sim_data{row_folder_idx,dpa2thres_idx};
-                else
-                    radar2threshold=NaN(1,1);
-                end
-                if ~isempty(per2_idx)
-                    mc_per2=cell_sim_data{row_folder_idx,per2_idx};
-                else
-                    mc_per2=NaN(1,1);
-                end
-                radar2threshold
-                mc_per2
-
-                if ~isnan(radar2threshold)
-                    tf_second_data=1;
-                else
-                    tf_second_data=0;
-                end
-                tf_second_data
 
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Secondary Data
@@ -169,14 +181,7 @@ if ~isempty(zero_idx)==1
 
 
                 %%%%%%%%%%%%%%%%%%%Check for manual azimuth
-                col_azi_step_idx=find(matches(data_header,'azimuth_step'));
-                if ~isempty(col_azi_step_idx)
-                    azimuth_step=cell_sim_data{row_folder_idx,col_azi_step_idx};
-                    tf_man_azi_step=1;
-                else
-                    azimuth_step=NaN(1,1);
-                    tf_man_azi_step=0;
-                end
+                [azimuth_step,tf_man_azi_step]=find_manual_azimuth_rev1(app,cell_sim_data,sim_folder);
                 azimuth_step
                 tf_man_azi_step
                 search_dist_array
@@ -263,30 +268,23 @@ if ~isempty(zero_idx)==1
                                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 249: Calculating Union, First ParFor Movelist:',num2str(single_search_dist),'km'))
 
 
-                                % % % %%%%%%%%%%We are parfor'ing the monte carlo iterations, not the points.
-                                % % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate first-->Parfor --> No data load
-                                % % % % if parallel_flag==1
-                                % % % %     [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
-                                % % % %     parfor point_idx=1:num_ppts  %%%%Change to parfor
-                                % % % %         %%%%pre_sort_movelist_rev20e_tf_full_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff);
-                                % % % %         pre_sort_movelist_rev20f_dual_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder);
-                                % % % %     end
-                                % % % % end
-
-                                %%%%%%%%%%%Then for each point, scrap the data and save to excel. Only hold onto 1 point data at a time.
-                                %%%%%%%%For this case (1 Monte Carlo Iteration), we really don't need to save most of the data, only the optimized move list order.
-                                %%%%%%%%%Keep the move list flexible with the reliability inputs, so we can have multiple move lists.
-                                %%%%%%%%%%In the next revision, do the full ITM reliability and do the aggregate check of the 50% ITM with the full 1-99%. (1000 MC and 95th Percentile)
-
-
-
                                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 263: Loading Move List with For Loop:',num2str(single_search_dist),'km'))
                                 server_status_rev2(app,tf_server_status)
                                 cell_move_list_turn_off_data=cell(num_ppts,1);
                                 for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
                                     point_idx
-                                    %%%%%[move_sort_sim_array_list_bs]=pre_sort_movelist_rev20f_dual_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder);
-                                    [move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev30_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status);
+
+
+
+
+
+
+                                   %[move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev30_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status);
+                                    [move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev31_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status);
+                                    
+                                    'Start here with part2 rev18 cleanup'
+                                    pause;
+
                                     if tf_test==1
                                         test_label='TEST1'
                                         [movelist_test]=pre_sort_movelist_rev20f_dual_turnoff_app_TEST(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,test_label);
@@ -586,6 +584,12 @@ if ~isempty(zero_idx)==1
                     %%%%%%%%the aggregate is greater than the radar_threshold, there is
                     %%%%%%%%a problem and the sim needs to stop.
 
+             
+
+                     'We need to find the maximum next_single_search_dist from the primary and secondary data. Not sequentially search distances for the primary then the secondary.'
+                     'It appears the secondary is actually driving the distance. Maybe'
+                     pause;
+
                     %%%%%%%Find the Next Search Dist and if to continue with the all_data_stats_binary
                     if binary_marker>1
                         disp_progress(app,strcat('Neighborhood Calc Rev1 Line 399: Before  calc_next_search_dist'))
@@ -800,9 +804,6 @@ if ~isempty(zero_idx)==1
 
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 578: Aggregate Excel Saved'))
 
-                all_data_stats_binary
-                radar_threshold
-                margin
                 [zone_dist_km]=calc_zone_distance_rev1(app, all_data_stats_binary, radar_threshold, margin)
 
 
@@ -814,14 +815,12 @@ if ~isempty(zero_idx)==1
                 end
 
 
-
-
                 if all(array_mitigation==0)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Find/Plot the Coordination Zones for the pop impact
 
                     file_name_cell_bound_miti=strcat('cell_bound_',string_prop_model,'_',num2str(sim_number),'_',data_label1,'.mat');
-                    %[file_cell_bound_miti]=persistent_var_exist_with_corruption(app,file_name_cell_bound_miti);
+                    [file_cell_bound_miti]=persistent_var_exist_with_corruption(app,file_name_cell_bound_miti);
 
                     base_polygon=base_polygon(~isnan(base_polygon(:,1)),:);
                     %%%%%%%If base_polygon is a single point
@@ -858,32 +857,22 @@ if ~isempty(zero_idx)==1
                             end
                         end
                     else
-                         disp_progress(app,strcat('Pause Error Part 2: Error: Union list does not exist'))
-                         size(sim_array_list_bs)
-                         union_turn_off_list_data=NaN(1,9)
-                         union_turn_off_list_data=union_turn_off_list_data(~isnan(union_turn_off_list_data))
-                         'Need to see what this does'
-                        %pause;
+                        'Error: Union list does not exist'
+                        pause;
                     end
-
-
-                    if isempty(union_turn_off_list_data)  %%%%%%%%%To fix the non-existent union move list
-                        neigh_miti_list_bs = [];
-                    else
-                        array_all_list=union_turn_off_list_data;
-                        uni_bs_idx=unique(array_all_list(:,5));
-                        num_bs=length(uni_bs_idx);
-                        [num_all_bs,num_col]=size(sim_array_list_bs);
-                        neigh_miti_list_bs=NaN(num_bs,num_col);
-                        for i=1:1:num_bs
-                            row_idx=find(array_all_list(:,5)==uni_bs_idx(i));
-                            if length(row_idx)>1
-                                temp_rows_data=array_all_list(row_idx,:);
-                                [~,min_idx]=min(temp_rows_data(:,4));
-                                neigh_miti_list_bs(i,:)=array_all_list(row_idx(min_idx),:);
-                            else
-                                neigh_miti_list_bs(i,:)=array_all_list(row_idx,:);
-                            end
+                    array_all_list=union_turn_off_list_data;
+                    uni_bs_idx=unique(array_all_list(:,5));
+                    num_bs=length(uni_bs_idx);
+                    [num_all_bs,num_col]=size(sim_array_list_bs);
+                    neigh_miti_list_bs=NaN(num_bs,num_col);
+                    for i=1:1:num_bs
+                        row_idx=find(array_all_list(:,5)==uni_bs_idx(i));
+                        if length(row_idx)>1
+                            temp_rows_data=array_all_list(row_idx,:);
+                            [~,min_idx]=min(temp_rows_data(:,4));
+                            neigh_miti_list_bs(i,:)=array_all_list(row_idx(min_idx),:);
+                        else
+                            neigh_miti_list_bs(i,:)=array_all_list(row_idx,:);
                         end
                     end
 
@@ -993,46 +982,7 @@ if ~isempty(zero_idx)==1
                                 cell_bound_miti{i,10}=0;
                             end
                         else
-                            % % % %%%%%%%%%%%%%%%%%%%%%%%%%New Code here to fix the concave KML
-                            %%%%%%%%%%%%%%%%%%%%%%%%%%What we actually want
-                            %%%%%%%%%%%%%%%%%%%%%%%%%%to is convex hull and
-                            %%%%%%%%%%%%%%%%%%%%%%%%%%not the circle.
-                            % % % %%%%%%%%%%%%%%%%Concave
-                            % % % %%%%%%Bin for each 1 degree step
-                            % % % [num_pp_pts,~]=size(base_polygon)
-                            % % % if num_pp_pts>1
-                            % % %     sim_pt=horzcat(meanm(base_polygon(:,1),base_polygon(:,2)));
-                            % % % else
-                            % % %     sim_pt=base_polygon;
-                            % % % end
-                            % % % 
-                            % % % cell_temp_pts=cell_miti_union_square([i:end],1);  %%%%%make this all the previous points
-                            % % % num_cells=length(cell_temp_pts);
-                            % % % cell_latlon=cell(num_cells,1);
-                            % % % for j=1:1:num_cells
-                            % % %     temp_latlon=cell_temp_pts{j};
-                            % % %     cell_latlon{j}=temp_latlon(:,[1,2]);
-                            % % % end
-                            % % % temp_pts=vertcat(cell_latlon{:});
-                            % % % keep_grid_pts=vertcat(base_polygon,temp_pts(:,[1,2]));
-                            % % % 
-                            % % % min_dist_km=1;
-                            % % % [radial_bound]=radial_bound_rev2(app,sim_pt,keep_grid_pts,min_dist_km);
-                            % % % cell_bound_miti{i,6}=radial_bound;
-                            % % % %%%%%%%%%For each contounr, find the pop impact
-                            % % % [inside_idx]=find_points_inside_contour_two_step(app,radial_bound,census_latlon);
-                            % % % if ~isempty(inside_idx)
-                            % % %     cell_bound_miti{i,9}=census_geoid(inside_idx);
-                            % % %     cell_bound_miti{i,10}=sum(census_pop(inside_idx));
-                            % % % else
-                            % % %     cell_bound_miti{i,9}=NaN(1,1);
-                            % % %     cell_bound_miti{i,10}=0;
-                            % % % end
-
-                            % % % % 'The old code'
-                            % % % % pause
                             cell_bound_miti{i,6}=NaN(1,1);
-                            %cell_bound_miti{i,6}=NaN(1,2);
                             cell_bound_miti{i,9}=NaN(1,1);
                             cell_bound_miti{i,10}=0;
                         end
@@ -1043,17 +993,11 @@ if ~isempty(zero_idx)==1
                     % % % 'Put it into the data format for the pea/pop impact section'
 
                     %%%%%%%%Map it
-                    cell_multi_convex=cell_bound_miti(:,[1,3])
+                    cell_multi_con=cell_bound_miti(:,[1,3])
                     filename_bugsplat=strcat('Convex_Multi_Bound_Contours_',sim_folder,'.png');
                     title_str=strcat('Convex Multi-Contours:',sim_folder);
-                    map_multi_contours_rev1(app,cell_multi_convex,title_str,filename_bugsplat)
+                    map_multi_contours_rev1(app,cell_multi_con,title_str,filename_bugsplat)
                     %%%%%%%%%%%This is the data we are putting it into
-
-                    % %%%%%%%%Map it
-                    % cell_multi_concave=cell_bound_miti(:,[1,6])
-                    % filename_bugsplat=strcat('Concave_Multi_Bound_Contours_',sim_folder,'.png');
-                    % title_str=strcat('Concave Multi-Contours:',sim_folder);
-                    % map_multi_contours_rev1(app,cell_multi_concave,title_str,filename_bugsplat)
 
                     %%%%1)Mitigation,
                     % %%2) Max knn dist,
@@ -1065,13 +1009,6 @@ if ~isempty(zero_idx)==1
                     %%%%%8)Convex Total Pop
                     %%%%%9)Concave GeoId,
                     %%%%%10)Concave Total Pop
-
-                    % % % cell_bound_miti
-                    % % % 'check cell_bound_miti row 6 for radial bound'
-                    % % % pause;
-                    % % % 
-                    % % % 'Need to figure out the concave kml bug'
-                    % % % pause;
 
 
                     %%%%%%%%%%Save
