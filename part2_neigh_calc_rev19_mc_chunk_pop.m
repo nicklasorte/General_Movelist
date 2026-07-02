@@ -58,11 +58,15 @@ if ~isempty(zero_idx)==1
         sim_folder='';
         [cell_status]=checkout_cell_status_rev1(app,checkout_filename,cell_status_filename,sim_folder,folder_names,tf_update_cell_status);
         disp_TextArea_PastText(app,strcat('neighborhood_calc_rev4_azimuths_geoplots_custant: After Checkout: Line 64'))
+        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 61'))
+
+        %%%%%%%%%On Rev 3.9.6, we are getting an error where it stop after this check in. Need to create more check ins after this. 
 
         sim_folder=temp_folder_names{array_rand_folder_idx(folder_idx)};
         temp_cell_idx=find(strcmp(cell_status(:,1),sim_folder)==1);
 
         if cell_status{temp_cell_idx,2}==0
+            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 69'))
             %%%%%%%%%%Calculate
             retry_cd_folder_rev1(app,rev_folder)
             sim_folder=temp_folder_names{array_rand_folder_idx(folder_idx)};
@@ -86,8 +90,10 @@ if ~isempty(zero_idx)==1
                 tic;
                 [~]=checkout_cell_status_rev1(app,checkout_filename,cell_status_filename,sim_folder,folder_names,tf_update_cell_status);
                 toc;
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 93'))
             else
                 server_status_rev2(app,tf_server_status)
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 96'))
                 disp_progress(app,strcat('Neighborhood Calc 1: Line 97: Loading Data . . . '))
                 %%%%%%%%%%%%%%%%CBSD Neighborhood Search Parameters
                 %%%%%Persistent Load the other variables
@@ -114,6 +120,7 @@ if ~isempty(zero_idx)==1
                     max_number_calc=(ceil(log2(sim_radius_km))+3)*num_ppts  %%%%%%%This assumes a 1km min_binaray_spacing and the 0 and max distance and that each distance search for a point is not applicable to the other points
                 end
                 disp_progress(app,strcat('Neighborhood Calc 1: Line 172: ', num2str(max_number_calc)))
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 123'))
 
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,6 +173,7 @@ if ~isempty(zero_idx)==1
                 end
                 all_data_stats_binary                
                 disp_progress(app,strcat('Neighborhood Calc 1: Line 178: loaded all_data_stats_binary'))
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 176'))
 
 
                 %%%%%%%%%%%%%%%%%%%Check for manual azimuth
@@ -184,11 +192,13 @@ if ~isempty(zero_idx)==1
 
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Starting the Binary Search
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 195'))
                 binary_marker=0;
                 tf_search=1;
                 while(tf_search==1)
                     server_status_rev2(app,tf_server_status)
                     disp_progress(app,strcat('Neighborhood Calc 1: Line 184: Top of While Loop: tf_search:',num2str(tf_search)))
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 201'))
                     binary_marker=binary_marker+1;
                     if binary_marker==1
                         single_search_dist=max(search_dist_array)
@@ -211,9 +221,11 @@ if ~isempty(zero_idx)==1
 
                     if any(temp_data_dist==single_search_dist)==1
                         %%%%%%%%Already calculated
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 224'))
                     else
                         %%%%%%%%Calculate
                         disp_progress(app,strcat('Neighborhood Calc 1: Line 210: Search Distance:',num2str(single_search_dist),'km'))
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 228'))
 
                         file_name_single_scrap_data=strcat(CBSD_label,'_',data_label1,'_',num2str(sim_number),'_single_scrap_data_',num2str(single_search_dist),'.mat'); %%%%%%First Check for an array file, named with the single_search_dist and has all the aggregate checks for each protection point.
                         [var_exist_single_scrap_data]=persistent_var_exist_with_corruption(app,file_name_single_scrap_data);
@@ -238,9 +250,11 @@ if ~isempty(zero_idx)==1
                                     pause(1)
                                 end
                             end
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 253'))
                         else %%%%if var_exist_single_scrap_data==0 %%%%%%%%Calculate move list, union, agg check, scrap agg
                             server_status_rev2(app,tf_server_status)
                             disp_progress(app,strcat('Neighborhood Calc 1: Line 216: Calculating  union_turn_off_list_data:',num2str(single_search_dist),'km'))
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 257'))
 
                             %%%%%%%%%%First check for the union move list
                             %%%%%%%%%First, check to see if the union of the move list exists
@@ -259,8 +273,10 @@ if ~isempty(zero_idx)==1
                                         pause(1)
                                     end
                                 end
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 276'))
                             else %%%%if file_union_move_exist==0 %%%The File Does not exist, we will calculate it
                                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 249: Calculating Union, First ParFor Movelist:',num2str(single_search_dist),'km'))
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 279'))
 
 
                                 % % % %%%%%%%%%%We are parfor'ing the monte carlo iterations, not the points.
@@ -284,6 +300,7 @@ if ~isempty(zero_idx)==1
                                 server_status_rev2(app,tf_server_status)
                                 cell_move_list_turn_off_data=cell(num_ppts,1);
                                 for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
+                                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 303'))
                                     point_idx
                                     %%%%%[move_sort_sim_array_list_bs]=pre_sort_movelist_rev20f_dual_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder);
                                     [move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev30_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status);
@@ -337,6 +354,7 @@ if ~isempty(zero_idx)==1
                                     end
                                 end
                                 toc;
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 356'))
 
                                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Create Union Move List
                                 union_turn_off_list_data=unique(vertcat(cell_move_list_turn_off_data{:}),'rows');
@@ -361,8 +379,10 @@ if ~isempty(zero_idx)==1
                                         pause(1)
                                     end
                                 end
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 382'))
                             end
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 289: Union Move List --> Creating the Keep On List :',num2str(single_search_dist),'km'))
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 385'))
 
                             % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%First create the keep_on list
                             [on_list_bs,off_idx]=create_on_list_bs_GPT_rev1(app,sim_array_list_bs,union_turn_off_list_data);
@@ -387,6 +407,7 @@ if ~isempty(zero_idx)==1
                             second_scrap_data=NaN(num_ppts,2); %%%%Aggregate, Move List Size
                             for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
                                 point_idx
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 410'))
                                 [array_agg_check_95,array_agg_check_mc_dBm]=agg_check_parfor_chunk_man_azi_rev10_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,cell_sim_data,sim_folder,parallel_flag,azimuth_step,tf_man_azi_step,tf_server_status);
                                 if tf_test==1
                                     test_label='TEST1'
@@ -484,6 +505,7 @@ if ~isempty(zero_idx)==1
                             end
                             toc;
                             server_status_rev2(app,tf_server_status)
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 508'))
 
                             if single_search_dist>0
                                 [search_dist_bound]=calc_sim_bound(app,base_polygon,single_search_dist,data_label1);
@@ -503,7 +525,7 @@ if ~isempty(zero_idx)==1
                             [sim_bound]=calc_sim_bound(app,base_polygon,sim_radius_km,data_label1);
                             %geo_plot_neighborhood_step_rev1(app,base_protection_pts,sim_bound,single_search_dist,on_list_bs,search_dist_bound,inside_idx,union_turn_off_list_data,temp_max_agg,data_label1)
                             geo_plot_neighborhood_step_rev2(app,base_protection_pts,sim_bound,single_search_dist,on_list_bs,search_dist_bound,inside_idx,union_turn_off_list_data,temp_max_agg,data_label1,cell_sim_data,tf_second_data,sim_folder,temp_max_second_agg)
-
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 528'))
 
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 336: Saving single_scrap_data :',num2str(single_search_dist),'km'))
@@ -520,9 +542,11 @@ if ~isempty(zero_idx)==1
                                     pause(1)
                                 end
                             end
+                            disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 545'))
                         end
                         server_status_rev2(app,tf_server_status)
                         disp_progress(app,strcat('Neighborhood Calc Rev1 Line 350: Putting single_scrap_data into the array :',num2str(single_search_dist),'km'))
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 549'))
                         single_scrap_data
                         second_scrap_data
 
@@ -569,10 +593,12 @@ if ~isempty(zero_idx)==1
                                 end
                             end
                         end
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 596'))
                     end
 
                     server_status_rev2(app,tf_server_status)
                     disp_progress(app,strcat('Neighborhood Calc Rev1 Line 385: Trying to Find the Next Distance to calculate :',num2str(single_search_dist),'km'))
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 601'))
 
                     %%%%%%%%%%%%%%%%Reload and plots
                     [all_data_stats_binary]=initialize_or_load_all_data_stats_binary_pre_label(app,data_label1,sim_number,base_protection_pts,CBSD_label);
@@ -602,12 +628,15 @@ if ~isempty(zero_idx)==1
                             end
                         end
                     end
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 631'))
                     hWaitbarMsgQueue_binary.send(0);
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 633'))
                 end
                 tf_search
 
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 408: Outside of While Loop'))
                 server_status_rev2(app,tf_server_status)
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 639'))
 
                 %%%%%%%%%%%%%%%%Reload and plots
                 [all_data_stats_binary]=initialize_or_load_all_data_stats_binary_pre_label(app,data_label1,sim_number,base_protection_pts,CBSD_label);
@@ -678,6 +707,7 @@ if ~isempty(zero_idx)==1
                         pause(0.1)
                     end
                 end
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 710'))
 
 
                 %%%%%'Need to update single_mod_plateau_alg_rev6_geoplot_name to remove maine_exception'
@@ -709,6 +739,7 @@ if ~isempty(zero_idx)==1
                 catch
                 end
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 564: Post close(hWaitbar_binary);'))
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 742'))
                 % % % 'Dont go past this point, check for the floating aggregate error'
                 % % % pause;
 
@@ -753,6 +784,7 @@ if ~isempty(zero_idx)==1
                     end
                 end
                 disp_progress(app,strcat('Neighborhood Calc Rev1 Line 569: Stats Neighborhood Excel Saved'))
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 787'))
 
                 %%%%%%%%%%%%%%%%
                 if tf_second_data==1
@@ -791,6 +823,7 @@ if ~isempty(zero_idx)==1
                         end
                     end
                     disp_progress(app,strcat('Neighborhood Calc Rev1 Line 569: Stats Neighborhood Excel Saved'))
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 826'))
                 end
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -857,6 +890,7 @@ if ~isempty(zero_idx)==1
                                 pause(1)
                             end
                         end
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 893'))
                     else
                          disp_progress(app,strcat('Pause Error Part 2: Error: Union list does not exist'))
                          size(sim_array_list_bs)
@@ -921,6 +955,7 @@ if ~isempty(zero_idx)==1
                             pause(0.1)
                         end
                     end
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 959'))
                     mid_lat=new_full_census_2020(:,2);
                     mid_lon=new_full_census_2020(:,3);
                     census_latlon=horzcat(mid_lat,mid_lon);
@@ -929,6 +964,7 @@ if ~isempty(zero_idx)==1
 
                     %%%%%%%%base_polygon
                     for i=1:1:num_miti_rows
+                        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 967'))
                         cell_bound_miti{i,1}=cell_miti_union_square{i,2}; %%%%%%%%%1)Mitigation
                         if ~isnan(cell_bound_miti{i,1})
                             cell_temp_pts=cell_miti_union_square([i:end],1);  %%%%%make this all the previous points
@@ -1043,6 +1079,7 @@ if ~isempty(zero_idx)==1
                     % % % 'Put it into the data format for the pea/pop impact section'
 
                     %%%%%%%%Map it
+                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1082'))
                     cell_multi_convex=cell_bound_miti(:,[1,3])
                     filename_bugsplat=strcat('Convex_Multi_Bound_Contours_',sim_folder,'.png');
                     title_str=strcat('Convex Multi-Contours:',sim_folder);
@@ -1091,6 +1128,7 @@ if ~isempty(zero_idx)==1
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%Save
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1131'))
                 retry_save=1;
                 while(retry_save==1)
                     try
@@ -1124,17 +1162,21 @@ if ~isempty(zero_idx)==1
                 toc;
                 disp_TextArea_PastText(app,strcat('neighborhood_calc_rev4_azimuths_geoplots_custant: After Checkout: Line 457'))
                 server_status_rev2(app,tf_server_status)
+                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1165'))
             end
         end
         try
             multi_hWaitbarMsgQueue.send(0);
         catch
         end
+        disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1172'))
     end
     try
         delete(multi_hWaitbarMsgQueue);
         close(multi_hWaitbar);
     catch
     end
+    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1179'))
 end
 server_status_rev2(app,tf_server_status)
+disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 1182'))

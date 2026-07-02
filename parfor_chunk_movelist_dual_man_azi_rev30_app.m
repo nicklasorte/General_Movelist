@@ -199,7 +199,9 @@ else
             %%%%%%But then each protection point is not calculated in parallel, but as one large calculation.
             %%%%%%%%This calculation might take 90 seconds, compared to milliseconds for the CBRS sorted move list.
             tf_calc_opt_sort=0  %%%%%%To be used to re-calculate.
-            [opt_sort_bs_idx]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+                       %[opt_sort_bs_idx]=near_opt_sort_idx_rev5(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth);
+            [opt_sort_bs_idx,~,~]=near_opt_sort_idx_man_azi_rev6(app,data_label1,point_idx,tf_calc_opt_sort,radar_beamwidth,single_search_dist,sim_array_list_bs,base_protection_pts,temp_pr_dbm,string_prop_model,custom_antenna_pattern,min_azimuth,max_azimuth,tf_man_azi_step,azimuth_step);
+
             sort_bs_idx=opt_sort_bs_idx; %%%%%%%%%%Use the "Near-Optimal Approach
         end
         disp_progress(app,strcat('Line 205: parfor_chunk_movelist_dual_man_azi_rev30_app'))
