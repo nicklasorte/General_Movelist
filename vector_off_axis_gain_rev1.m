@@ -20,3 +20,4 @@ for azimuth_idx=1:1:num_sim_azi
     ant_deg_idx=nearestpoint_app(app,rel_az,pat_az_unique);
     off_axis_gain_matrix(:,azimuth_idx)=pat_gain_unique(ant_deg_idx);
 end
+

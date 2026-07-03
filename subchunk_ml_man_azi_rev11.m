@@ -39,6 +39,8 @@ if ~isnan(radar2threshold)
 else
     tf_second_data=0;
 end
+% radar2threshold
+% tf_second_data
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%All the things above could be pulled out of this subchunk.
 
@@ -46,7 +48,7 @@ end
 sub_mc_idx=cell_sim_chunk_idx{sub_point_idx};
 num_mc_idx=length(sub_mc_idx);
 num_bs=length(bs_azimuth);
-num_tx=num_bs
+num_tx=num_bs;
 sub_array_ml_turnoff_mc=NaN(num_mc_idx,1);
 sub_array_ml_turnoff_mc_secondary=NaN(num_mc_idx,1);
 
@@ -181,6 +183,10 @@ for loop_idx=1:1:num_mc_idx  %%%%%%%%For each Monte Carlo
     chunk_gain=off_axis_gain_matrix;
     sort_temp_mc_dBm=base_mc+chunk_gain;
 
+    % % horzcat(base_mc,sort_temp_mc_dBm)
+    % % 'check'
+    % % pause;
+
     % 'size sort_temp_mc_dBm'
     % size(sort_temp_mc_dBm)
 
@@ -194,6 +200,11 @@ for loop_idx=1:1:num_mc_idx  %%%%%%%%For each Monte Carlo
         disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev8: NaN Error: temp_mc_watts'))
         pause;
     end
+
+    % radar_threshold
+    % move_list_margin
+    % 'check'
+    % pause;
 
 
     [mid_primary]=pre_sort_binary_movelist_rev3_multi_azi_app(app,radar_threshold-move_list_margin,binary_sort_mc_watts);
@@ -216,5 +227,6 @@ for loop_idx=1:1:num_mc_idx  %%%%%%%%For each Monte Carlo
         %horzcat(mid_primary,mid_second)
     end
 end
+horzcat(max(sub_array_ml_turnoff_mc),max(sub_array_ml_turnoff_mc_secondary))
 
 %'end of subchunk function'

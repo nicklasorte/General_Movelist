@@ -387,6 +387,12 @@ if ~isempty(zero_idx)==1
                             % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%First create the keep_on list
                             [on_list_bs,off_idx]=create_on_list_bs_GPT_rev1(app,sim_array_list_bs,union_turn_off_list_data);
 
+                            % if isempty(on_list_bs)
+                            %     on_list_bs
+                            %     'Empty on_list_bs'
+                            %     pause;
+                            % end
+
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate Aggregate Check
                             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Calculate first-->Parfor --> No data load
                             disp_progress(app,strcat('Neighborhood Calc Rev1 Line 309: Parfor Aggregate Check :',num2str(single_search_dist),'km'))
@@ -464,8 +470,10 @@ if ~isempty(zero_idx)==1
                                         % % % 'Open question, how does a NaN aggregate effect the next_single_search_dist and tf_search?'
                                         % % % 'Might need to update the calc_next_search_dist algorithm for a NaN at the end (or anywhere) '
                                         %%%%%%%%%%It does not like it
+                                    elseif isempty(on_list_bs)==1 
+                                        single_scrap_data(point_idx,1)=radar_threshold-0.1;
                                     else
-                                        disp_progress(app,strcat('Pause Error Part 2, Still an aggegrate NaN Error'))
+                                        disp_progress(app,strcat('Error Part 2, Still an aggegrate NaN Error Full Turnoff'))
                                         pause;
                                     end
                                 end
@@ -765,12 +773,16 @@ if ~isempty(zero_idx)==1
                 threshold_idx=find(matches(data_header,'dpa_threshold'));
                 radar_threshold=cell_sim_data{row_folder_idx,threshold_idx};
 
-                %%%%%%%%%%This is the zero dB shift.
+                % %%%%%%%%%%This is the zero dB shift.
                 zero_dB=in_ratio1-radar_threshold;
-                temp_array(:,2)=temp_array(:,2)+zero_dB;
-
-                agg_col_idx=2:3:num_col
+                %%%%%%agg_col_idx are the aggregate columns for ALL protection points (stride 3); shift every one to I/N, not just point 1.
+                agg_col_idx=2:3:num_col;
+                temp_array(:,agg_col_idx)=temp_array(:,agg_col_idx)+zero_dB;
                 table_stats=array2table(temp_array(:,[1,3,agg_col_idx]))
+
+                % 'check this'
+                % pause;
+
                 retry_save=1;
                 while(retry_save==1)
                     try
@@ -805,8 +817,10 @@ if ~isempty(zero_idx)==1
 
                     %%%%%%%%%%This is the zero dB shift.
                     second_zero_dB=in_ratio2-second_radar_threshold;
-                    second_temp_array(:,2)=second_temp_array(:,2)+second_zero_dB;
-                    agg_col_idx=2:3:num_col
+                    %%%%%%agg_col_idx are the aggregate columns for ALL protection points (stride 3); shift every one to I/N, not just point 1.
+                    agg_col_idx=2:3:num_col;
+                    %%%%second_temp_array(:,2)=second_temp_array(:,2)+second_zero_dB;
+                    second_temp_array(:,agg_col_idx)=second_temp_array(:,agg_col_idx)+second_zero_dB;
                     table_second_stats=array2table(second_temp_array(:,[1,3,agg_col_idx]))
                     table_stats
 
