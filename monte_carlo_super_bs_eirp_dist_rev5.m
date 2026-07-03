@@ -16,10 +16,10 @@ if num_cols>1
     for n=1:1:num_rows
         rand_norm_eirp(n)=interp1(reliability,super_array_bs_eirp_dist(n,:),rand_numbers(n),'spline');
     end
-    min(rand_norm_eirp)
-    max(rand_norm_eirp)
-    'check'
-    pause;
+    % min(rand_norm_eirp)
+    % max(rand_norm_eirp)
+    % 'check'
+    % pause;
 else
     rand_norm_eirp=zeros(num_rows,1);
 end
