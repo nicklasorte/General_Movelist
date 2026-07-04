@@ -780,8 +780,8 @@ if ~isempty(zero_idx)==1
                 temp_array(:,agg_col_idx)=temp_array(:,agg_col_idx)+zero_dB;
                 table_stats=array2table(temp_array(:,[1,3,agg_col_idx]))
 
-                % 'check this'
-                % pause;
+                % % 'check this'
+                % % pause;
 
                 retry_save=1;
                 while(retry_save==1)
