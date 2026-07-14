@@ -336,13 +336,22 @@ if ~isempty(zero_idx)==1
                         mod_neg_ant_array(:,1)=mod(neg_ant_array(:,1),360);
                         temp_ant=vertcat(radar_ant_array,mod_neg_ant_array);
                         [~,uni_idx]= unique(temp_ant(:,1), 'stable');
-                        custom_antenna_pattern=temp_ant(uni_idx,:)
+                        temp_custom_antenna_pattern=temp_ant(uni_idx,:);
 
+                        %%%%%%%%%Need to shift by gs_azimuth
+                        col_gs_azimuth_idx=find(matches(data_header,'gs_azimuth'));
+                        gs_azimuth=temp_single_cell_sim_data{col_gs_azimuth_idx};
+                        nn_azi_idx=nearestpoint_app(app,gs_azimuth,temp_custom_antenna_pattern(:,1));
+
+                        custom_antenna_pattern=temp_custom_antenna_pattern;
+                        custom_antenna_pattern(:,2)=circshift(temp_custom_antenna_pattern(:,2),nn_azi_idx)                    
+                        % 
                         % figure;
                         % hold on
                         % plot(radar_ant_array(:,1),radar_ant_array(:,2),'-ok')
                         % plot(mod_neg_ant_array(:,1),mod_neg_ant_array(:,2),'-sr')
                         % plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-g')
+
 
                         %%%%%%%%%%%%%%Plot and Save
                         fig1=figure;
