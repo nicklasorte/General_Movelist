@@ -110,6 +110,14 @@ if ~isempty(zero_idx)==1
                 radar_threshold=dpa_threshold;
                 custom_antenna_pattern=load_variable_with_retry_GPT_rev2(app, data_label1+"_custom_antenna_pattern.mat", "custom_antenna_pattern");  % e.g. stop if it truly doesn't exist
 
+
+                % figure;
+                % plot(custom_antenna_pattern(:,1),custom_antenna_pattern(:,2),'-k')
+                % grid on;
+                % 
+                % 'check'
+                % pause;
+
                 %%%%%%%%%%Binary Search
                 [poolobj,cores]=start_parpool_poolsize_app(app,parallel_flag,workers);
                 [num_ppts,~]=size(base_protection_pts);
@@ -300,7 +308,7 @@ if ~isempty(zero_idx)==1
                                 server_status_rev2(app,tf_server_status)
                                 cell_move_list_turn_off_data=cell(num_ppts,1);
                                 for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
-                                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 303'))
+                                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 303'))  %%%%%%%Error between here and 356, probably need to load at end of parfor
                                     point_idx
                                     %%%%%[move_sort_sim_array_list_bs]=pre_sort_movelist_rev20f_dual_turnoff_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder);
                                     [move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev30_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status);
@@ -413,9 +421,10 @@ if ~isempty(zero_idx)==1
                             second_scrap_data=NaN(num_ppts,2); %%%%Aggregate, Move List Size
                             for point_idx=1:1:num_ppts  %%%%%%%%This can be parfor
                                 point_idx
-                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 410'))
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 410'))  %%%%Stops between 410 and 465 (inside the agg_check_parfor_chunk_man_azi_rev10_app(
                                 [array_agg_check_95,array_agg_check_mc_dBm]=agg_check_parfor_chunk_man_azi_rev10_app(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,cell_sim_data,sim_folder,parallel_flag,azimuth_step,tf_man_azi_step,tf_server_status);
                                 if tf_test==1
+                                    disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 427'))
                                     test_label='TEST1'
                                     %[agg_check_95_test,array_agg_check_test]=agg_check_parfor_chunk_rev7_app_TEST(app,agg_check_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,mc_percentile,on_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,off_idx,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,cell_sim_data,sim_folder,parallel_flag,test_label);
                                     %%%%%%%%Rev 6 was the pre-mc-chunk
@@ -453,6 +462,7 @@ if ~isempty(zero_idx)==1
                                         end
                                     end
                                 end
+                                disp_TextArea_PastText(app,strcat('part2_neigh_calc_rev19_mc_chunk_pop: 465'))
                                
                                 cell_agg_check_data{point_idx}=array_agg_check_95;
                                 single_scrap_data(point_idx,1)=max(array_agg_check_95); %%%%%%Aggregate

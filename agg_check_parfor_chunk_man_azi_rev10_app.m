@@ -3,12 +3,16 @@ function [array_agg_check_95,array_agg_check_mc_dBm]=agg_check_parfor_chunk_man_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Agg Check Function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 6'))  
+
 agg_check_file_name=strcat(string_prop_model,'_array_agg_check_95_',num2str(min(agg_check_reliability)),'_',num2str(max(agg_check_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
 [var_exist_agg_check]=persistent_var_exist_with_corruption(app,agg_check_file_name);
 
 %%%%%%%%%Need to save the distribution also.
 agg_dist_file_name=strcat(string_prop_model,'_array_agg_check_mc_dBm_',num2str(min(agg_check_reliability)),'_',num2str(max(agg_check_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
 [var_exist_agg_dist]=persistent_var_exist_with_corruption(app,agg_dist_file_name);
+
+disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 16'))  
 
 if var_exist_agg_check==2 && var_exist_agg_dist==2
     %%%%%%%%%%%load
@@ -21,10 +25,12 @@ if var_exist_agg_check==2 && var_exist_agg_dist==2
         catch
             retry_load=1;
             pause(1)
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 28'))  
         end
     end
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 31'))  
 else
-
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 33'))  
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%This is where we define the num_chunks
     [num_chunks,cell_sim_chunk_idx,array_rand_chunk_idx]=dynamic_mc_chunks_rev1(app,mc_size);
@@ -44,6 +50,7 @@ else
             pause(1)
         end
     end
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 53'))  
 
     file_name_clutter=strcat('P2108_clutter_loss_',num2str(point_idx),'_',num2str(sim_number),'_',data_label1,'.mat');
     retry_load=1;
@@ -56,6 +63,7 @@ else
             pause(1)
         end
     end
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 66')) 
 
     %%%%%%%% Cut the reliabilities that we will use for the move list
     %disp_progress(app,strcat('Inside Agg Check Rev1: Line 44: Cutting Reliabilities'))
@@ -69,7 +77,6 @@ else
     end
     size(pathloss)
     min(pathloss)
-
     [pathloss]=fix_inf_pathloss_rev1(app,pathloss);
 
     %%%%%%%% Cut the reliabilities that we will use for the move list
@@ -97,18 +104,21 @@ else
     toc;
 
     if any(isnan(bs_azi_gain))
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 107')) 
         find(isnan(bs_azi_gain))
         %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 70: NaN error on bs_azi_gain'))
         pause;
     end
 
     if any(isnan(pathloss))
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 114')) 
         find(isnan(pathloss))
         %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 76: NaN error on pathloss'))
         pause;
     end
 
     if any(isnan(on_full_Pr_dBm))
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 121')) 
         on_full_Pr_dBm
         %find(isnan(sort_full_Pr_dBm(:,1)))
         %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 83: NaN error on on_full_Pr_dBm'))
@@ -118,6 +128,7 @@ else
 
 
     if isempty(on_full_Pr_dBm)
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 131')) 
         %disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev1: Line 89: Empty on_full_Pr_dBm, cant calculate aggrgate'))
         array_agg_check_95=NaN(1,1);
         array_agg_check_mc_dBm=NaN(1,1);
@@ -135,7 +146,9 @@ else
                 pause(1)
             end
         end
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 149')) 
     else
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 151')) 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%Rand Seed1 for MC Iterations
         tempx=ceil(rand(1)*mc_size);
@@ -157,6 +170,7 @@ else
             end
             server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
         end
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 173')) 
 
         %%%%'I dont think we need the tf_stop_subchunk'
 
@@ -182,13 +196,16 @@ else
             end
         end
         server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 199')) 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         array_agg_check_mc_dBm=vertcat(cell_agg_check{:}); %%%%%%%%Piece it together here.
         if all(isnan(array_agg_check_mc_dBm))
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 204')) 
             'Error array_agg_check_mc_dBm is NaN'
             pause;
         else
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 208')) 
             %%%%%%%%Not NaN, can keep going
             %%%%%%%%%%%%%%Generate MC Iterations and Calculate Move List
             %array_agg_check_mc_dBm=NaN(mc_size,num_sim_azi);
@@ -295,9 +312,11 @@ else
                     pause(1)
                 end
             end
-
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 315')) 
         end
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 317')) 
     end
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 319')) 
     toc;
 
     %%%%'delete the chunks before leaving this function'
@@ -322,6 +341,7 @@ else
             pause(10)
         end
     end
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 344')) 
 
     if var_exist1==2 && var_exist2==2
         %%%%%%%%%Loop for deleting
@@ -330,6 +350,7 @@ else
             file_name_agg_check_chunk=strcat('sub_',num2str(sub_point_idx),'_array_agg_check_mc_dBm_',num2str(point_idx),'_',num2str(sim_number),'_',data_label1,'_',num2str(single_search_dist),'km.mat');
             persistent_delete_rev1(app,file_name_agg_check_chunk)
         end
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 353')) 
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%End of clean up
 
@@ -339,6 +360,48 @@ else
         close(hWaitbar_agg_chunks);
     catch
     end
-      server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
+    server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 364')) 
+end
+disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 367')) 
 
+%%Reload
+
+agg_check_file_name=strcat(string_prop_model,'_array_agg_check_95_',num2str(min(agg_check_reliability)),'_',num2str(max(agg_check_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
+[var_exist_agg_check]=persistent_var_exist_with_corruption(app,agg_check_file_name);
+disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 372'))  
+
+%%%%%%%%%Need to save the distribution also.
+agg_dist_file_name=strcat(string_prop_model,'_array_agg_check_mc_dBm_',num2str(min(agg_check_reliability)),'_',num2str(max(agg_check_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
+[var_exist_agg_dist]=persistent_var_exist_with_corruption(app,agg_dist_file_name);
+disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 377'))  
+
+if var_exist_agg_check==2 && var_exist_agg_dist==2
+    %%%%%%%%%%%load
+    retry_load=1;
+    while(retry_load==1)
+        try
+            load(agg_check_file_name,'array_agg_check_95')
+            load(agg_dist_file_name,'array_agg_check_mc_dBm')
+            retry_load=0;
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 387')) 
+        catch
+            retry_load=1;
+            pause(1)
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 391'))  
+        end
+    end
+end
+
+
+if exist('array_agg_check_95', 'var')
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 398'))
+else
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 400'))
+end
+
+if exist('array_agg_check_mc_dBm', 'var')
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 404'))
+else
+    disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 406'))
 end

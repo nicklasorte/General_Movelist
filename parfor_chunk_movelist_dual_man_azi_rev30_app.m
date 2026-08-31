@@ -1,6 +1,6 @@
 function [move_sort_sim_array_list_bs]=parfor_chunk_movelist_dual_man_azi_rev30_app(app,move_list_reliability,point_idx,sim_number,mc_size,radar_beamwidth,base_protection_pts,radar_threshold,mc_percentile,sim_array_list_bs,data_label1,reliability,norm_aas_zero_elevation_data,string_prop_model,single_search_dist,tf_opt,min_azimuth,max_azimuth,custom_antenna_pattern,cell_aas_dist_data,move_list_margin,tf_full_turnoff,cell_sim_data,sim_folder,tf_man_azi_step,azimuth_step,parallel_flag,tf_server_status)
 
-
+disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 3')) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Move List Function with Neighborhoor Cut
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,7 +11,7 @@ disp_progress(app,strcat('Line 7: parfor_chunk_movelist_dual_man_azi_rev30_app')
 
 move_sort_file_name=strcat(string_prop_model,'_move_sort_sim_array_list_bs_',num2str(min(move_list_reliability)),'_',num2str(max(move_list_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
 [var_exist_move_sort]=persistent_var_exist_with_corruption(app,move_sort_file_name);
-
+disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 14')) 
 if var_exist_move_sort==2
     %%%%%%%%%%%load
     retry_load=1;
@@ -24,7 +24,9 @@ if var_exist_move_sort==2
             pause(1)
         end
     end
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 27')) 
 else
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 29')) 
     disp_progress(app,strcat('Line 28: parfor_chunk_movelist_dual_man_azi_rev30_app'))
     %%%Same as Agg Check
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%This is where we define the num_chunks,
@@ -33,6 +35,7 @@ else
     %%%%%%%%Remove empty cell_sim_chunk_idx
     
     if tf_full_turnoff==1
+        disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 38')) 
         disp_progress(app,strcat('Line 36: parfor_chunk_movelist_dual_man_azi_rev30_app'))
         %%%%%%%%%If we're turning off the full circle, no need to do all the calculations.
         %%%%%%This cuts overall computational time in half.
@@ -71,6 +74,7 @@ else
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     else  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%tf_full_turnoff==0
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 77')) 
         disp_progress(app,strcat('Line 74: parfor_chunk_movelist_dual_man_azi_rev30_app'))
         tic;
         %point_idx
@@ -140,7 +144,7 @@ else
 
         %%%%%%%%%%%%Cut the list
         sim_array_list_bs=sim_array_list_bs(keep_idx,:);
-        %size(sim_array_list_bs)
+        size(sim_array_list_bs)
 
         %%%%%%%%%%%%Might need to create the sorted list before we move into the move list calculation, a sort of step 1b.
         %%%%array_list_bs  %%%%%%%1) Lat, 2)Lon, 3)BS height, 4)BS EIRP 5) Unique ID
@@ -189,6 +193,7 @@ else
             [~,sort_bs_idx]=sort(temp_pr_dbm,'descend'); %%%Sort power received at radar, and then this is the order of turn off.
             toc; %%%%%Elapsed time is 0.000862 seconds.
         else
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 196')) 
             disp_progress(app,strcat('Line 192: parfor_chunk_movelist_dual_man_azi_rev30_app'))
             %disp_progress(app,strcat('PAUSE: Inside Pre_sort_ML rev8 Line 118: Need to double check optimal sort Logic Below'))
 
@@ -221,6 +226,7 @@ else
         %%%%%%%Clutter added later because of the randomization.
 
         if any(isnan(bs_azi_gain))
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 229')) 
             find(isnan(bs_azi_gain))
             disp_progress(app,strcat('Line 223: Error: PAUSE: parfor_chunk_movelist_dual_man_azi_rev30_app: NaN error on bs_azi_gain'))
             pause;
@@ -228,12 +234,14 @@ else
 
         if any(isnan(pathloss))
             find(isnan(pathloss))
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 237')) 
             disp_progress(app,strcat('Line 229: Error: PAUSE: parfor_chunk_movelist_dual_man_azi_rev30_app:: NaN error on pathloss'))
             pause;
         end
 
         if any(isnan(sim_array_list_bs(:,4)))
             find(isnan(sim_array_list_bs(:,4)))
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 244')) 
             disp_progress(app,strcat('Line 235: Error: PAUSE: parfor_chunk_movelist_dual_man_azi_rev30_app:: NaN error on sim_array_list_bs(:,4)'))
             pause;
         end
@@ -241,18 +249,21 @@ else
         if any(isnan(sort_full_Pr_dBm))
             sort_full_Pr_dBm
             %find(isnan(sort_full_Pr_dBm(:,1)))
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 252')) 
             disp_progress(app,strcat('Line 242: Error: PAUSE: parfor_chunk_movelist_dual_man_azi_rev30_app:: NaN error on sort_full_Pr_dBm'))
             pause;
         end
 
 
         if isempty(sort_full_Pr_dBm)
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 259')) 
             disp_progress(app,strcat('Line 248: parfor_chunk_movelist_dual_man_azi_rev30_app'))
             %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 194: Empty sort_full_Pr_dBm'))
             array_turn_off_size=NaN(1,1);
             move_list_turn_off_idx=NaN(1,1);
             move_list_turn_off_idx=move_list_turn_off_idx(~isnan(move_list_turn_off_idx));
         else
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 266')) 
             disp_progress(app,strcat('Line 254: parfor_chunk_movelist_dual_man_azi_rev30_app'))
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -291,6 +302,7 @@ else
                 end
             end
             server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 305')) 
 
             %%%%%%%%%%%%%%MC Iterations and Calculated Move List
             array_turn_off_size=vertcat(cell_ml_check_primary{:});
@@ -427,8 +439,10 @@ else
                 end
             end
         end
+        disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 442')) 
         toc;
     end
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 445')) 
 
 
     %%%%'delete the chunks before leaving this function'
@@ -454,6 +468,7 @@ else
         end
     end
 
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 471')) 
     if var_exist1==2 && var_exist2==2
         %%%%%%%%%Loop for deleting
         for sub_point_idx=1:num_chunks
@@ -475,6 +490,38 @@ else
     catch
     end
     server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
-
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 493')) 
 end
 %disp_progress(app,strcat('Inside Pre_sort_ML rev8 Line 344: Finished'))
+
+
+
+%%%%%%%Reload
+
+move_sort_file_name=strcat(string_prop_model,'_move_sort_sim_array_list_bs_',num2str(min(move_list_reliability)),'_',num2str(max(move_list_reliability)),'_',num2str(point_idx),'_',num2str(sim_number),'_',num2str(mc_size),'_',num2str(single_search_dist),'km.mat');
+[var_exist_move_sort]=persistent_var_exist_with_corruption(app,move_sort_file_name);
+if var_exist_move_sort==2 
+    %%%%%%%%%%%load
+    retry_load=1;
+    while(retry_load==1)
+        try
+            load(move_sort_file_name,'move_sort_sim_array_list_bs')
+            retry_load=0;
+        catch
+            retry_load=1;
+            pause(1)
+        end
+    end
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 515')) 
+end
+
+
+if exist('move_sort_sim_array_list_bs', 'var')
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: Line 520'))
+else
+    disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: Line 522'))
+end
+
+
+
+

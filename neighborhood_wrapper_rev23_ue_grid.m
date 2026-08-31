@@ -88,6 +88,9 @@ server_status_rev2(app,tf_server_status)
 %part2_neigh_calc_rev17_mc_chunk_tf_test(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel,cell_aas_dist_data,move_list_margin,cell_sim_data,tf_full_turnoff,array_mitigation,tf_test)
 part2_neigh_calc_rev19_mc_chunk_pop(app,parallel_flag,rev_folder,workers,move_list_reliability,mc_size,mc_percentile,reliability,norm_aas_zero_elevation_data,string_prop_model,sim_radius_km,min_binaray_spacing,margin,maine_exception,tf_full_binary_search,agg_check_reliability,tf_opt,tf_recalculate,tf_server_status,tf_print_excel,cell_aas_dist_data,move_list_margin,cell_sim_data,tf_full_turnoff,array_mitigation,tf_test)
 
+'There is where we scrap the 0km aggregate data'
+tf_rescrap_agg_data=1
+scrap_aggregate_0km_rev1(app,sim_number,string_prop_model,reliability,tf_rescrap_agg_data,tf_server_status,rev_folder,cell_sim_data)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%'for part 3, if miti array is just zero, the mitigartion list is the union move list and we skip this step'
