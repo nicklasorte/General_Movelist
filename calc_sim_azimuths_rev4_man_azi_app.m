@@ -1,5 +1,9 @@
 function [array_sim_azimuth,num_sim_azi]=calc_sim_azimuths_rev4_man_azi_app(app,radar_beamwidth,min_azimuth,max_azimuth,tf_man_azi_step,azimuth_step)
-
+% radar_beamwidth
+% tf_man_azi_step
+% min_azimuth
+% max_azimuth
+% azimuth_step
 if radar_beamwidth==360
     array_sim_azimuth=0;
 else

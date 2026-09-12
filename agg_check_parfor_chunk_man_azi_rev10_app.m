@@ -148,7 +148,7 @@ else
         end
         disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 149')) 
     else
-        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 151')) 
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 151')) %%%%%Error between 151 and 173
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%Rand Seed1 for MC Iterations
         tempx=ceil(rand(1)*mc_size);
@@ -158,19 +158,19 @@ else
         %%%%%%%%%%%%%%%%%This is where we break the mc_iter into chunks, like pathloss
 
         [hWaitbar_agg_chunks,hWaitbarMsgQueue_agg_chunks]= ParForWaitbarCreateMH_time('Agg Check Chunks: ',num_chunks);    %%%%%%% Create ParFor Waitbar, this one covers points and chunks
-
-
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 161'))
         %%%%'This is where we create the chunks and do a parfor and then stitch together with a for loop'
         if parallel_flag==1
-            parfor chunk_idx=1:num_chunks  %%%%%%%%%Parfor
-                %%parfor_randchunk_aggcheck_rev7(app,agg_check_file_name,agg_dist_file_name,array_rand_chunk_idx,chunk_idx,point_idx,sim_number,data_label1,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,parallel_flag);
-                %parfor_randchunk_aggcheck_rev8_claude(app,agg_check_file_name,agg_dist_file_name,array_rand_chunk_idx,chunk_idx,point_idx,sim_number,data_label1,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,parallel_flag,single_search_dist);
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 164'))
+            parfor chunk_idx=1:num_chunks  %%%%%%%%%Parfor                
                 parfor_randchunk_aggcheck_rev9_mc_same(app,agg_check_file_name,agg_dist_file_name,array_rand_chunk_idx,chunk_idx,point_idx,sim_number,data_label1,cell_aas_dist_data,array_bs_azi_data,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,on_list_bs,cell_sim_chunk_idx,rand_seed1,agg_check_reliability,on_full_Pr_dBm,clutter_loss,custom_antenna_pattern,parallel_flag,single_search_dist,tf_man_azi_step,azimuth_step);
                 hWaitbarMsgQueue_agg_chunks.send(0);
+                disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 168'))
             end
+            disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 170'))
             server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
         end
-        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 173')) 
+        disp_TextArea_PastText(app,strcat('part2:agg_check_parfor_chunk_man_azi_rev10_app: Line 173')) %%%Error between 173 and 199
 
         %%%%'I dont think we need the tf_stop_subchunk'
 

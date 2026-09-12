@@ -104,12 +104,14 @@ for loop_idx=1:1:num_mc_idx
         sort_temp_mc_dBm=base_mc+chunk_gain;
 
         if any(isnan(sort_temp_mc_dBm),'all')
+            disp_TextArea_PastText(app,strcat('part2:subchunk_agg_check_maxazi_man_azi_rev10: Line 107'))
             disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check: NaN Error: sort_temp_mc_dBm'))
             pause;
         end
 
         binary_sort_mc_watts=db2pow(sort_temp_mc_dBm)/1000;
         if any(isnan(binary_sort_mc_watts),'all')
+            disp_TextArea_PastText(app,strcat('part2:subchunk_agg_check_maxazi_man_azi_rev10: Line 114'))
             disp_progress(app,strcat('ERROR PAUSE: Inside Agg Check Rev8: NaN Error: temp_mc_watts'))
             pause;
         end
@@ -124,5 +126,13 @@ for loop_idx=1:1:num_mc_idx
 end
 
 %%%%%%%%%%We can max azimuths -->sub_array_agg_check_mc_dBm=NaN(num_mc_idx,num_sim_azi);
+
+
+
+if exist('sub_array_agg_check_mc_dBm', 'var')
+    disp_TextArea_PastText(app,strcat('part2:subchunk_agg_check_maxazi_man_azi_rev10: Line 133'))
+else
+    disp_TextArea_PastText(app,strcat('part2:subchunk_agg_check_maxazi_man_azi_rev10: Line 135'))
+end
 
 

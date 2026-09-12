@@ -11,6 +11,10 @@ disp_TextArea_PastText(app,strcat('Part0: Line 10'))
 %%%%%%%%%%%%%Need to feed in the the folder names we need
 data_label_idx=find(matches(cell_sim_data(1,:),'data_label1'));
 create_folder_names=cell_sim_data([2:end],data_label_idx)
+create_folder_names
+sim_number
+[num_folders1,~]=size(create_folder_names)
+disp_TextArea_PastText(app,strcat('Part0: Line 17:',num2str(num_folders1)))
 
 tf_update_cell_status=0;
 sim_folder='';  %%%%%Empty sim_folder to not update.
@@ -529,7 +533,13 @@ if ~isempty(zero_idx)==1
                         custom_antenna_pattern(:,2)=ant_gain;
                     else
                         %%%%%%%%%%%Note, this is not STATGAIN
-                        [radar_ant_array]=horizontal_antenna_loss_app(app,ant_beamwidth,min_ant_loss);
+                        %%%%This pattern needs to have the antenna gain in
+                        %%%%it and not normalized.
+                        ant_gain_idx=find(matches(data_header,'rx_ant_gain_mb'));
+                        ant_gain=temp_single_cell_sim_data{ant_gain_idx}
+                         %[radar_ant_array]=horizontal_antenna_loss_app(app,ant_beamwidth,min_ant_loss);
+                        [radar_ant_array]=antenna_pattern_rev2(app,ant_beamwidth,ant_gain,min_ant_loss);
+                        %plot(radar_ant_array(:,1),radar_ant_array(:,2),'-b')
                         neg_ant_array=flipud(radar_ant_array([2:end],:));
                         neg_ant_array(:,1)=-1*neg_ant_array(:,1);
                         mod_neg_ant_array=neg_ant_array;

@@ -13,6 +13,11 @@ function [bs_azi_gain,array_bs_azi_data]=off_axis_gain_bs2fed_rev1(app,base_prot
         % % geoplot(sim_array_list_bs(1,1),sim_array_list_bs(1,2),'sb')
         % % geobasemap streets-light%landcover
         % % bs2fed_azimuth(1)
+
+        size(sim_array_list_bs)
+        % sim_array_list_bs(1:10,:)
+        % 'check'
+        % pause;
  
 
         sector_azi=sim_array_list_bs(:,7);
@@ -35,9 +40,30 @@ function [bs_azi_gain,array_bs_azi_data]=off_axis_gain_bs2fed_rev1(app,base_prot
 
         % rural_idx(1)
 
-        bs_azi_gain(rural_idx)=norm_aas_zero_elevation_data(nn_azi_idx(rural_idx),2);
-        bs_azi_gain(sub_idx)=norm_aas_zero_elevation_data(nn_azi_idx(sub_idx),3);
-        bs_azi_gain(urban_idx)=norm_aas_zero_elevation_data(nn_azi_idx(urban_idx),4);
+        if any(sim_array_list_bs(:,6)>3)
+            'Greater than 3 idx in EIRP idx'
+            %pause;
+        end
+
+        if any(sim_array_list_bs(:,6)<1)
+            'Less than 1 idx in EIRP idx'
+            %pause;
+        end
+
+        if isempty(rural_idx) && isempty(sub_idx) && isempty(urban_idx)
+            'Empty EIRP idx'
+            %pause;
+        end
+
+            if ~isempty(rural_idx)
+                bs_azi_gain(rural_idx)=norm_aas_zero_elevation_data(nn_azi_idx(rural_idx),2);
+            end
+            if ~isempty(sub_idx)
+                bs_azi_gain(sub_idx)=norm_aas_zero_elevation_data(nn_azi_idx(sub_idx),3);
+            end
+            if ~isempty(urban_idx)
+                bs_azi_gain(urban_idx)=norm_aas_zero_elevation_data(nn_azi_idx(urban_idx),4);
+            end
 
              array_bs_azi_data=horzcat(bs2fed_azimuth,sector_azi,azi_diff_bs,mod_azi_diff_bs,bs_azi_gain);  %%%%%%%%This is the data to save and export to the excel
              % 

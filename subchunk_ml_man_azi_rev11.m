@@ -230,3 +230,16 @@ end
 horzcat(max(sub_array_ml_turnoff_mc),max(sub_array_ml_turnoff_mc_secondary))
 
 %'end of subchunk function'
+
+
+if exist('sub_array_ml_turnoff_mc', 'var')
+    disp_TextArea_PastText(app,strcat('part2:subchunk_ml_man_azi_rev11: Line 236'))
+else
+    disp_TextArea_PastText(app,strcat('part2:subchunk_ml_man_azi_rev11: Line 238'))
+end
+
+if exist('sub_array_ml_turnoff_mc_secondary', 'var')
+    disp_TextArea_PastText(app,strcat('part2:subchunk_ml_man_azi_rev11: Line 242'))
+else
+    disp_TextArea_PastText(app,strcat('part2:subchunk_ml_man_azi_rev11: Line 244'))
+end

@@ -263,7 +263,7 @@ else
             move_list_turn_off_idx=NaN(1,1);
             move_list_turn_off_idx=move_list_turn_off_idx(~isnan(move_list_turn_off_idx));
         else
-            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 266')) 
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 266')) %%%Pause Between 266 and 305
             disp_progress(app,strcat('Line 254: parfor_chunk_movelist_dual_man_azi_rev30_app'))
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -275,17 +275,18 @@ else
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%This is where we break the mc_iter into chunks, like pathloss
-
             [hWaitbar_ml_mc_chunks,hWaitbarMsgQueue_ml_mc_chunks]= ParForWaitbarCreateMH_time('MoveList MC Chunks: ',num_chunks);    %%%%%%% Create ParFor Waitbar, this one covers points and chunks
             %%%%'This is where we create the chunks and do a parfor and then stitch together with a for loop'
             if parallel_flag==1
+                disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 281')) %%%%%%Error Between 281 and 286, last message was 281. Somewhere in parfor_randchunk_ml_rev1_mc_same
                 parfor chunk_idx=1:num_chunks  %%%%%%%%%Parfor
                     parfor_randchunk_ml_rev1_mc_same(app,move_sort_file_name,sim_folder,cell_sim_data,sort_full_Pr_dBm,sort_sim_array_list_bs,super_array_bs_eirp_dist,array_rand_chunk_idx,chunk_idx,point_idx,sim_number,data_label1,radar_beamwidth,min_azimuth,max_azimuth,base_protection_pts,cell_sim_chunk_idx,rand_seed1,sort_clutter_loss,custom_antenna_pattern,single_search_dist,tf_man_azi_step,azimuth_step,move_list_reliability,radar_threshold,move_list_margin,parallel_flag);
                     hWaitbarMsgQueue_ml_mc_chunks.send(0);
                 end
+                disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 286')) 
                 server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
             end
-
+            disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 289')) 
 
             %%%%%%%%%Then Assemble with for loop
             cell_ml_check_primary=cell(num_chunks,1);  %%%%Primary and Secondary
@@ -300,6 +301,7 @@ else
                 if parallel_flag==0
                     hWaitbarMsgQueue_ml_mc_chunks.send(0);%%%%%%%Decrement the waitbar
                 end
+                disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 304'))
             end
             server_status_rev2(app,tf_server_status) %%%%%%%%%%Send an update after we done all the heavy computation
             disp_TextArea_PastText(app,strcat('part2:parfor_chunk_movelist_dual_man_azi_rev30_app: 305')) 
